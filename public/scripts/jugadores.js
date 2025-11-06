@@ -1,4 +1,8 @@
-import { supabase } from "./supabaseClient.js";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabaseUrl = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function cargarJugadores(filtro, valor) {
   let query = supabase.from("jugadores").select("*").order("id_jugador");
@@ -16,20 +20,25 @@ export async function cargarJugadores(filtro, valor) {
     cuerpo.innerHTML += `
       <tr>
         <td>${j.id_jugador}</td>
-        <td>${j.nombres}</td>
-        <td>${j.apellidos}</td>
-        <td>${j.tipo_id ?? ""}</td>
-        <td>${j.numero_id ?? ""}</td>
-        <td>${j.numero_camiseta ?? ""}</td>
-        <td>${j.posicion ?? ""}</td>
-        <td><span class="badge ${j.estado === "Activo" ? "bg-success" : "bg-danger"}">${j.estado}</span></td>
+        <td>${j.nombre}</td>
+        <td>${j.equipo}</td>
+        <td>${j.posicion}</td>
+        <td>${j.edad}</td>
       </tr>`;
   });
 }
-document.addEventListener("DOMContentLoaded", () => cargarJugadores());
-document.getElementById("busqueda-rapida-jugadores").addEventListener("submit", function(e) {
+document.addEventListener("DOMContentLoaded", () => {
+  cargarJugadores();
+});
+
+document.getElementById("filtroForm").addEventListener("submit", function (e) {
   e.preventDefault();
-  const filtro = document.getElementById("selectFiltroJugador").value;
-  const valor = document.getElementById("inputFiltroJugador").value.trim();
+  const filtro = document.getElementById("filtroSelect").value;
+  const valor = document.getElementById("filtroInput").value.trim();
   cargarJugadores(filtro, valor);
 });
+
+document.getElementById("resetButton").addEventListener("click", function () {
+  document.getElementById("filtroInput").value = "";
+  cargarJugadores();
+}); 

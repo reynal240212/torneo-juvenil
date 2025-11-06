@@ -1,14 +1,24 @@
-// script.js (Para la tabla de partidos en index.html)
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
+// Coloca tu URL y ANON KEY aquí
+const supabaseUrl = "TU_URL_SUPABASE";
+const supabaseKey = "TU_ANON_KEY";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Para la tabla de partidos en index.html (usando vista_resultados)
 async function cargarPartidos() {
   try {
-    const response = await fetch("http://localhost:3000/api/partidos");
-    const partidos = await response.json();
+    const { data: partidos, error } = await supabase
+      .from("vista_resultados")
+      .select("*")
+      .order("jornada")
+      .order("fecha")
+      .order("hora");
 
-    // ✅ CORREGIDO: El ID de la tabla en index.html es 'partidos'
-    const tabla = document.getElementById("partidos"); 
+    // ✅ El ID de la tabla en index.html debe ser 'tablaPartidos'
+    const tabla = document.getElementById("tablaPartidos"); 
     if (!tabla) {
-        console.warn('Advertencia: No se encontró el elemento con ID "partidos" en esta página.');
+        console.warn('Advertencia: No se encontró el elemento con ID "tablaPartidos" en esta página.');
         return; 
     }
     
@@ -21,13 +31,12 @@ async function cargarPartidos() {
       const fechaObj = new Date(p.fecha);
       const fechaFormateada = fechaObj.toLocaleDateString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
-      // Resultado: Muestra goles si están definidos, si no, muestra "VS"
-      // ✅ CLAVE CORREGIDA: Usamos goles_local y goles_visitante
+      // Resultado
       const resultadoHTML = (p.goles_local !== null && p.goles_visitante !== null) ? 
           `<span class="text-danger">${p.goles_local}</span> - <span class="text-primary">${p.goles_visitante}</span>` :
           `<span class="text-muted fw-normal">VS</span>`;
 
-      // Clase del badge (usamos un estilo simple aquí, puedes personalizarlo con CSS)
+      // Clase del badge
       const estadoClase = p.estado === 'FINALIZADO' ? 'text-success' : 'text-warning';
 
       fila.innerHTML = `
@@ -43,37 +52,36 @@ async function cargarPartidos() {
     });
   } catch (error) {
     console.error("Error al cargar partidos en index:", error);
-    const tabla = document.getElementById("partidos");
+    const tabla = document.getElementById("tablaPartidos");
     if (tabla) {
       tabla.innerHTML = `<tr><td colspan="7" class="text-danger p-3">No se pudieron cargar los partidos.</td></tr>`;
     }
   }
 }
 
-// Cargar partidos al iniciar la página
-document.addEventListener("DOMContentLoaded", cargarPartidos);
-
-// También cargamos las posiciones en el index (si aplica)
-// Ya que index.html tiene <tbody id="tablaPosiciones">
+// También cargamos las posiciones en el index (usando vista_posiciones)
 async function cargarPosicionesIndex() {
   try {
-   const response = await fetch("http://localhost:3000/api/posiciones");
-   if (!response.ok) throw new Error("Error al cargar posiciones");
-   const posiciones = await response.json();
+    const { data: posiciones, error } = await supabase
+      .from("vista_posiciones")
+      .select("*")
+      .order("puntos", { ascending: false })
+      .order("diferencia_goles", { ascending: false })
+      .order("goles_favor", { ascending: false });
 
-   const tabla = document.getElementById("tablaPosiciones");
-   if (!tabla) return;
-   tabla.innerHTML = ""; 
+    const tabla = document.getElementById("tablaPosiciones");
+    if (!tabla) return;
+    tabla.innerHTML = ""; 
 
     posiciones.forEach((p, index) => {
       const fila = document.createElement("tr");
       fila.innerHTML = `
         <td>${index + 1}</td>
-        <td class="text-start fw-bold">${p.nombre_equipo}</td>
-        <td>${p.partidos_jugados}</td>
-        <td>${p.partidos_ganados}</td>
-        <td>${p.partidos_empatados}</td>
-        <td>${p.partidos_perdidos}</td>
+        <td class="text-start fw-bold">${p.equipo}</td>
+        <td>${p.pj}</td>
+        <td>${p.pg}</td>
+        <td>${p.pe}</td>
+        <td>${p.pp}</td>
         <td>${p.goles_favor}</td>
         <td>${p.goles_contra}</td>
         <td>${p.diferencia_goles}</td>
@@ -87,4 +95,6 @@ async function cargarPosicionesIndex() {
     if(tabla) tabla.innerHTML = `<tr><td colspan="10" class="text-danger p-3">No se pudieron cargar las posiciones.</td></tr>`;
   }
 }
+
+document.addEventListener("DOMContentLoaded", cargarPartidos);
 document.addEventListener("DOMContentLoaded", cargarPosicionesIndex);

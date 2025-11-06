@@ -18,19 +18,19 @@ async function cargarPosiciones() {
     tabla.innerHTML = `<tr><td colspan="10" class="text-danger">Error al cargar posiciones.</td></tr>`;
     return;
   }
-  data.forEach((item, idx) => {
+  data.forEach((p, idx) => {
     tabla.innerHTML += `
       <tr>
         <td>${idx + 1}</td>
-        <td>${item.equipo}</td>
-        <td>${item.pj}</td>
-        <td>${item.pg}</td>
-        <td>${item.pe}</td>
-        <td>${item.pp}</td>
-        <td>${item.goles_favor}</td>
-        <td>${item.goles_contra}</td>
-        <td>${item.diferencia_goles}</td>
-        <td>${item.puntos}</td>
+        <td>${p.nombre_equipo}</td>
+        <td>${p.partidos_jugados}</td>
+        <td>${p.partidos_ganados}</td>
+        <td>${p.partidos_empatados}</td>
+        <td>${p.partidos_perdidos}</td>
+        <td>${p.goles_favor}</td>
+        <td>${p.goles_contra}</td>
+        <td>${p.diferencia_goles}</td>
+        <td>${p.puntos}</td>
       </tr>`;
   });
 }

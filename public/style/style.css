@@ -43,6 +43,9 @@ body {
   background: var(--color-light);
   border-radius: 0 0 10px 10px;
 }
+.navbar-toggler{
+ background:var(--color-light)
+}
 
 .card-torneo, .card-reglamento {
   background: var(--gradient-card);

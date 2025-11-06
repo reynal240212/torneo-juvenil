@@ -8,21 +8,42 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link rel="shortcut icon" href="images/EscudoTorneo.png" type="image/x-icon">
   <link rel="stylesheet" href="style/style.css" />
-  <!-- Tus estilos inline pueden quedarse como los tienes -->
+  <style>
+    /* Paleta suave para fondo principal */
+    body {
+      background: linear-gradient(125deg, #e3f6fe 0%, #a7e6fb 100%);
+      min-height: 100vh;
+    }
+    .info-shadow {
+      box-shadow: 0 8px 32px rgba(0,130,201,0.11);
+    }
+  </style>
 </head>
 <body>
   <div id="nav-placeholder"></div>
   <div id="hero-placeholder"></div>
 
   <main class="container" style="max-width:1240px;">
-    <div class="col-md-5">
-      <div class="card-torneo">
-        <h3 class="mb-2"><i class="fas fa-info-circle"></i> Sobre el Torneo</h3>
-        <p>El Torneo Juvenil La Pradera reúne los mejores equipos jóvenes de la región en una experiencia de fútbol inolvidable.</p>
-        <a href="reglamento.html" class="btn-torneo mt-2"><i class="fas fa-scroll"></i> Ver Reglamento</a>
+    <!-- Info General -->
+    <section class="row mb-4">
+      <div class="col-lg-4 col-md-5 mb-3">
+        <div class="card-torneo info-shadow h-100">
+          <h3 class="mb-2"><i class="fas fa-info-circle"></i> Sobre el Torneo</h3>
+          <p>El Torneo Juvenil La Pradera reúne los mejores equipos jóvenes de la región en una experiencia de fútbol inolvidable.</p>
+          <a href="reglamento.html" class="btn-torneo mt-2"><i class="fas fa-scroll"></i> Ver Reglamento</a>
+        </div>
       </div>
-    </div>
-    <div class="card-torneo">
+      <div class="col-lg-8 col-md-7 mb-3">
+        <div class="card-torneo info-shadow h-100 d-flex align-items-center bg-lightblue" style="background: linear-gradient(100deg, #e3f6fe 55%, #a7e6fb 100%);">
+          <div>
+            <h1 class="display-5 fw-bold mb-2" style="color:#0082C9;"><i class="fas fa-futbol"></i> ¡Bienvenidos!</h1>
+            <p class="lead mb-0">Consulta posiciones, resultados y próximos partidos aquí. Sigue a tu equipo favorito y vive la pasión juvenil.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Tabla Partidos -->
+    <div class="card-torneo mb-4">
       <h3 class="mb-3"><i class="fas fa-calendar-days"></i> Encuentros Recientes y Próximos</h3>
       <div class="table-responsive">
         <table class="table align-middle text-center table-hover mb-0">
@@ -35,7 +56,8 @@
         </table>
       </div>
     </div>
-    <div class="card-torneo mt-4">
+    <!-- Tabla Posiciones -->
+    <div class="card-torneo mb-4">
       <h3 class="mb-3"><i class="fas fa-ranking-star"></i> Tabla General</h3>
       <div class="table-responsive">
         <table class="table align-middle text-center table-hover mb-0">
@@ -50,10 +72,8 @@
       </div>
     </div>
   </main>
-
   <div id="footer-placeholder"></div>
   <script>
-    // Carga modular de parciales
     Promise.all([
       fetch('layout/navbar.html').then(r=>r.text()).then(h=>{ document.getElementById('nav-placeholder').innerHTML=h; }),
       fetch('layout/hero.html').then(r=>r.text()).then(h=>{ document.getElementById('hero-placeholder').innerHTML=h; }),

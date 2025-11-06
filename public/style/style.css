@@ -24,28 +24,29 @@ body {
   line-height: 1.7;
 }
 
-.navbar {
-  background: var(--gradient-nav);
-  box-shadow: var(--shadow-default);
-  border-bottom: 3px solid var(--color-cyan);
-}
-
-.nav-link {
-  color: var(--color-cyan) !important;
-  font-weight: 600;
-  margin: 0 8px;
-  transition: color .18s, border-color .18s;
-}
-.nav-link:hover,
-.nav-link.active {
-  color: var(--color-dark) !important;
-  border-bottom: 2.5px solid var(--color-light);
-  background: var(--color-light);
-  border-radius: 0 0 10px 10px;
-}
-.navbar-toggler{
- background:var(--color-light)
-}
+.navbar-nav .nav-link.active, .navbar-nav .nav-link:focus-visible {
+    color: #fff !important;
+    background: linear-gradient(90deg,#0082C9 80%,#00B7DF 100%);
+    border-radius:9px;
+    font-weight: 900;
+    box-shadow: 0 4px 14px #00b7df40;
+    text-shadow: 0 1px 8px #003c9a83,0 1px 0 #212b3825;
+  }
+  .navbar-nav .nav-link:hover:not(.active) {
+    color: #fff !important;
+    background: #136ea388;
+    border-radius: 9px;
+    transition: .2s;
+    text-shadow: 0 .5px 4px #003c9a40;
+  }
+  .navbar {
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    font-size: 1.105rem;
+  }
+  @media (max-width:800px){
+    .navbar-nav{font-size:1em;}
+    .navbar-brand span{font-size:1rem;}
+  }
 
 .card-torneo, .card-reglamento {
   background: var(--gradient-card);

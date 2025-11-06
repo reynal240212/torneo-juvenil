@@ -1,7 +1,7 @@
 import pkg from "pg";
 import dotenv from "dotenv";
 
-dotenv.config(); // Carga variables del archivo .env
+dotenv.config();
 const { Pool } = pkg;
 
 const pool = new Pool({
@@ -10,12 +10,15 @@ const pool = new Pool({
   user: process.env.PG_USER || "postgres",
   password: process.env.PG_PASSWORD || "241206",
   database: process.env.PG_DATABASE || "TorneoJuvenil",
-  ssl: process.env.PG_SSL === "true" ? { rejectUnauthorized: false } : false,
+  ssl:
+    process.env.RENDER === "true" || process.env.PG_SSL === "true"
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 export default pool;
 
-// Prueba de conexión
+// 🔍 Prueba de conexión
 (async () => {
   try {
     const client = await pool.connect();

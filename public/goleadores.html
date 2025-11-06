@@ -1,138 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Goleadores - Torneo Juvenil La Pradera</title>
-  <!-- Bootstrap y FontAwesome -->
+  <link rel="stylesheet" href="style/style.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link rel="shortcut icon" href="images/EscudoTorneo.png" type="image/x-icon">
-  <link rel="stylesheet" href="./style/style.css">
-
-  <style>
-    :root {
-      --color-blue: #0082C9;
-      --color-cyan: #00B7DF;
-      --color-dark: #002B3C;
-      --color-light: #D5F6FC;
-      --color-white: #ffffff;
-      --border-radius: 16px;
-      --shadow-default: 0 4px 32px rgba(0,130,201, 0.09);
-    }
-    body {
-   
-      color: var(--color-dark);
-      min-height: 100vh;
-      font-family: 'Poppins', 'Roboto', sans-serif;
-    }
-    .navbar {
-      background: linear-gradient(90deg, #002B3C 60%, #0082C9 100%);
-      border-bottom: 2.5px solid #00B7DF;
-      box-shadow: 0 2px 22px #0082C911;
-    }
-    .navbar-brand, .nav-link.active { color: #fff !important; font-weight: 700;}
-    .nav-link {color: var(--color-cyan) !important; font-weight: 600; border-bottom: 2px solid transparent;}
-    .nav-link:hover, .nav-link.active {color: var(--color-dark) !important; border-bottom: 2.5px solid var(--color-light); background: var(--color-light); border-radius: 0 0 10px 10px;}
-    footer {
-      background: linear-gradient(90deg, #002B3C 57%, #0082C9 100%);
-      color: var(--color-cyan);
-      letter-spacing: .07em;
-      margin-top: 3em;
-      font-size: 1.1rem;
-      border-top: 3px solid #0082C9;
-      box-shadow: 0 -10px 40px #0082C944;
-    }
-    .section-header {text-align: center; margin: 40px 0 24px;}
-    .section-header h2 {font-size: 2.3rem; color: #0082C9; font-weight:900;}
-    .section-header p {color: var(--color-dark);}
-    .jugadores-list { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; margin-bottom: 36px;}
-    .jugador-card {
-      background: linear-gradient(120deg, var(--color-light) 55%, var(--color-cyan) 100%);
-      border-radius: 18px;
-      box-shadow: 0 6px 30px #0082C933;
-      backdrop-filter: blur(5px);
-      padding: 1em 20px;
-      max-width: 240px;
-      min-width: 180px;
-      flex: 1;
-      transition: transform .16s;
-      border: 2px solid var(--color-blue);
-      display: flex; flex-direction: column; align-items: center;
-    }
-    .jugador-card:hover {transform: scale(1.06);}
-    .jugador-avatar { width: 54px; height: 54px; border-radius: 50%; object-fit: cover; margin-bottom: 13px; border: 3px solid var(--color-blue);}
-    .jugador-nombre { font-size: 1.1rem; color: var(--color-blue); font-weight: 800;}
-    .jugador-equipo { color: var(--color-dark); font-size: 0.98rem; margin-bottom: 6px;}
-    .badge-goles {
-      background: var(--color-cyan);
-      color: var(--color-dark);
-      font-weight: bold;
-      border-radius: 24px;
-      padding: 8px 17px;
-      font-size: 1.06rem;
-      box-shadow:0 2px 12px #00b7df22;
-    }
-    .table-responsive { border-radius:16px; box-shadow: var(--shadow-default);}
-    .table th, .table td {text-align: center;}
-    .table thead {background: linear-gradient(90deg, #0082C9 50%, #00B7DF 100%); color: #fff;}
-    .table-striped>tbody>tr:nth-of-type(odd) {background: #e3f8ff;}
-    .table-striped>tbody>tr:nth-of-type(even) {background: #f8fbfe;}
-    .table tbody tr:hover {background: var(--color-cyan); color: var(--color-dark);}
-    @media(max-width:968px) { .section-header h2{font-size:1.3rem;} .jugador-card{max-width:94vw;} }
-  </style>
 </head>
 <body>
- <!--insercion de navbar y hero section
-  conectado desde layout/
-  -->
-  <div id="nav-placeholder"></div>      
-  <div id="hero-placeholder"></div>
-
-
-  <main class="container my-5">
-    <div class="section-header">
-  <h2><i class="fas fa-trophy me-2"></i> Goleadores del Torneo</h2>
-  <p class="text-muted">Ranking actual y perfiles destacados - ¡Descubre quién lidera la tabla!</p>
-</div>
-<div id="jugadores-list" class="jugadores-list mb-3"></div>
-
-    <!-- Tabla completa ranking -->
-    <div class="table-responsive">
-      <table class="table table-hover table-striped align-middle text-center mb-4" id="tablaGoleadores">
-        <thead>
-          <tr>
-            <th>Puesto</th>
-            <th>Jugador</th>
-            <th>Goles</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colspan="4" class="text-muted">Cargando goleadores...</td>
-          </tr>
-        </tbody>
-      </table>
+  <div id="nav-placeholder"></div>
+  <main class="container">
+    <h2 class="mb-4 mt-2"><i class="fas fa-futbol"></i> Tabla de goleadores</h2>
+    <div class="card-torneo">
+      <div class="table-responsive">
+        <table class="table table-hover" id="tablaGoleadores">
+          <thead>
+            <tr>
+              <th>#</th><th>Nombre</th><th>Equipo</th><th>Goles</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="4" class="text-muted">Cargando goleadores...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </main>
-  
-  <!-- Footer moderno -->
   <div id="footer-placeholder"></div>
-
-   <script>
-    fetch('layout/navbar.html')
-      .then(res => res.text())
-      .then(html => { document.getElementById('nav-placeholder').innerHTML = html; });
-    fetch('layout/hero.html')
-      .then(res => res.text())
-      .then(html => { document.getElementById('hero-placeholder').innerHTML = html; });
-    fetch('layout/footer.html')
-      .then(res => res.text())
-      .then(html => { document.getElementById('footer-placeholder').innerHTML = html; });
+  <script>
+    fetch('layout/navbar.html').then(res => res.text()).then(html => { document.getElementById('nav-placeholder').innerHTML = html; });
+    fetch('layout/footer.html').then(res => res.text()).then(html => { document.getElementById('footer-placeholder').innerHTML = html; });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="scripts/supabaseClient.js"></script>
   <script type="module" src="scripts/goleadores.js"></script>
-
 </body>
 </html>

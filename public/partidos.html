@@ -46,11 +46,13 @@
   </style>
 </head>
 <body>
+<div id="nav-placeholder"></div>
+<div id="hero-placeholder"></div>
   <div class="container mt-4 mb-5">
     <h2 class="mb-3 fw-bold text-primary">Partidos y Resultados</h2>
     <div id="partidosList"></div>
   </div>
-
+  <div id="footer-placeholder"></div>
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
@@ -118,6 +120,13 @@
     }
 
     document.addEventListener("DOMContentLoaded", cargarPartidos);
+  </script>
+  <script>
+    Promise.all([
+      fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; }),
+      fetch('layout/hero.html').then(r => r.text()).then(h => { document.getElementById('hero-placeholder').innerHTML = h; }),
+      fetch('layout/footer.html').then(r => r.text()).then(h => { document.getElementById('footer-placeholder').innerHTML = h; })
+    ]).catch(console.error);
   </script>
 </body>
 </html>

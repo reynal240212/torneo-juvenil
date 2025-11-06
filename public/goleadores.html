@@ -5,139 +5,61 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Goleadores - Torneo Juvenil La Pradera</title>
   
-  <!-- Metadatos SEO y Open Graph (ya estaban bien) -->
+  <!-- SEO -->
   <meta name="description" content="Consulta la tabla actualizada de goleadores del Torneo Juvenil La Pradera. Estadísticas, equipos y máximo artillero del campeonato." />
   <meta name="keywords" content="goleadores, torneo juvenil, la pradera, fútbol, tabla de goleadores, estadísticas, liga juvenil, fútbol barranquilla" />
   <meta name="author" content="Organización Torneo Juvenil La Pradera" />
   <meta name="robots" content="index, follow">
+
+  <!-- Open Graph (Facebook / WhatsApp) -->
   <meta property="og:title" content="Tabla de Goleadores - Torneo Juvenil La Pradera" />
   <meta property="og:description" content="Descubre quién lidera la tabla de goleadores del Torneo Juvenil La Pradera. Actualización en tiempo real." />
   <meta property="og:image" content="https://torneo-juvenil.vercel.app/images/Goleadores.png" />
   <meta property="og:url" content="https://torneo-juvenil.vercel.app/goleadores.html" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="es_CO" />
+
+  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Tabla de Goleadores - Torneo Juvenil La Pradera" />
   <meta name="twitter:description" content="Consulta la clasificación de goleadores del Torneo Juvenil La Pradera. Datos actualizados al instante." />
   <meta name="twitter:image" content="https://torneo-juvenil.vercel.app/images/Goleadores.png" />
+
+  <!-- Favicon -->
+  <!-- Icono para navegadores y apps -->
   <link rel="icon" href="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png" type="image/png">
   <link rel="apple-touch-icon" href="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png" sizes="180x180">
 
-  <!-- Dependencias -->
+  <!-- CSS y librerías -->
+  <link rel="stylesheet" href="style/style.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  
-  <!-- Estilos Mejorados -->
-  <link rel="stylesheet" href="style/style.css" />
-  <style>
-    /* Estilos del contenedor principal y título */
-    .container-goleadores {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-      padding: 2.5em;
-      margin-top: 2em;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #f0f8ff;
-    }
-
-    .titulo-goleadores {
-      font-weight: 900;
-      font-size: 2.2rem;
-      letter-spacing: .02em;
-      color: #fff;
-      margin-bottom: 1.5rem;
-      text-shadow: 0 4px 20px #00000050;
-    }
-
-    /* Estilos para las tarjetas del Top 3 */
-    .top-goleador-card {
-      border-radius: 15px;
-      border: none;
-      padding: 1.5rem;
-      text-align: center;
-      color: white;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .top-goleador-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-    
-    .top-goleador-oro { background: linear-gradient(140deg, #d4af37, #b48608); } /* Oro */
-    .top-goleador-plata { background: linear-gradient(140deg, #c0c0c0, #a8a8a8); } /* Plata */
-    .top-goleador-bronce { background: linear-gradient(140deg, #cd7f32, #a0522d); } /* Bronce */
-
-    .top-goleador-card .posicion {
-      font-size: 3rem;
-      font-weight: 900;
-    }
-    .top-goleador-card .nombre { font-size: 1.5rem; font-weight: 700; }
-    .top-goleador-card .equipo { opacity: 0.8; }
-    .top-goleador-card .goles-numero {
-      font-size: 4rem;
-      font-weight: 900;
-      line-height: 1;
-      margin-top: 0.2em;
-      text-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    }
-    .top-goleador-card .goles-texto { font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
-
-    /* Estilos de la tabla */
-    .table-goleadores {
-      --bs-table-bg: transparent;
-      --bs-table-color: #f0f8ff;
-      --bs-table-border-color: rgba(255, 255, 255, 0.15);
-      --bs-table-striped-bg: rgba(255, 255, 255, 0.05);
-      --bs-table-hover-bg: rgba(255, 255, 255, 0.1);
-    }
-    .table-goleadores thead {
-      --bs-table-bg: rgba(0, 0, 0, 0.2);
-      --bs-table-color: white;
-      font-weight: 700;
-    }
-    .table-goleadores .posicion-col { font-weight: 700; font-size: 1.1rem; }
-    .table-goleadores .goles-col { font-weight: 700; font-size: 1.2rem; }
-
-    /* Skeleton Loader */
-    @keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }
-    .skeleton {
-      animation: shimmer 1.5s linear infinite;
-      background: linear-gradient(to right, rgba(255,255,255,0.08) 8%, rgba(255,255,255,0.15) 18%, rgba(255,255,255,0.08) 33%);
-      background-size: 800px 104px;
-      border-radius: 8px;
-    }
-    .skeleton-card { height: 250px; }
-    .skeleton-row td { padding: 1rem 0.5rem; }
-    .skeleton-row .skeleton { height: 25px; }
-  </style>
 </head>
 
 <body>
   <div id="nav-placeholder"></div>
-  <main class="container">
-    <div class="container-goleadores">
-      <h1 class="titulo-goleadores text-center"><i class="fas fa-futbol"></i> Tabla de Goleadores</h1>
+  <main class="container" style="max-width:1240px;">
+    <div class="card-torneo mt-4">
+      <h3 class="mb-3"><i class="fas fa-futbol"></i> Tabla de Goleadores</h3>
 
-      <!-- Contenedor para el Top 3 -->
-      <div class="row mb-5" id="topGoleadores">
-        <!-- El skeleton loader del Top 3 se inyectará aquí -->
+      <div class="row mb-4" id="topGoleadores">
+        <div class="col text-center text-muted">Cargando líderes...</div>
       </div>
 
-      <!-- Contenedor para la tabla completa -->
       <div class="table-responsive">
-        <table class="table table-striped table-hover align-middle text-center table-goleadores">
-          <thead class="thead-dark">
+        <table class="table table-hover align-middle text-center mb-0">
+          <thead class="table-dark">
             <tr>
-              <th scope="col" style="width: 10%;">#</th>
-              <th scope="col" style="text-align: left;">Jugador</th>
-              <th scope="col">Equipo</th>
-              <th scope="col" style="width: 15%;">Goles</th>
+              <th>#</th>
+              <th>Jugador</th>
+              <th>Equipo</th>
+              <th>Goles</th>
             </tr>
           </thead>
           <tbody id="tablaGoleadores">
-            <!-- El skeleton loader de la tabla se inyectará aquí -->
+            <tr>
+              <td colspan="4" class="text-muted">Cargando goleadores...</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -145,11 +67,15 @@
   </main>
   <div id="footer-placeholder"></div>
 
-  <!-- Scripts -->
   <script>
-    fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; });
-    fetch('layout/footer.html').then(r => r.text()).then(h => { document.getElementById('footer-placeholder').innerHTML = h; });
+    fetch('layout/navbar.html')
+      .then(res => res.text())
+      .then(html => { document.getElementById('nav-placeholder').innerHTML = html; });
+    fetch('layout/footer.html')
+      .then(res => res.text())
+      .then(html => { document.getElementById('footer-placeholder').innerHTML = html; });
   </script>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script type="module" src="scripts/goleadores.js"></script>
 </body>

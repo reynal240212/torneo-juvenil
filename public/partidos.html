@@ -258,7 +258,6 @@
 
       return `
         <li id="partido-${p.id_partido}" class="partido-card">
-          <span class="estado-badge estado-${estadoClase}">${p.estado || '—'}</span>
           <div class="partido-grid">
             <div class="equipo local">
               <div class="equipo-nombre"><i class="fa-solid fa-shirt"></i> ${p.equipo_local}</div>
@@ -270,6 +269,7 @@
           </div>
           <div class="partido-info">
             <i class="fa-regular fa-calendar-alt"></i> ${fechaFormato} | <i class="fa-regular fa-clock"></i> ${hora}
+            <span class="estado-badge estado-${estadoClase}">${p.estado || '—'}</span>
           </div>
         </li>
       `;

@@ -1,12 +1,11 @@
-// server/server.js
-
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
 import pkg from "pg";
-
-// Importa routers de tus archivos (ES Modules)
 import loginRoutes from "./routes/loginRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+
+dotenv.config(); // <-- Carga las variables del .env
 
 const { Pool } = pkg;
 const app = express();
@@ -14,16 +13,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Configuración de PostgreSQL
+// 🔗 CONFIGURACIÓN DE CONEXIÓN A SUPABASE (Render lee las env vars)
 const pool = new Pool({
-  host: "localhost",
-  database: "TorneoJuvenil",
-  user: "postgres",
-  password: "241206",
-  port: 5432
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.PG_SSL === "true" ? { rejectUnauthorized: false } : false
 });
 
-// ENDPOINTS DIRECTOS DE TU API (las vistas)
+// ✅ Verificación de conexión
+pool.connect()
+  .then(() => console.log("✅ Conectado a la base de datos Supabase"))
+  .catch(err => console.error("❌ Error al conectar a la base de datos:", err.message));
+
+// ------------------------- ENDPOINTS API -----------------------------
+
 app.get("/api/posiciones", async (req, res) => {
   try {
     const result = await pool.query(`
@@ -109,11 +111,12 @@ app.get("/api/jugadores", async (req, res) => {
   }
 });
 
-// INCORPORA RUTAS MVC
-app.use('/api', loginRoutes);
-app.use('/api', adminRoutes);  // /api/jugadores, /api/equipos... protegidas si quieres
+// ------------------------- RUTAS MVC -----------------------------
+app.use("/api", loginRoutes);
+app.use("/api", adminRoutes);
 
-const PORT = 3000;
+// ------------------------- INICIO SERVIDOR -----------------------------
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor Node.js corriendo en http://localhost:${PORT}`);
+  console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
 });

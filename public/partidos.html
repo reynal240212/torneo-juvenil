@@ -113,6 +113,8 @@
 </head>
 
 <body>
+  <div id="nav-placeholder"></div>
+  <div id="hero-placeholder"></div>
   <!-- NAVBAR simple arriba, puedes poner tu navbar mejorado aquí si lo prefieres -->
   <nav class="navbar contenedor-navbar py-0 px-0" style="background: none; border: none !important;">
     <div class="container-fluid">
@@ -248,6 +250,14 @@
       renderTabsFechas(tabs, hoyISO);
       cargarPartidosPorFecha(hoyISO);
     });
+  </script>
+  <div id="footer-placeholder"></div>
+  <script>
+    Promise.all([
+      fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; }),
+      fetch('layout/hero.html').then(r => r.text()).then(h => { document.getElementById('hero-placeholder').innerHTML = h; }),
+      fetch('layout/footer.html').then(r => r.text()).then(h => { document.getElementById('footer-placeholder').innerHTML = h; })
+    ]).catch(console.error);
   </script>
 </body>
 

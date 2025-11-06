@@ -2,10 +2,12 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import pkg from "pg";
+import path from "path";
+import { fileURLToPath } from "url";
 import loginRoutes from "./routes/loginRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 
-dotenv.config(); // <-- Carga las variables del .env
+dotenv.config();
 
 const { Pool } = pkg;
 const app = express();
@@ -13,10 +15,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🔗 CONFIGURACIÓN DE CONEXIÓN A SUPABASE (Render lee las env vars)
+// Configurar ruta absoluta
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Servir archivos estáticos desde "public"
+app.use(express.static(path.join(__dirname, "../public")));
+
+// ------------------------- CONEXIÓN A SUPABASE -----------------------------
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.PG_SSL === "true" ? { rejectUnauthorized: false } : false
+  ssl: { rejectUnauthorized: false }, // Render requiere SSL
 });
 
 // ✅ Verificación de conexión
@@ -25,7 +34,6 @@ pool.connect()
   .catch(err => console.error("❌ Error al conectar a la base de datos:", err.message));
 
 // ------------------------- ENDPOINTS API -----------------------------
-
 app.get("/api/posiciones", async (req, res) => {
   try {
     const result = await pool.query(`
@@ -114,6 +122,11 @@ app.get("/api/jugadores", async (req, res) => {
 // ------------------------- RUTAS MVC -----------------------------
 app.use("/api", loginRoutes);
 app.use("/api", adminRoutes);
+
+// ------------------------- RUTA POR DEFECTO (HTML) -----------------------------
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/index.html"));
+});
 
 // ------------------------- INICIO SERVIDOR -----------------------------
 const PORT = process.env.PORT || 3000;

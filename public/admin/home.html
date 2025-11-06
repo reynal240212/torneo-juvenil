@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Admin - Torneo Juvenil La Pradera</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark" style="background: linear-gradient(90deg,#002B3C 70%,#0082C9 100%);">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">Admin Torneo Juvenil</a>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link fw-bold" href="jugadores.html">Jugadores</a></li>
+        <li class="nav-item"><a class="nav-link" href="equipos.html">Equipos</a></li>
+        <li class="nav-item"><a class="nav-link" href="goleadores.html">Goleadores</a></li>
+        <li class="nav-item"><a class="nav-link" href="partidos.html">Partidos</a></li>
+        <li class="nav-item"><a class="nav-link" href="posiciones.html">Posiciones</a></li>
+        <li class="nav-item"><a class="nav-link text-danger" href="#" onclick="logout()">Salir</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container py-5 text-center">
+    <h2 class="mb-4 text-primary">Bienvenido al Panel de Administración</h2>
+    <p><strong>Utiliza el menú para gestionar datos del torneo.</strong></p>
+  </div>
+  <!-- <script>
+    function logout(){
+      localStorage.removeItem('jwt_token');
+      window.location.href = 'login.html';
+    }
+    // (opcional: redirigir si no hay token)
+    if(!localStorage.getItem('jwt_token')) window.location.href = 'login.html';
+  </script> -->
+</body>
+</html>

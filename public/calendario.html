@@ -10,23 +10,33 @@
 </head>
 <body>
   <div id="nav-placeholder"></div>
-  <main class="container">
-    <h2 class="mb-4 mt-2"><i class="fas fa-calendar-days"></i> Calendario oficial de jornadas</h2>
-    <div class="card-torneo">
+
+  <main class="container" style="max-width:1240px;">
+    <div class="card-torneo mt-4">
+      <h3 class="mb-3"><i class="fas fa-calendar-days"></i> Encuentros Recientes y Próximos</h3>
       <div class="table-responsive">
-        <table class="table table-hover" id="tablaCalendario">
+        <table class="table align-middle text-center table-hover mb-0">
           <thead>
             <tr>
-              <th>Jornada</th><th>Fecha</th><th>Hora</th><th>Local</th><th>Visitante</th><th>Estado</th>
+              <th>Jornada</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Local</th>
+              <th>Visitante</th>
+              <th>Resultado</th>
+              <th>Estado</th>
             </tr>
           </thead>
-          <tbody>
-            <tr><td colspan="6" class="text-muted">Cargando calendario...</td></tr>
+          <tbody id="tablaPartidos">
+            <tr>
+              <td colspan="7" class="text-muted">Cargando partidos...</td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
   </main>
+
   <div id="footer-placeholder"></div>
   <script>
     fetch('layout/navbar.html').then(res => res.text()).then(html => { document.getElementById('nav-placeholder').innerHTML = html; });

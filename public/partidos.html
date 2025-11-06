@@ -49,83 +49,128 @@
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background: #f5f8ff;
-    }
+ <style>
+  body {
+    background: #f5f8ff;
+  }
+  main {
+    min-height: 80vh;
+  }
+  .partido-card {
+    background: linear-gradient(110deg, #f6fbff 70%, #e3eefc 100%);
+    border-radius: 18px;
+    box-shadow: 0 2px 12px #0001;
+    padding: 1.5rem 1.4rem 1.3rem 1.4rem;
+    margin-bottom: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.2rem;
+    border-left: .33rem solid #4e64fa;
+    transition: box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .partido-card:hover {
+    box-shadow: 0 8px 32px #4e64fa22;
+    border-left-color: #0082c9;
+    background: linear-gradient(110deg, #e3eefc 40%, #f6fbff 100%);
+  }
+  .equipos {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 2.2rem;
+    flex: 2 1 auto;
+  }
+  .equipo {
+    text-align: right;
+    min-width: 110px;
+    max-width: 160px;
+  }
+  .visitante { text-align: left; }
+  .equipo-nombre {
+    font-size: 1.23rem;
+    font-weight: 700;
+    color: #233865;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    line-height: 1.2;
+  }
+  .equipo-icon {
+    display: inline-block;
+    background: #fff;
+    border-radius: 50%;
+    font-size: 1.5em;
+    width: 2.1em;
+    height: 2.1em;
+    margin-right: .3em;
+    line-height: 2.1em;
+    text-align: center;
+    box-shadow: 0 2px 7px #9cf2;
+    color: #4e64fa;
+  }
+  .vs-box {
+    padding: 0.2em 0.6em;
+    background: #4e64fa;
+    color: #fff;
+    border-radius: 1.2em;
+    font-weight: 900;
+    font-size: 1.06rem;
+    margin: 0 1em;
+    letter-spacing: 0.06em;
+    box-shadow: 0 0 8px #2221;
+    align-self: center;
+  }
+  .resultado-box {
+    font-size: 1.12rem;
+    font-weight: 900;
+    color: #23378c;
+    padding: 0.19em 0.8em;
+    border-radius: 0.85em;
+    background: #ebf3fe;
+    margin: 0 1em;
+    min-width: 60px;
+    text-align: center;
+    border: 1px solid #e3eefc;
+    box-shadow: 0 3px 10px #0001;
+  }
+  .partido-hora {
+    font-size: 1.10rem;
+    color: #0082c9;
+    font-weight: 700;
+    text-align: right;
+    margin-bottom: 0.7em;
+  }
+  .estado-badge {
+    position: absolute;
+    top: 0.7em;
+    right: 1.6em;
+    font-size: 1em;
+    z-index: 2;
+    pointer-events: none;
+    background: #fff;
+    border-radius: .7em;
+    box-shadow: 0 2px 8px #2b71e622;
+    padding: .2em .8em;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+  @media (max-width: 800px) {
+    .equipos { flex-direction: column; gap: 0.7em; align-items: flex-start;}
+    .equipo, .visitante { text-align: left; min-width: 0; max-width: 100%;}
+    .estado-badge { right: 1em; }
+  }
+  @media (max-width: 500px) {
+    .partido-card { padding: 1.1rem 0.7rem; border-radius: 13px;}
+    .estado-badge { right: 0.5em; top: 0.3em;}
+  }
+</style>
 
-    main {
-      min-height: 80vh;
-    }
-
-    .partido-card {
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 2px 12px #0001;
-      padding: 1.2rem 1.5rem;
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: box-shadow 0.2s;
-    }
-
-    .partido-card:hover {
-      box-shadow: 0 4px 24px #0002;
-    }
-
-    .equipos {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .equipo-nombre {
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: #182347;
-      margin-bottom: 0.3rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-    }
-
-    .vs {
-      color: #4e64fa;
-      font-weight: bold;
-      margin: 0.4em 0;
-    }
-
-    .partido-hora {
-      font-size: 1.15rem;
-      color: #2535b8;
-      font-weight: 700;
-      text-align: right;
-    }
-
-    .badge {
-      font-size: 90%;
-      vertical-align: middle;
-      margin-left: .5em;
-    }
-
-    .partido-btn {
-      margin-top: 0.75em;
-      pointer-events: none;
-    }
-
-    @media (max-width: 600px) {
-      .partido-card {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .partido-hora {
-        align-self: flex-end;
-        margin-bottom: 1em;
-      }
-    }
-  </style>
 </head>
 
 <body>

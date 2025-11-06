@@ -2,7 +2,7 @@
 <html lang="es">
 
 <head>
-  <!-- Meta datos esenciales para página de partidos del Torneo Juvenil La Pradera -->
+  <!-- Meta datos esenciales (sin cambios, ya estaban bien optimizados) -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Partidos y Resultados - Torneo Juvenil La Pradera</title>
@@ -13,7 +13,6 @@
   <meta name="author" content="Organización Torneo Juvenil La Pradera">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0082C9">
-  <!-- Open Graph y más... -->
   <meta property="og:title" content="Partidos y Resultados - Torneo Juvenil La Pradera">
   <meta property="og:description"
     content="Programación actualizada, resultados y horarios de los partidos del Torneo Juvenil La Pradera. Consulta equipos, jornadas y sigue tu equipo favorito.">
@@ -24,90 +23,181 @@
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_CO">
   <meta property="og:site_name" content="Torneo Juvenil La Pradera">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Partidos y Resultados - Torneo Juvenil La Pradera">
-  <meta name="twitter:description"
-    content="Descubre la programación y resultados de los partidos del Torneo Juvenil La Pradera. Todos los datos en tiempo real.">
-  <meta name="twitter:image" content="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png">
-  <meta name="twitter:site" content="@TuUsuarioTwitter">
 
-  <link rel="icon" href="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png" type="image/png">
-  <link rel="apple-touch-icon" href="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png" sizes="180x180">
-
+  <!-- Dependencias (Bootstrap y FontAwesome) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="style/style.css" />
 
+  <!-- Estilos Mejorados -->
   <style>
-    body {
-      background: linear-gradient(120deg, #0f2578 48%, #002B3C 75%, #0082C9 100%);
-      min-height: 100vh;
+    :root {
+      --azul-primario: #0f2578;
+      --azul-secundario: #002B3C;
+      --azul-acento: #0082C9;
+      --azul-interactivo: #0036a8;
+      --texto-claro: #f0f8ff;
+      --texto-resaltado: #7ef0ff;
     }
 
+    body {
+      background: linear-gradient(120deg, var(--azul-primario) 48%, var(--azul-secundario) 75%, var(--azul-acento) 100%);
+      min-height: 100vh;
+      color: var(--texto-claro);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    .container.bg-content {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+      padding: 2em;
+      margin-top: 1.5em;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .titulo-pag {
+      font-weight: 900;
+      font-size: 2.5rem;
+      letter-spacing: .03em;
+      margin: 1em 0 .5em 0;
+      text-shadow: 0 4px 20px #00000050;
+    }
+
+    /* Estilos para los botones de fecha */
     .nav-fechas {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6em;
+      gap: 0.7em;
       justify-content: flex-start;
-      margin: .7em 0 1.3em 0;
-      padding: .6em 0;
-      background: none;
+      margin-bottom: 2em;
+      padding-bottom: 1em;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .nav-fecha-btn {
       background: #191d53;
       color: #c2e7fa;
       border-radius: 20px;
-      padding: 0.4em 1.2em;
-      border: none;
-      font-weight: 600;
-      font-size: 1.05em;
-      box-shadow: 0 2px 10px #191D5330;
-      transition: background .16s, color .18s;
-      outline: none;
-      letter-spacing: .012em;
+      padding: 0.5em 1.3em;
       border: 2px solid transparent;
+      font-weight: 600;
+      font-size: 1em;
+      box-shadow: 0 2px 10px rgba(25, 29, 83, 0.2);
+      transition: all .2s ease-in-out;
       cursor: pointer;
     }
 
     .nav-fecha-btn.active,
-    .nav-fecha-btn:focus {
-      background: #0036a8;
-      color: #7ef0ff;
-      border-color: #00b7df;
-      box-shadow: 0 4px 20px #0082c960;
+    .nav-fecha-btn:focus-visible {
+      background: var(--azul-interactivo);
+      color: var(--texto-resaltado);
+      border-color: var(--azul-acento);
+      box-shadow: 0 4px 20px rgba(0, 130, 201, 0.4);
+      transform: translateY(-2px);
     }
 
-    .nav-fecha-btn:hover {
-      background: #0082c9;
-      color: #fff;
-      border-color: #00b7df;
+    .nav-fecha-btn:hover:not(.active) {
+      background: var(--azul-acento);
+      color: white;
+      transform: translateY(-2px);
     }
 
-   
-
-    /* ...el resto de tu CSS cartas aquí... */
-    .contenedor-navbar {
-      padding: 0;
-      margin-bottom: 0;
-      border: none;
+    /* Estilos para las tarjetas de partido rediseñadas */
+    .partido-card {
+      background: rgba(15, 37, 120, 0.6);
+      border-radius: 12px;
+      padding: 1.5em;
+      margin-bottom: 1em;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(0, 130, 201, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
     }
 
-    .titulo-pag {
-      color: #fff;
+    .partido-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 30px rgba(0, 130, 201, 0.3);
+    }
+
+    .partido-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1em;
+      text-align: center;
+    }
+
+    .equipo-nombre {
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.7em;
+    }
+
+    .equipo.local .equipo-nombre {
+      justify-content: flex-start;
+    }
+    .equipo.visitante .equipo-nombre {
+      justify-content: flex-end;
+      text-align: right;
+    }
+
+    .marcador {
+      font-size: 2rem;
       font-weight: 900;
-      font-size: 2.05rem;
-      letter-spacing: .03em;
-      margin: 1em 0 .2em 0;
-      text-shadow: 0 2px 15px #002b3c98;
+      letter-spacing: .05em;
     }
 
-    .container.bg-content {
-      background: #fff8;
-      border-radius: 19px;
-      box-shadow: 0 6px 27px #002b3c18;
-      padding: 2em 1.2em;
-      margin-top: 1em;
+    .vs {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--texto-resaltado);
+    }
+
+    .partido-info {
+      text-align: center;
+      margin-top: 1.2em;
+      font-size: 0.9rem;
+      color: #c2e7fa;
+      border-top: 1px solid rgba(0, 130, 201, 0.2);
+      padding-top: 1em;
+    }
+
+    .estado-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 0.3em 0.7em;
+      border-radius: 15px;
+      font-size: 0.8em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    
+    /* Clases para los estados de partido */
+    .estado-FINALIZADO { background-color: #28a745; color: white; }
+    .estado-EN-JUEGO { background-color: #007bff; color: white; animation: pulse 1.5s infinite; }
+    .estado-PROGRAMADO { background-color: #17a2b8; color: white; }
+    .estado-OTORGADO { background-color: #ffc107; color: #212529; }
+    .estado-CANCELADO { background-color: #dc3545; color: white; }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+    }
+    
+    /* Mensajes y Spinner */
+    .feedback-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 4em 0;
+        min-height: 200px;
     }
   </style>
 </head>
@@ -115,28 +205,19 @@
 <body>
   <div id="nav-placeholder"></div>
   <div id="hero-placeholder"></div>
-  <!-- NAVBAR simple arriba, puedes poner tu navbar mejorado aquí si lo prefieres -->
-  <nav class="navbar contenedor-navbar py-0 px-0" style="background: none; border: none !important;">
-    <div class="container-fluid">
-      <!-- Aquí puedes poner tu propio nav institucional -->
+  <main class="container">
+    <h1 class="titulo-pag text-center">Partidos y Resultados</h1>
+
+    <div class="bg-content">
+      <!-- Contenedor para los botones de fechas -->
+      <nav id="navFechas" class="nav-fechas"></nav>
+
+      <!-- Contenedor para la lista de partidos con atributos para accesibilidad -->
+      <ul id="partidosList" class="list-unstyled" aria-live="polite" aria-atomic="true"></ul>
     </div>
-  </nav>
+  </main>
 
-  <div class="container bg-content">
-    <h2 class="titulo-pag mb-3">Partidos y resultados</h2>
-
-    <!-- Tabs de fechas (se generan dinámicamente en JS)-->
-    <div id="navFechas" class="nav-fechas mb-2"></div>
-
-    <!-- Cartas de partidos -->
-    <div id="partidosList"></div>
-  </div>
-
-  <!-- Bootstrap y FontAwesome JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
-
-  <!-- Supabase y lógica -->
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
@@ -144,86 +225,102 @@
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Genera rango de fechas tabs (7 pasadas y 7 futuras)
-    function obtenerFechasTabs(base = '2025-11-06') {
-      const fechas = [];
-      const hoy = base ? new Date(base) : new Date();
-      for (let i = -7; i <= 7; i++) {
-        const f = new Date(hoy);
-        f.setDate(hoy.getDate() + i);
-        fechas.push(f);
-      }
-      return fechas.map(f => ({
-        label: f.toLocaleDateString('es-CO', { weekday: "short", day: "2-digit", month: "short" }),
-        value: f.toISOString().slice(0, 10),
-        esHoy: (f.toDateString() === hoy.toDateString())
-      }));
-    }
+    const navFechasEl = document.getElementById("navFechas");
+    const partidosListEl = document.getElementById("partidosList");
+    let realtimeChannel = null;
 
-    // Render de tabs de fechas
-    function renderTabsFechas(fechasArr, activa) {
-      const navFechas = document.getElementById("navFechas");
-      navFechas.innerHTML = fechasArr.map(f =>
-        `<button class="nav-fecha-btn${(f.value === activa) ? " active" : ""}" 
-          data-fecha="${f.value}">
-          ${f.label}
-        </button>`
-      ).join("");
-      // Listeners
-      document.querySelectorAll(".nav-fecha-btn").forEach(btn => {
-        btn.onclick = () => {
-          renderTabsFechas(fechasArr, btn.getAttribute("data-fecha"));
-          cargarPartidosPorFecha(btn.getAttribute("data-fecha"));
-        }
-      });
-    }
+    // --- RENDERIZACIÓN DE LA UI ---
 
-    // Render cartas (usa tu diseño mejorado aquí)
-    function partidoCard(p) {
-      const hora = p.hora || "-";
-      const fecha = p.fecha ? new Date(p.fecha).toLocaleDateString('es-CO') : "-";
-      const estadoHtml = `<span class="estado-badge ${claseEstado(p.estado)}">${p.estado || '—'}</span>`;
-      const resultado = (p.goles_local !== null && p.goles_visitante !== null)
-        ? `<span class="resultado-box"><span class="text-danger">${p.goles_local}</span> - <span class="text-primary">${p.goles_visitante}</span></span>`
-        : `<span class="vs-box">VS</span>`;
-      return `
-        <div class="partido-card position-relative">
-          ${estadoHtml}
-          <div class="equipos">
-            <div class="equipo">
-              <div class="equipo-nombre"><span class="equipo-icon"><i class="fa-solid fa-shirt"></i></span>${p.equipo_local}</div>
-            </div>
-            ${resultado}
-            <div class="equipo visitante">
-              <div class="equipo-nombre">${p.equipo_visitante}<span class="equipo-icon"><i class="fa-solid fa-shirt"></i></span></div>
-            </div>
-          </div>
-          <div class="partido-hora">
-            <i class="fa-regular fa-clock"></i> ${hora}<br>
-            <span class="text-muted small"><i class="fa-regular fa-calendar"></i> ${fecha}</span>
+    const renderSpinner = () => {
+      partidosListEl.innerHTML = `
+        <div class="feedback-container">
+          <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">Cargando partidos...</span>
           </div>
         </div>
       `;
+    };
+
+    const renderFeedbackMessage = (message) => {
+        partidosListEl.innerHTML = `<div class="feedback-container"><p class="lead">${message}</p></div>`;
     }
 
-    function claseEstado(estado = "") {
-      switch (estado.toUpperCase()) {
-        case "FINALIZADO": return "badge bg-success text-white";
-        case "OTORGADO": return "badge bg-warning text-dark";
-        case "PROGRAMADO": return "badge bg-info text-dark";
-        case "EN JUEGO": return "badge bg-primary text-white";
-        case "CANCELADO": return "badge bg-danger text-white";
-        default: return "badge bg-secondary text-white";
+    const partidoCardTemplate = (p) => {
+      const hora = p.hora ? p.hora.substring(0, 5) : "--:--";
+      const fechaFormato = p.fecha ? new Date(p.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' }) : "Fecha no definida";
+      
+      const marcadorHtml = (p.goles_local !== null && p.goles_visitante !== null)
+        ? `<div class="marcador"><span>${p.goles_local}</span> - <span>${p.goles_visitante}</span></div>`
+        : `<div class="vs">VS</div>`;
+
+      // Sanitiza el estado para usarlo como clase CSS
+      const estadoClase = (p.estado || 'desconocido').replace(/\s+/g, '-').toUpperCase();
+
+      return `
+        <li id="partido-${p.id_partido}" class="partido-card">
+          <span class="estado-badge estado-${estadoClase}">${p.estado || '—'}</span>
+          <div class="partido-grid">
+            <div class="equipo local">
+              <div class="equipo-nombre"><i class="fa-solid fa-shirt"></i> ${p.equipo_local}</div>
+            </div>
+            ${marcadorHtml}
+            <div class="equipo visitante">
+              <div class="equipo-nombre">${p.equipo_visitante} <i class="fa-solid fa-shirt"></i></div>
+            </div>
+          </div>
+          <div class="partido-info">
+            <i class="fa-regular fa-calendar-alt"></i> ${fechaFormato} | <i class="fa-regular fa-clock"></i> ${hora}
+          </div>
+        </li>
+      `;
+    };
+
+    const renderPartidos = (partidos) => {
+        if (!partidos || partidos.length === 0) {
+            renderFeedbackMessage("No hay partidos programados para esta fecha.");
+            return;
+        }
+        partidosListEl.innerHTML = partidos.map(partidoCardTemplate).join('');
+    };
+
+    const renderTabsFechas = (fechasArr, fechaActiva) => {
+      navFechasEl.innerHTML = fechasArr.map(f =>
+        `<button class="nav-fecha-btn${f.value === fechaActiva ? " active" : ""}" data-fecha="${f.value}">
+          ${f.label}
+        </button>`
+      ).join("");
+
+      navFechasEl.querySelectorAll(".nav-fecha-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const nuevaFecha = btn.getAttribute("data-fecha");
+            document.querySelector('.nav-fecha-btn.active')?.classList.remove('active');
+            btn.classList.add('active');
+            cargarPartidosPorFecha(nuevaFecha);
+        });
+      });
+    };
+
+    // --- LÓGICA DE DATOS ---
+
+    const obtenerFechasTabs = (base = new Date()) => {
+      const fechas = [];
+      for (let i = -7; i <= 7; i++) {
+        const f = new Date(base);
+        f.setDate(base.getDate() + i);
+        fechas.push(f);
       }
-    }
-
+      return fechas.map(f => ({
+        label: f.toLocaleDateString('es-CO', { weekday: "short", day: "2-digit", month: "short" }).replace('.', ''),
+        value: f.toISOString().slice(0, 10),
+      }));
+    };
+    
     async function cargarPartidosPorFecha(fechaISO) {
-      const el = document.getElementById("partidosList");
-      el.innerHTML = '<div class="my-5 text-center text-muted">Cargando partidos...</div>';
-      // Si tu campo fecha es tipo date, simplemente ".eq('fecha', fechaISO)"
-      // Si tipo timestamp: rango día
-      const desde = fechaISO + " 00:00:00";
-      const hasta = fechaISO + " 23:59:59";
+      renderSpinner();
+      
+      const desde = `${fechaISO} 00:00:00`;
+      const hasta = `${fechaISO} 23:59:59`;
+      
       const { data, error } = await supabase
         .from("vista_resultados")
         .select("*")
@@ -231,22 +328,67 @@
         .lte('fecha', hasta)
         .order("hora", { ascending: true });
 
-      if (error || !data) {
-        el.innerHTML = `<div class="alert alert-danger">Error al cargar partidos</div>`;
+      if (error) {
+        console.error("Error al cargar partidos:", error);
+        renderFeedbackMessage("Error al cargar los partidos. Inténtelo de nuevo.");
         return;
       }
-      if (data.length === 0) {
-        el.innerHTML = `<div class="alert alert-info">No hay partidos para esa fecha.</div>`;
-        return;
-      }
-      el.innerHTML = data.map(partidoCard).join('');
+      
+      renderPartidos(data);
+      suscribirseACambios(); // Inicia la suscripción después de cargar los partidos
     }
 
-    // Inicializar
+    function suscribirseACambios() {
+        // Si ya hay un canal, lo eliminamos para evitar duplicados
+        if (realtimeChannel) {
+            supabase.removeChannel(realtimeChannel);
+        }
+
+        realtimeChannel = supabase.channel('vista_resultados_changes')
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'partidos' }, // Escucha cambios en la tabla original
+                (payload) => {
+                    console.log('Cambio recibido:', payload.new);
+                    // Busca la tarjeta del partido en el DOM y la actualiza
+                    const partidoActualizado = payload.new;
+                    const cardElement = document.getElementById(`partido-${partidoActualizado.id_partido}`);
+                    if (cardElement) {
+                        // Para actualizar necesitamos los nombres de los equipos, que están en la vista
+                        // Hacemos una pequeña consulta para obtener el registro completo de la vista
+                        fetchPartidoActualizado(partidoActualizado.id_partido);
+                    }
+                }
+            )
+            .subscribe();
+    }
+    
+    // Función auxiliar para obtener los datos completos de la vista y actualizar el DOM
+    async function fetchPartidoActualizado(partidoId) {
+        const { data, error } = await supabase
+            .from('vista_resultados')
+            .select('*')
+            .eq('id_partido', partidoId)
+            .single();
+            
+        if (error || !data) {
+            console.error("Error al obtener datos actualizados del partido:", error);
+            return;
+        }
+
+        const cardElement = document.getElementById(`partido-${data.id_partido}`);
+        if(cardElement) {
+            cardElement.outerHTML = partidoCardTemplate(data);
+        }
+    }
+
+
+    // --- INICIALIZACIÓN ---
     document.addEventListener("DOMContentLoaded", () => {
-      // Por defecto, fecha de hoy
-      const hoyISO = new Date().toISOString().slice(0, 10);
-      const tabs = obtenerFechasTabs(hoyISO);
+      const hoy = new Date();
+      const hoyISO = hoy.toISOString().slice(0, 10);
+      
+      const tabs = obtenerFechasTabs(hoy);
       renderTabsFechas(tabs, hoyISO);
       cargarPartidosPorFecha(hoyISO);
     });
@@ -260,5 +402,4 @@
     ]).catch(console.error);
   </script>
 </body>
-
 </html>

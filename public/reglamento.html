@@ -5,30 +5,38 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Reglamento - Torneo Juvenil La Pradera</title>
   <link rel="stylesheet" href="style/style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
   <div id="nav-placeholder"></div>
-  <main class="container">
-    <h2><i class="fas fa-scroll"></i> 📜 Reglamento del Torneo</h2>
-    <div class="card-torneo">
-      <ul>
-        <li><strong>Duración del Partido:</strong> Dos tiempos de 20 minutos.</li>
-        <li><strong>Sustituciones:</strong> Permitidas recambios ilimitados.</li>
-        <li><strong>Puntuación:</strong> 3 puntos por victoria, 1 por empate, 0 por derrota.</li>
-        <li><strong>Árbitro:</strong> Tarjeta azul (advertencia y cambio), roja (expulsión inmediata), amarilla (advertencia menor).</li>
-        <li><strong>Desempate:</strong> Puntos > Diferencia de Goles > Goles a Favor > Enfrentamiento Directo.</li>
-        <li><strong>Equipamiento:</strong> Uso obligatorio de indumentaria adecuada y protectores.</li>
-        <li><strong>Fair Play:</strong> Respeto y deportividad en todo momento.</li>
-        <li><strong>Lesiones:</strong> El árbitro puede detener el partido si hay conflictos.</li>
-        <li><strong>Clima:</strong> En caso de lluvia severa, se evaluará la suspensión.</li>
-        <li><strong>Empate en la Final:</strong> Tiempo extra de 10 minutos, penales si sigue igual.</li>
-        <li><strong>Comportamiento Deportivo:</strong> Respeto hacia jugadores, árbitros y público.</li>
-        <li><strong>Respeto a los Árbitros:</strong> Acatar todas las decisiones arbitrales.</li>
-        <li><strong>Puntualidad:</strong> Presentarse a tiempo a los partidos.</li>
-        <li><strong>Sanciones:</strong> Suspensiones o multas por el comité.</li>
+  <main class="container" style="max-width:1240px;">
+    <div class="card-torneo mt-4">
+      <div class="d-flex align-items-center mb-3">
+        <span class="me-2" style="font-size:2rem;color:#0082C9"><i class="fas fa-scroll"></i></span>
+        <h3 class="mb-0">Reglamento del Torneo Juvenil La Pradera</h3>
+      </div>
+      <ul class="list-group list-group-flush" style="font-size:1.07rem;">
+        <li class="list-group-item"><strong>Duración del Partido:</strong> Dos tiempos de 20 minutos.</li>
+        <li class="list-group-item"><strong>Sustituciones:</strong> Permitidas recambios ilimitados.</li>
+        <li class="list-group-item"><strong>Puntuación:</strong> 3 puntos por victoria, 1 por empate, 0 por derrota.</li>
+        <li class="list-group-item"><strong>Árbitro:</strong> <span class="badge bg-primary">Azul</span> (advertencia y cambio), <span class="badge bg-danger">Roja</span> (expulsión), <span class="badge bg-warning text-dark">Amarilla</span> (advertencia menor).</li>
+        <li class="list-group-item"><strong>Desempate:</strong> Puntos > Diferencia de Goles > Goles a Favor > Enfrentamiento Directo.</li>
+        <li class="list-group-item"><strong>Equipamiento:</strong> Uso obligatorio de indumentaria adecuada y protectores.</li>
+        <li class="list-group-item"><strong>Fair Play:</strong> Respeto y deportividad en todo momento.</li>
+        <li class="list-group-item"><strong>Lesiones:</strong> El árbitro puede detener el partido si hay conflictos.</li>
+        <li class="list-group-item"><strong>Clima:</strong> En caso de lluvia severa, se evaluará la suspensión.</li>
+        <li class="list-group-item"><strong>Empate en la Final:</strong> Tiempo extra de 10 minutos, penales si sigue igual.</li>
+        <li class="list-group-item"><strong>Comportamiento Deportivo:</strong> Respeto hacia jugadores, árbitros y público.</li>
+        <li class="list-group-item"><strong>Respeto a los Árbitros:</strong> Acatar todas las decisiones arbitrales.</li>
+        <li class="list-group-item"><strong>Puntualidad:</strong> Presentarse a tiempo a los partidos.</li>
+        <li class="list-group-item"><strong>Sanciones:</strong> Suspensiones o multas por el comité.</li>
       </ul>
-      <p><em>El incumplimiento de las normas puede resultar en tarjetas, suspensión o pérdida de puntos.<br>
-      Todos los participantes deben leer y entender este reglamento.</em></p>
+      <div class="alert alert-info mt-4 mb-0" role="alert">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Nota:</strong> El incumplimiento de las normas puede resultar en sanciones, suspensión o pérdida de puntos.<br>
+        Todos los participantes deben leer y entender este reglamento.
+      </div>
     </div>
   </main>
   <div id="footer-placeholder"></div>
@@ -36,5 +44,6 @@
     fetch('layout/navbar.html').then(res => res.text()).then(html => { document.getElementById('nav-placeholder').innerHTML = html; });
     fetch('layout/footer.html').then(res => res.text()).then(html => { document.getElementById('footer-placeholder').innerHTML = html; });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

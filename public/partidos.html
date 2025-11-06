@@ -13,8 +13,7 @@
   <meta name="author" content="Organización Torneo Juvenil La Pradera">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0082C9">
-
-  <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+  <!-- Open Graph y más... -->
   <meta property="og:title" content="Partidos y Resultados - Torneo Juvenil La Pradera">
   <meta property="og:description"
     content="Programación actualizada, resultados y horarios de los partidos del Torneo Juvenil La Pradera. Consulta equipos, jornadas y sigue tu equipo favorito.">
@@ -25,175 +24,185 @@
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_CO">
   <meta property="og:site_name" content="Torneo Juvenil La Pradera">
-
-  <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Partidos y Resultados - Torneo Juvenil La Pradera">
   <meta name="twitter:description"
     content="Descubre la programación y resultados de los partidos del Torneo Juvenil La Pradera. Todos los datos en tiempo real.">
   <meta name="twitter:image" content="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png">
-  <meta name="twitter:site" content="@TuUsuarioTwitter"> <!-- (Opcional: tu usuario) -->
+  <meta name="twitter:site" content="@TuUsuarioTwitter">
 
-  <!-- Iconos para navegadores y apps -->
   <link rel="icon" href="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png" type="image/png">
   <link rel="apple-touch-icon" href="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png" sizes="180x180">
 
-  <!-- Canonical URL para SEO -->
-  <link rel="canonical" href="https://torneo-juvenil.vercel.app/partidos">
-
-  <!-- Librerías y estilos extra -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link rel="shortcut icon" href="images/EscudoTorneo.png" type="image/x-icon">
   <link rel="stylesheet" href="style/style.css" />
 
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
- <style>
-  body {
-    background: #f5f8ff;
-  }
-  main {
-    min-height: 80vh;
-  }
-  .partido-card {
-    background: linear-gradient(110deg, #f6fbff 70%, #e3eefc 100%);
-    border-radius: 18px;
-    box-shadow: 0 2px 12px #0001;
-    padding: 1.5rem 1.4rem 1.3rem 1.4rem;
-    margin-bottom: 22px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.2rem;
-    border-left: .33rem solid #4e64fa;
-    transition: box-shadow 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .partido-card:hover {
-    box-shadow: 0 8px 32px #4e64fa22;
-    border-left-color: #0082c9;
-    background: linear-gradient(110deg, #e3eefc 40%, #f6fbff 100%);
-  }
-  .equipos {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 2.2rem;
-    flex: 2 1 auto;
-  }
-  .equipo {
-    text-align: right;
-    min-width: 110px;
-    max-width: 160px;
-  }
-  .visitante { text-align: left; }
-  .equipo-nombre {
-    font-size: 1.23rem;
-    font-weight: 700;
-    color: #233865;
-    margin-bottom: 0.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4em;
-    line-height: 1.2;
-  }
-  .equipo-icon {
-    display: inline-block;
-    background: #fff;
-    border-radius: 50%;
-    font-size: 1.5em;
-    width: 2.1em;
-    height: 2.1em;
-    margin-right: .3em;
-    line-height: 2.1em;
-    text-align: center;
-    box-shadow: 0 2px 7px #9cf2;
-    color: #4e64fa;
-  }
-  .vs-box {
-    padding: 0.2em 0.6em;
-    background: #4e64fa;
-    color: #fff;
-    border-radius: 1.2em;
-    font-weight: 900;
-    font-size: 1.06rem;
-    margin: 0 1em;
-    letter-spacing: 0.06em;
-    box-shadow: 0 0 8px #2221;
-    align-self: center;
-  }
-  .resultado-box {
-    font-size: 1.12rem;
-    font-weight: 900;
-    color: #23378c;
-    padding: 0.19em 0.8em;
-    border-radius: 0.85em;
-    background: #ebf3fe;
-    margin: 0 1em;
-    min-width: 60px;
-    text-align: center;
-    border: 1px solid #e3eefc;
-    box-shadow: 0 3px 10px #0001;
-  }
-  .partido-hora {
-    font-size: 1.10rem;
-    color: #0082c9;
-    font-weight: 700;
-    text-align: right;
-    margin-bottom: 0.7em;
-  }
-  .estado-badge {
-    position: absolute;
-    top: 0.7em;
-    right: 1.6em;
-    font-size: 1em;
-    z-index: 2;
-    pointer-events: none;
-    background: #fff;
-    border-radius: .7em;
-    box-shadow: 0 2px 8px #2b71e622;
-    padding: .2em .8em;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-  }
-  @media (max-width: 800px) {
-    .equipos { flex-direction: column; gap: 0.7em; align-items: flex-start;}
-    .equipo, .visitante { text-align: left; min-width: 0; max-width: 100%;}
-    .estado-badge { right: 1em; }
-  }
-  @media (max-width: 500px) {
-    .partido-card { padding: 1.1rem 0.7rem; border-radius: 13px;}
-    .estado-badge { right: 0.5em; top: 0.3em;}
-  }
-</style>
+  <style>
+    body {
+      background: linear-gradient(120deg, #0f2578 48%, #002B3C 75%, #0082C9 100%);
+      min-height: 100vh;
+    }
 
+    .nav-fechas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6em;
+      justify-content: flex-start;
+      margin: .7em 0 1.3em 0;
+      padding: .6em 0;
+      background: none;
+    }
+
+    .nav-fecha-btn {
+      background: #191d53;
+      color: #c2e7fa;
+      border-radius: 20px;
+      padding: 0.4em 1.2em;
+      border: none;
+      font-weight: 600;
+      font-size: 1.05em;
+      box-shadow: 0 2px 10px #191D5330;
+      transition: background .16s, color .18s;
+      outline: none;
+      letter-spacing: .012em;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+
+    .nav-fecha-btn.active,
+    .nav-fecha-btn:focus {
+      background: #0036a8;
+      color: #7ef0ff;
+      border-color: #00b7df;
+      box-shadow: 0 4px 20px #0082c960;
+    }
+
+    .nav-fecha-btn:hover {
+      background: #0082c9;
+      color: #fff;
+      border-color: #00b7df;
+    }
+
+   
+
+    /* ...el resto de tu CSS cartas aquí... */
+    .contenedor-navbar {
+      padding: 0;
+      margin-bottom: 0;
+      border: none;
+    }
+
+    .titulo-pag {
+      color: #fff;
+      font-weight: 900;
+      font-size: 2.05rem;
+      letter-spacing: .03em;
+      margin: 1em 0 .2em 0;
+      text-shadow: 0 2px 15px #002b3c98;
+    }
+
+    .container.bg-content {
+      background: #fff8;
+      border-radius: 19px;
+      box-shadow: 0 6px 27px #002b3c18;
+      padding: 2em 1.2em;
+      margin-top: 1em;
+    }
+  </style>
 </head>
 
 <body>
-  <!-- NAVBAR, HERO Y FOOTER INCLUÍDOS EXTERNAMENTE -->
-  <div id="nav-placeholder"></div>
-  <div id="hero-placeholder"></div>
-
-  <main>
-    <div class="container py-4 mb-5">
-      <h2 class="mb-4 fw-bold text-primary">Partidos y Resultados</h2>
-      <div id="partidosList"></div>
+  <!-- NAVBAR simple arriba, puedes poner tu navbar mejorado aquí si lo prefieres -->
+  <nav class="navbar contenedor-navbar py-0 px-0" style="background: none; border: none !important;">
+    <div class="container-fluid">
+      <!-- Aquí puedes poner tu propio nav institucional -->
     </div>
-  </main>
+  </nav>
 
-  <div id="footer-placeholder"></div>
+  <div class="container bg-content">
+    <h2 class="titulo-pag mb-3">Partidos y resultados</h2>
 
-  <!-- SUPABASE Y JS -->
+    <!-- Tabs de fechas (se generan dinámicamente en JS)-->
+    <div id="navFechas" class="nav-fechas mb-2"></div>
+
+    <!-- Cartas de partidos -->
+    <div id="partidosList"></div>
+  </div>
+
+  <!-- Bootstrap y FontAwesome JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+
+  <!-- Supabase y lógica -->
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
     const supabaseUrl = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Genera rango de fechas tabs (7 pasadas y 7 futuras)
+    function obtenerFechasTabs(base = '2025-11-06') {
+      const fechas = [];
+      const hoy = base ? new Date(base) : new Date();
+      for (let i = -7; i <= 7; i++) {
+        const f = new Date(hoy);
+        f.setDate(hoy.getDate() + i);
+        fechas.push(f);
+      }
+      return fechas.map(f => ({
+        label: f.toLocaleDateString('es-CO', { weekday: "short", day: "2-digit", month: "short" }),
+        value: f.toISOString().slice(0, 10),
+        esHoy: (f.toDateString() === hoy.toDateString())
+      }));
+    }
+
+    // Render de tabs de fechas
+    function renderTabsFechas(fechasArr, activa) {
+      const navFechas = document.getElementById("navFechas");
+      navFechas.innerHTML = fechasArr.map(f =>
+        `<button class="nav-fecha-btn${(f.value === activa) ? " active" : ""}" 
+          data-fecha="${f.value}">
+          ${f.label}
+        </button>`
+      ).join("");
+      // Listeners
+      document.querySelectorAll(".nav-fecha-btn").forEach(btn => {
+        btn.onclick = () => {
+          renderTabsFechas(fechasArr, btn.getAttribute("data-fecha"));
+          cargarPartidosPorFecha(btn.getAttribute("data-fecha"));
+        }
+      });
+    }
+
+    // Render cartas (usa tu diseño mejorado aquí)
+    function partidoCard(p) {
+      const hora = p.hora || "-";
+      const fecha = p.fecha ? new Date(p.fecha).toLocaleDateString('es-CO') : "-";
+      const estadoHtml = `<span class="estado-badge ${claseEstado(p.estado)}">${p.estado || '—'}</span>`;
+      const resultado = (p.goles_local !== null && p.goles_visitante !== null)
+        ? `<span class="resultado-box"><span class="text-danger">${p.goles_local}</span> - <span class="text-primary">${p.goles_visitante}</span></span>`
+        : `<span class="vs-box">VS</span>`;
+      return `
+        <div class="partido-card position-relative">
+          ${estadoHtml}
+          <div class="equipos">
+            <div class="equipo">
+              <div class="equipo-nombre"><span class="equipo-icon"><i class="fa-solid fa-shirt"></i></span>${p.equipo_local}</div>
+            </div>
+            ${resultado}
+            <div class="equipo visitante">
+              <div class="equipo-nombre">${p.equipo_visitante}<span class="equipo-icon"><i class="fa-solid fa-shirt"></i></span></div>
+            </div>
+          </div>
+          <div class="partido-hora">
+            <i class="fa-regular fa-clock"></i> ${hora}<br>
+            <span class="text-muted small"><i class="fa-regular fa-calendar"></i> ${fecha}</span>
+          </div>
+        </div>
+      `;
+    }
 
     function claseEstado(estado = "") {
       switch (estado.toUpperCase()) {
@@ -205,42 +214,19 @@
         default: return "badge bg-secondary text-white";
       }
     }
-    function formatearFecha(fechaISO) {
-      try {
-        return fechaISO ? new Date(fechaISO).toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' }) : "-";
-      } catch { return "-"; }
-    }
-    function partidoCard(p) {
-      const hora = p.hora || "-";
-      const fecha = formatearFecha(p.fecha);
-      const estadoHtml = `<span class="${claseEstado(p.estado)} fw-bold">${p.estado || '—'}</span>`;
-      const resultado = (p.goles_local !== null && p.goles_visitante !== null)
-        ? `<span class="text-danger">${p.goles_local}</span> - <span class="text-primary">${p.goles_visitante}</span>`
-        : `<span class="vs">VS</span>`;
-      return `
-        <div class="partido-card">
-          <div class="equipos">
-            <div class="equipo-nombre">${p.equipo_local}</div>
-            ${resultado}
-            <div class="equipo-nombre">${p.equipo_visitante}</div>
-            <div class="text-secondary small">${fecha} ${estadoHtml}</div>
-          </div>
-          <div class="partido-hora">
-            ${hora}
-            <br>
-            <button class="btn btn-outline-primary btn-sm partido-btn" type="button" disabled>Ver detalles</button>
-          </div>
-        </div>
-      `;
-    }
-    async function cargarPartidos() {
+
+    async function cargarPartidosPorFecha(fechaISO) {
       const el = document.getElementById("partidosList");
       el.innerHTML = '<div class="my-5 text-center text-muted">Cargando partidos...</div>';
+      // Si tu campo fecha es tipo date, simplemente ".eq('fecha', fechaISO)"
+      // Si tipo timestamp: rango día
+      const desde = fechaISO + " 00:00:00";
+      const hasta = fechaISO + " 23:59:59";
       const { data, error } = await supabase
         .from("vista_resultados")
         .select("*")
-        .order("jornada", { ascending: true })
-        .order("fecha", { ascending: true })
+        .gte('fecha', desde)
+        .lte('fecha', hasta)
         .order("hora", { ascending: true });
 
       if (error || !data) {
@@ -248,26 +234,21 @@
         return;
       }
       if (data.length === 0) {
-        el.innerHTML = `<div class="alert alert-info">No hay partidos por mostrar</div>`;
+        el.innerHTML = `<div class="alert alert-info">No hay partidos para esa fecha.</div>`;
         return;
       }
       el.innerHTML = data.map(partidoCard).join('');
     }
 
-    document.addEventListener("DOMContentLoaded", cargarPartidos);
+    // Inicializar
+    document.addEventListener("DOMContentLoaded", () => {
+      // Por defecto, fecha de hoy
+      const hoyISO = new Date().toISOString().slice(0, 10);
+      const tabs = obtenerFechasTabs(hoyISO);
+      renderTabsFechas(tabs, hoyISO);
+      cargarPartidosPorFecha(hoyISO);
+    });
   </script>
-
-  <!-- INCLUDES DE COMPONENTES EXTERNOS -->
-  <script>
-    Promise.all([
-      fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; }),
-      fetch('layout/hero.html').then(r => r.text()).then(h => { document.getElementById('hero-placeholder').innerHTML = h; }),
-      fetch('layout/footer.html').then(r => r.text()).then(h => { document.getElementById('footer-placeholder').innerHTML = h; })
-    ]).catch(console.error);
-  </script>
-  <!-- Bootstrap JS + Popper para responsive navbar -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 
 </html>

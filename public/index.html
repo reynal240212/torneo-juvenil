@@ -1,26 +1,57 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Inicio - Torneo Juvenil La Pradera</title>
-  <meta name="description" content="Sitio oficial del Torneo Juvenil La Pradera. Consulta posiciones, calendario de partidos, goleadores y reglamento. Vive la mejor experiencia de fútbol juvenil de la región.">
-  <meta name="keywords" content="fútbol juvenil, torneo juvenil, La Pradera, posiciones, calendario, goleadores, resultados, reglamento, equipos, partidos">
+  <meta name="description"
+    content="Sitio oficial del Torneo Juvenil La Pradera. Consulta posiciones, calendario de partidos, goleadores y reglamento. Vive la mejor experiencia de fútbol juvenil de la región.">
+  <meta name="keywords"
+    content="fútbol juvenil, torneo juvenil, La Pradera, posiciones, calendario, goleadores, resultados, reglamento, equipos, partidos">
   <meta name="author" content="Organización Torneo Juvenil La Pradera">
   <meta name="theme-color" content="#0082C9">
   <meta name="robots" content="index, follow">
-  <!-- Open Graph para compartir en redes -->
+  <!-- SEO básico -->
+  <meta name="description"
+    content="Sitio oficial del Torneo Juvenil La Pradera. Consulta posiciones, calendario de partidos, goleadores y reglamento. Vive la mejor experiencia de fútbol juvenil de la región.">
+  <meta name="keywords"
+    content="fútbol juvenil, torneo juvenil, La Pradera, posiciones, calendario, goleadores, resultados, reglamento, equipos, partidos">
+  <meta name="author" content="Organización Torneo Juvenil La Pradera">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0082C9">
+
+  <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
   <meta property="og:title" content="Torneo Juvenil La Pradera - Fútbol Regional">
-  <meta property="og:description" content="Resultados, posiciones, goleadores y toda la información del torneo juvenil más importante de la región.">
+  <meta property="og:description"
+    content="Resultados, posiciones, goleadores y toda la información del torneo juvenil más importante de la región.">
   <meta property="og:image" content="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:url" content="https://torneo-juvenil.vercel.app/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_CO">
-  <!-- Twitter Card -->
+  <meta property="og:site_name" content="Torneo Juvenil La Pradera">
+
+  <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Torneo Juvenil La Pradera">
-  <meta name="twitter:description" content="Resultados, posiciones, goleadores y noticias del torneo juvenil más importante de La Pradera.">
-  <meta name="twitter:image" content="https://torneo-juvenil.vercel.app//images/EscudoTorneo.png">
+  <meta name="twitter:description"
+    content="Resultados, posiciones, goleadores y noticias del torneo juvenil más importante de La Pradera.">
+  <meta name="twitter:image" content="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png">
+  <meta name="twitter:site" content="@TuUsuarioTwitter"> <!-- (Opcional: tu usuario) -->
+
+  <!-- Telegram y otras apps modernas también usan Open Graph -->
+
+  <!-- Icono para navegadores y apps -->
+  <link rel="icon" href="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png" type="image/png">
+  <link rel="apple-touch-icon" href="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png" sizes="180x180">
+
+  <!-- Canonical URL para SEO -->
+  <link rel="canonical" href="https://torneo-juvenil.vercel.app/">
+
+  <!-- Preferiblemente la imagen debe ser 1200x630, jpg o png, accesible para todos -->
+
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -32,11 +63,13 @@
       background: linear-gradient(125deg, #e3f6fe 0%, #a7e6fb 100%);
       min-height: 100vh;
     }
+
     .info-shadow {
-      box-shadow: 0 8px 32px rgba(0,130,201,0.11);
+      box-shadow: 0 8px 32px rgba(0, 130, 201, 0.11);
     }
   </style>
 </head>
+
 <body>
   <div id="nav-placeholder"></div>
   <div id="hero-placeholder"></div>
@@ -47,15 +80,18 @@
       <div class="col-lg-4 col-md-5 mb-3">
         <div class="card-torneo info-shadow h-100">
           <h3 class="mb-2"><i class="fas fa-info-circle"></i> Sobre el Torneo</h3>
-          <p>El Torneo Juvenil La Pradera reúne los mejores equipos jóvenes de la región en una experiencia de fútbol inolvidable.</p>
+          <p>El Torneo Juvenil La Pradera reúne los mejores equipos jóvenes de la región en una experiencia de fútbol
+            inolvidable.</p>
           <a href="reglamento.html" class="btn-torneo mt-2"><i class="fas fa-scroll"></i> Ver Reglamento</a>
         </div>
       </div>
       <div class="col-lg-8 col-md-7 mb-3">
-        <div class="card-torneo info-shadow h-100 d-flex align-items-center bg-lightblue" style="background: linear-gradient(100deg, #e3f6fe 55%, #a7e6fb 100%);">
+        <div class="card-torneo info-shadow h-100 d-flex align-items-center bg-lightblue"
+          style="background: linear-gradient(100deg, #e3f6fe 55%, #a7e6fb 100%);">
           <div>
             <h1 class="display-5 fw-bold mb-2" style="color:#0082C9;"><i class="fas fa-futbol"></i> ¡Bienvenidos!</h1>
-            <p class="lead mb-0">Consulta posiciones, resultados y próximos partidos aquí. Sigue a tu equipo favorito y vive la pasión juvenil.</p>
+            <p class="lead mb-0">Consulta posiciones, resultados y próximos partidos aquí. Sigue a tu equipo favorito y
+              vive la pasión juvenil.</p>
           </div>
         </div>
       </div>
@@ -67,10 +103,20 @@
         <table class="table align-middle text-center table-hover mb-0">
           <thead>
             <tr>
-              <th>Jornada</th><th>Fecha</th><th>Hora</th><th>Local</th><th>Visitante</th><th>Resultado</th><th>Estado</th>
+              <th>Jornada</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Local</th>
+              <th>Visitante</th>
+              <th>Resultado</th>
+              <th>Estado</th>
             </tr>
           </thead>
-          <tbody id="tablaPartidos"><tr><td colspan="7" class="text-muted">Cargando partidos...</td></tr></tbody>
+          <tbody id="tablaPartidos">
+            <tr>
+              <td colspan="7" class="text-muted">Cargando partidos...</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -81,11 +127,23 @@
         <table class="table align-middle text-center table-hover mb-0">
           <thead>
             <tr>
-              <th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th>
-              <th>GF</th><th>GC</th><th>DG</th><th>PTS</th>
+              <th>#</th>
+              <th>Equipo</th>
+              <th>PJ</th>
+              <th>PG</th>
+              <th>PE</th>
+              <th>PP</th>
+              <th>GF</th>
+              <th>GC</th>
+              <th>DG</th>
+              <th>PTS</th>
             </tr>
           </thead>
-          <tbody id="tablaPosiciones"><tr><td colspan="10" class="text-muted">Cargando posiciones...</td></tr></tbody>
+          <tbody id="tablaPosiciones">
+            <tr>
+              <td colspan="10" class="text-muted">Cargando posiciones...</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -93,13 +151,14 @@
   <div id="footer-placeholder"></div>
   <script>
     Promise.all([
-      fetch('layout/navbar.html').then(r=>r.text()).then(h=>{ document.getElementById('nav-placeholder').innerHTML=h; }),
-      fetch('layout/hero.html').then(r=>r.text()).then(h=>{ document.getElementById('hero-placeholder').innerHTML=h; }),
-      fetch('layout/footer.html').then(r=>r.text()).then(h=>{ document.getElementById('footer-placeholder').innerHTML=h; })
+      fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; }),
+      fetch('layout/hero.html').then(r => r.text()).then(h => { document.getElementById('hero-placeholder').innerHTML = h; }),
+      fetch('layout/footer.html').then(r => r.text()).then(h => { document.getElementById('footer-placeholder').innerHTML = h; })
     ]).catch(console.error);
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script type="module" src="scripts/posiciones.js"></script>
   <script type="module" src="scripts/calendario.js"></script>
 </body>
+
 </html>

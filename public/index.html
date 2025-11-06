@@ -6,261 +6,27 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Inicio - Torneo Juvenil La Pradera</title>
 
-  <!-- Bootstrap y FontAwesome -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link rel="shortcut icon" href="images/EscudoTorneo.png" type="image/x-icon">
   <link rel="stylesheet" href="style/style.css" />
-
-  <!-- Estilos UI/UX deportivos personalizados (PALETA USUARIO) -->
-  <style>
-    :root {
-      --color-blue: #0082C9;
-      --color-cyan: #00B7DF;
-      --color-dark: #002B3C;
-      --color-light: #D5F6FC;
-      --color-white: #ffffff;
-      --color-gray: #f6f8fa;
-      --border-radius: 14px;
-      --shadow-default: 0 4px 28px rgba(0, 130, 201, 0.10);
-      --gradient-bg: linear-gradient(120deg, #0082C9 25%, #00B7DF 70%, #D5F6FC 100%);
-      --gradient-nav: linear-gradient(90deg, #002B3C 70%, #0082C9 100%);
-      --gradient-card: linear-gradient(120deg, #D5F6FC 25%, #00B7DF 100%);
-    }
-
-    body {
-      font-family: 'Poppins', 'Roboto', sans-serif;
-      color: var(--color-dark);
-      min-height: 100vh;
-    }
-
-    .navbar {
-      background: var(--gradient-nav);
-      box-shadow: var(--shadow-default);
-      border-bottom: 2.5px solid var(--color-cyan);
-    }
-
-    .navbar-brand,
-    .nav-link.active {
-      color: var(--color-white) !important;
-      font-weight: 700;
-      text-shadow: 1px 2px 6px #0082C944;
-    }
-
-    .nav-link {
-      color: var(--color-cyan) !important;
-      font-weight: 500;
-      border-bottom: 2px solid transparent;
-      margin: 0 6px;
-      transition: color .18s, border-color .18s;
-    }
-
-    .nav-link:hover {
-      color: var(--color-blue) !important;
-      border-bottom: 2.5px solid var(--color-light);
-      background: var(--color-light);
-      border-radius: 0 0 10px 10px;
-    }
-
-    .hero {
-      background: linear-gradient(100deg, #0082C9 65%, #00B7DF 90%, #D5F6FC 100%);
-      position: relative;
-      padding: 62px 0 38px 0;
-      border-radius: 22px;
-      margin-bottom: 44px;
-      box-shadow: 0 4px 26px rgba(0, 130, 201, 0.13);
-      text-align: center;
-      color: #f1f1f1;
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      z-index: 0;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('images/bg-football.svg') no-repeat right bottom/80%;
-      opacity: 0.15;
-      pointer-events: none;
-    }
-
-    .hero h1 {
-      font-size: 2.5rem;
-      font-weight: 900;
-      color: #ffffff;
-      margin-bottom: 15px;
-      letter-spacing: 1px;
-      text-shadow: 1px 2px 7px #D5F6FC;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero p {
-      font-size: 1.2rem;
-      color: #002B3C;
-      background: rgba(255, 255, 255, 0.65);
-      border-radius: 12px;
-      display: inline-block;
-      padding: 10px 24px;
-      margin-bottom: 1.1em;
-      font-weight: 500;
-      z-index: 1;
-      position: relative;
-    }
-
-    .hero .btn-torneo {
-      background: #00B7DF;
-      color: #002B3C;
-      font-weight: 700;
-      box-shadow: 0 2px 24px rgba(0, 130, 201, 0.18);
-      font-size: 1.1rem;
-      padding: 0.75em 1.6em;
-      border-radius: 12px;
-      transition: all .16s;
-      z-index: 1;
-      position: relative;
-    }
-
-    .hero .btn-torneo:hover,
-    .hero .btn-torneo:focus {
-      background: #0082C9;
-      color: #D5F6FC;
-      box-shadow: 0 8px 32px rgba(0, 130, 201, 0.21);
-      transform: scale(1.06);
-    }
-
-    @media (max-width: 960px) {
-      .hero {
-        padding: 32px 0 20px 0;
-      }
-
-      .hero h1 {
-        font-size: 1.6rem;
-      }
-
-      .hero p {
-        font-size: 0.98rem;
-        padding: 8px 10px;
-      }
-    }
-
-    .btn-torneo {
-      background: var(--color-cyan);
-      color: var(--color-dark);
-      padding: 0.65em 1.3em;
-      border-radius: 11px;
-      font-weight: 700;
-      transition: background .18s, color .18s;
-      margin-top: 20px;
-      box-shadow: var(--shadow-default);
-      border: none;
-    }
-
-    .btn-torneo:hover {
-      background: var(--color-blue);
-      color: var(--color-white);
-    }
-
-    .card-torneo {
-      background: var(--gradient-card);
-      box-shadow: var(--shadow-default);
-      border-radius: var(--border-radius);
-      padding: 1.3em 1.1em;
-      border: 1.5px solid var(--color-light);
-      margin-bottom: 30px;
-    }
-
-    .card-torneo h3 {
-      color: var(--color-blue);
-      font-weight: 800;
-    }
-
-    .table-responsive {
-      border-radius: var(--border-radius);
-      overflow-x: auto;
-      box-shadow: var(--shadow-default);
-      margin: 22px 0 38px 0;
-    }
-
-    .table thead {
-      background: var(--color-dark);
-      color: var(--color-cyan);
-      font-weight: 700;
-    }
-
-    .table tbody tr:hover {
-      background: var(--color-light);
-      color: var(--color-dark);
-      transition: background-color .18s;
-    }
-
-    footer {
-      background: var(--gradient-nav);
-      color: var(--color-cyan);
-      border-top: 3px solid var(--color-blue);
-      font-size: 1.06rem;
-      padding: 1.6em 0 1em 0;
-      box-shadow: 0 -10px 40px rgba(0, 130, 201, 0.10);
-      margin-top: 48px;
-      text-align: center;
-      letter-spacing: 0.07em;
-    }
-
-    .footer-icon {
-      color: var(--color-light);
-    }
-
-    @media (max-width: 968px) {
-      .hero h1 {
-        font-size: 2rem;
-      }
-
-      .hero {
-        padding: 30px 0 18px 0;
-      }
-
-      main {
-        padding: 0 4px;
-      }
-
-      .table th,
-      .table td {
-        font-size: 0.94rem;
-      }
-
-      .card-torneo {
-        padding: 1em 6px;
-      }
-    }
-  </style>
+  <!-- Tus estilos inline pueden quedarse como los tienes -->
 </head>
 
 <body>
-  <div id="nav-placeholder"></div>      
+  <div id="nav-placeholder"></div>
   <div id="hero-placeholder"></div>
-  
-  <!-- Cards rápidas: partido destacado y info torneo -->
-  <main class="container" style="max-width: 1240px;">
 
-    <!-- Card Info general -->
+  <main class="container" style="max-width:1240px;">
     <div class="col-md-5">
       <div class="card-torneo">
         <h3 class="mb-2"><i class="fas fa-info-circle"></i> Sobre el Torneo</h3>
-        <p>
-          El Torneo Juvenil La Pradera reúne los mejores equipos jóvenes de la región en una experiencia de fútbol
-          inolvidable. ¡Sigue tu equipo favorito, consulta resultados y estadísticas, y vive la pasión del deporte!
-        </p>
+        <p>El Torneo Juvenil La Pradera reúne los mejores equipos jóvenes de la región en una experiencia de fútbol
+          inolvidable.</p>
         <a href="reglamento.html" class="btn-torneo mt-2"><i class="fas fa-scroll"></i> Ver Reglamento</a>
       </div>
     </div>
-    </div>
 
-    
-
-    <!-- Tabla de partidos rápidos -->
     <div class="card-torneo">
       <h3 class="mb-3"><i class="fas fa-calendar-days"></i> Encuentros Recientes y Próximos</h3>
       <div class="table-responsive">
@@ -285,7 +51,6 @@
       </div>
     </div>
 
-    <!-- Tabla posiciones rápida -->
     <div class="card-torneo mt-4">
       <h3 class="mb-3"><i class="fas fa-ranking-star"></i> Tabla General</h3>
       <div class="table-responsive">
@@ -314,23 +79,23 @@
     </div>
   </main>
 
-  <!-- Footer moderno -->
   <div id="footer-placeholder"></div>
 
-   <script>
-    fetch('layout/navbar.html')
-      .then(res => res.text())
-      .then(html => { document.getElementById('nav-placeholder').innerHTML = html; });
-    fetch('layout/hero.html')
-      .then(res => res.text())
-      .then(html => { document.getElementById('hero-placeholder').innerHTML = html; });
-    fetch('layout/footer.html')
-      .then(res => res.text())
-      .then(html => { document.getElementById('footer-placeholder').innerHTML = html; });
+  <script>
+    // Carga de parciales
+    Promise.all([
+      fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; }),
+      fetch('layout/hero.html').then(r => r.text()).then(h => { document.getElementById('hero-placeholder').innerHTML = h; }),
+      fetch('layout/footer.html').then(r => r.text()).then(h => { document.getElementById('footer-placeholder').innerHTML = h; })
+    ]).catch(console.error);
   </script>
-  <!-- JS Bootstrap y scripts dinámicos -->
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="scripts/"></script>
+
+  <!-- JS: quita esta línea si no tienes script.js global -->
+  <!-- <script type="module" src="scripts/script.js"></script> -->
+
+  <!-- Módulos por vista -->
   <script type="module" src="scripts/posiciones.js"></script>
   <script type="module" src="scripts/calendario.js"></script>
 </body>

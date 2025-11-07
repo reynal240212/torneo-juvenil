@@ -248,7 +248,7 @@
     let realtimeChannel = null;
 
     // --- RENDERIZACIÓN DE LA UI ---
-
+    // (Sin cambios en esta sección)
     const renderSpinner = () => {
       partidosListEl.innerHTML = `
         <div class="feedback-container">
@@ -264,7 +264,6 @@
     }
 
     const partidoCardTemplate = (p) => {
-      // **MEJORA:** Manejo de valores nulos para evitar errores.
       const hora = p.hora?.substring(0, 5) ?? "--:--";
       const fechaFormato = p.fecha 
         ? new Date(p.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' }) 
@@ -277,7 +276,6 @@
         ? `<div class="marcador"><span>${p.goles_local}</span> - <span>${p.goles_visitante}</span></div>`
         : `<div class="vs">VS</div>`;
 
-      // **MEJORA:** Sanitiza el estado para usarlo como clase CSS de forma más robusta.
       const estadoClase = estado.trim().replace(/\s+/g, '-').toUpperCase();
 
       return `
@@ -318,6 +316,14 @@
 
     // --- LÓGICA DE DATOS ---
 
+    // FIX: Helper para obtener la fecha en formato YYYY-MM-DD según la zona horaria local.
+    const getLocalISODate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses son 0-indexados
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
     const obtenerFechasTabs = (base = new Date()) => {
       const fechas = [];
       for (let i = -7; i <= 7; i++) {
@@ -327,7 +333,7 @@
       }
       return fechas.map(f => ({
         label: f.toLocaleDateString('es-CO', { weekday: "short", day: "2-digit", month: "short" }).replace('.', ''),
-        value: f.toISOString().slice(0, 10),
+        value: getLocalISODate(f), // FIX: Usar la función helper en lugar de toISOString()
       }));
     };
 
@@ -345,10 +351,10 @@
           .lte('fecha', hasta)
           .order("hora", { ascending: true });
 
-        if (error) throw error; // Lanza el error para ser capturado por el catch
+        if (error) throw error; 
 
         renderPartidos(data);
-        suscribirseACambios(); // Inicia la suscripción después de cargar los partidos
+        suscribirseACambios(); 
       } catch (error) {
         console.error("Error al cargar partidos:", error);
         renderFeedbackMessage("Error al cargar los partidos. Inténtelo de nuevo.");
@@ -356,9 +362,8 @@
     }
 
     // --- LÓGICA DE TIEMPO REAL (REALTIME) ---
-
+    // (Sin cambios en esta sección)
     function suscribirseACambios() {
-      // Si ya hay un canal, lo eliminamos para evitar duplicados al cambiar de fecha
       if (realtimeChannel) {
         supabase.removeChannel(realtimeChannel);
       }
@@ -366,17 +371,15 @@
       realtimeChannel = supabase.channel('vista_resultados_changes')
         .on(
           'postgres_changes',
-          { event: 'UPDATE', schema: 'public', table: 'partidos' }, // Escucha cambios en la tabla original 'partidos'
+          { event: 'UPDATE', schema: 'public', table: 'partidos' },
           (payload) => {
             console.log('Cambio recibido en tiempo real:', payload.new);
-            // La vista tiene los nombres de los equipos, por lo que volvemos a consultarla para obtener el registro completo.
             fetchPartidoActualizado(payload.new.id_partido);
           }
         )
         .subscribe();
     }
 
-    // Función auxiliar para obtener los datos completos de la vista y actualizar el DOM
     async function fetchPartidoActualizado(partidoId) {
       try {
         const { data, error } = await supabase
@@ -386,19 +389,18 @@
           .single();
           
         if (error) throw error;
-        if (!data) return; // Si no se encuentra el partido, no hacer nada
+        if (!data) return;
 
         const cardElement = document.getElementById(`partido-${data.id_partido}`);
         if (cardElement) {
           cardElement.outerHTML = partidoCardTemplate(data);
           
-          // **MEJORA UX:** Añade una clase para un feedback visual y la quita después de la animación.
           const newCardElement = document.getElementById(`partido-${data.id_partido}`);
           if(newCardElement) {
             newCardElement.classList.add('is-updating');
             setTimeout(() => {
                 newCardElement.classList.remove('is-updating');
-            }, 1500); // Duración de la animación
+            }, 1500); 
           }
         }
       } catch (error) {
@@ -410,26 +412,23 @@
     // --- INICIALIZACIÓN Y MANEJO DE EVENTOS ---
     document.addEventListener("DOMContentLoaded", () => {
       const hoy = new Date();
-      const hoyISO = hoy.toISOString().slice(0, 10);
+      // FIX: Usar la función helper para obtener la fecha de hoy correcta.
+      const hoyISO = getLocalISODate(hoy); 
       
       const tabs = obtenerFechasTabs(hoy);
       renderTabsFechas(tabs, hoyISO);
       cargarPartidosPorFecha(hoyISO);
 
-      // **MEJORA:** Delegación de eventos para los botones de fecha
       navFechasEl.addEventListener('click', (e) => {
-        // Verifica si el clic fue en un botón de fecha
         const targetButton = e.target.closest('.nav-fecha-btn');
         if (!targetButton) return;
 
-        // Procede con la lógica de cambio de fecha
         const nuevaFecha = targetButton.getAttribute("data-fecha");
         document.querySelector('.nav-fecha-btn.active')?.classList.remove('active');
         targetButton.classList.add('active');
         cargarPartidosPorFecha(nuevaFecha);
       });
 
-      // Cargar componentes de layout
       Promise.all([
         fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; }),
         fetch('layout/hero.html').then(r => r.text()).then(h => { document.getElementById('hero-placeholder').innerHTML = h; }),

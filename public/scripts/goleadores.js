@@ -1,24 +1,16 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
 const supabaseUrl = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
-const supabaseKey = "ANON_KEY_AQUI"; // mantén la service_role solo en backend
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Parámetros de paginación
-const pageSize = 50;
-let page = 0; // cambia según navegación
-
 async function cargarGoleadores() {
-  const from = page * pageSize;
-  const to = from + pageSize - 1;
-
   const { data, error } = await supabase
     .from("vista_goleadores")
-    .select("jugador,equipo,goles")      // solo lo necesario
-    .gte("goles", 1)                    // al menos 1 gol
-    .order("goles", { ascending: false })
-    .range(from, to);                   // no traigas todo
+    .select("*")
+    .order("goles", { ascending: false });
 
+  // Renderiza top 3 en cards arriba
   const topDiv = document.getElementById('topGoleadores');
   topDiv.innerHTML = "";
   if (data && data.length > 0) {
@@ -42,6 +34,7 @@ async function cargarGoleadores() {
     topDiv.innerHTML = `<div class="col text-center text-muted">No hay datos de goleadores.</div>`;
   }
 
+  // Renderiza la tabla
   const tbody = document.getElementById("tablaGoleadores");
   tbody.innerHTML = "";
   if (error || !data) {
@@ -51,7 +44,7 @@ async function cargarGoleadores() {
   data.forEach((p, idx) => {
     tbody.innerHTML += `
       <tr>
-        <td>${from + idx + 1}</td>
+        <td>${idx + 1}</td>
         <td>${p.jugador}</td>
         <td>${p.equipo}</td>
         <td class="fw-bold">${p.goles}</td>

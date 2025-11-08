@@ -4,8 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plantillas de Equipos - Torneo Juvenil La Pradera</title>
-  <meta name="description"
-    content="Consulta las plantillas de los equipos del Torneo Juvenil La Pradera.">
+  <meta name="description" content="Consulta las plantillas de los equipos del Torneo Juvenil La Pradera.">
   <meta name="author" content="Organización Torneo Juvenil La Pradera">
   <meta name="theme-color" content="#0082C9">
 
@@ -14,59 +13,13 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style/style.css" />
   <style>
-    body {
-      min-height: 100vh;
-      background-color: #f4f4f4; /* Un fondo más suave */
-    }
-
-    .info-shadow {
-      box-shadow: 0 8px 32px rgba(0, 130, 201, 0.11);
-    }
-    
-    /* Estilos para las cartas de jugador */
-    .player-card {
-      border: 1px solid #e0e0e0;
-      border-radius: 12px;
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-      background-color: #fff;
-    }
-
-    .player-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-
-    .player-card .card-img-top {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin: 1.5rem auto 1rem;
-      background-color: #e9ecef;
-      display: block;
-      border: 3px solid #0082C9;
-    }
-
-    .player-card .card-body {
-      text-align: center;
-    }
-
-    .player-card .player-position {
-      font-weight: 500;
-      color: #6c757d;
-      font-size: 0.9rem;
-    }
-
-    .player-card .player-age {
-      background-color: #0082C9;
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: bold;
-      display: inline-block;
-      margin-top: 0.5rem;
-    }
+    body { min-height: 100vh; background-color: #f4f4f4; }
+    .info-shadow { box-shadow: 0 8px 32px rgba(0, 130, 201, 0.11); }
+    .player-card { border: 1px solid #e0e0e0; border-radius: 12px; transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; background-color: #fff; }
+    .player-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    .player-card .card-img-top { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 1.5rem auto 1rem; background-color: #e9ecef; display: block; border: 3px solid #0082C9; }
+    .player-card .player-position { font-weight: 500; color: #6c757d; font-size: 0.9rem; }
+    .player-card .player-age { background-color: #0082C9; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; display: inline-block; }
   </style>
 </head>
 
@@ -76,39 +29,31 @@
   <main class="container my-5" style="max-width:1240px;">
     <h1 class="mb-4 text-center" style="color:#0082C9;"><i class="fas fa-users-cog"></i> Plantillas de Equipos</h1>
 
-    <!-- FILTRO POR EQUIPO -->
     <div class="card card-torneo info-shadow mb-5 p-3">
       <div class="row align-items-center">
-        <div class="col-md-4">
-          <label for="equipoSelect" class="form-label fw-bold fs-5">Selecciona un Equipo:</label>
-        </div>
-        <div class="col-md-8">
-          <select id="equipoSelect" class="form-select form-select-lg">
-            <option value="">Cargando equipos...</option>
-          </select>
-        </div>
+        <div class="col-md-4"><label for="equipoSelect" class="form-label fw-bold fs-5">Selecciona un Equipo:</label></div>
+        <div class="col-md-8"><select id="equipoSelect" class="form-select form-select-lg"><option value="">Cargando equipos...</option></select></div>
       </div>
     </div>
 
-    <!-- CONTENEDOR DE CARTAS DE JUGADORES -->
     <div id="plantillaContainer" class="row g-4">
-      <!-- Las cartas de los jugadores se insertarán aquí dinámicamente -->
-      <div class="col-12 text-center text-muted">
-        <p class="fs-4">Por favor, selecciona un equipo para ver su plantilla.</p>
-      </div>
+      <div class="col-12 text-center text-muted"><p class="fs-4">Por favor, selecciona un equipo para ver su plantilla.</p></div>
     </div>
   </main>
 
- <div id="footer-placeholder"></div>
-  <script>
-    Promise.all([
-      fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; }),
-      fetch('layout/hero.html').then(r => r.text()).then(h => { document.getElementById('hero-placeholder').innerHTML = h; }),
-      fetch('layout/footer.html').then(r => r.text()).then(h => { document.getElementById('footer-placeholder').innerHTML = h; })
-    ]).catch(console.error);
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="scripts/jugadores.js"></script>
+  <div id="footer-placeholder"></div>
 
+  <!-- CAMBIO: Cargar navbar y footer DENTRO de DOMContentLoaded -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const navPromise = fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; });
+      const footerPromise = fetch('layout/footer.html').then(r => r.text()).then(h => { document.getElementById('footer-placeholder').innerHTML = h; });
+      Promise.all([navPromise, footerPromise]).catch(console.error);
+    });
+  </script>
+
+  <!-- Script de Supabase -->
+  <script type="module" src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

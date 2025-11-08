@@ -147,15 +147,15 @@ document.addEventListener("DOMContentLoaded", () => {
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
             Tarjetas Amarillas:
-            <span class="badge bg-warning rounded-pill fs-6 text-dark">${jugador.T.A || 0}</span>
+            <span class="badge bg-warning rounded-pill fs-6 text-dark">${jugador.T_A || 0}</span>
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
             Tarjetas Rojas:
-            <span class="badge bg-danger rounded-pill fs-6">${jugador.T.R || 0}</span>
+            <span class="badge bg-danger rounded-pill fs-6">${jugador.T_R || 0}</span>
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
             Tarjetas Azules:
-            <span class="badge bg-info rounded-pill fs-6 text-dark">${jugador.T.AZ || 0}</span>
+            <span class="badge bg-info rounded-pill fs-6 text-dark">${jugador.T_AZ || 0}</span>
           </li>
         </ul>
       `;

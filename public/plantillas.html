@@ -16,10 +16,15 @@
     body { min-height: 100vh; background-color: #f4f4f4; }
     .info-shadow { box-shadow: 0 8px 32px rgba(0, 130, 201, 0.11); }
     .player-card { border: 1px solid #e0e0e0; border-radius: 12px; transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; background-color: #fff; }
-    .player-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    .player-card:hover { transform: translateY(-px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
     .player-card .card-img-top { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 1.5rem auto 1rem; background-color: #e9ecef; display: block; border: 3px solid #0082C9; }
     .player-card .player-position { font-weight: 500; color: #6c757d; font-size: 0.9rem; }
     .player-card .player-age { background-color: #0082C9; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; display: inline-block; }
+    
+    /* ===== AÑADIDO: Estilo para indicar que las cartas son clicables ===== */
+    .player-card { 
+      cursor: pointer; 
+    }
   </style>
 </head>
 
@@ -43,7 +48,32 @@
 
   <div id="footer-placeholder"></div>
 
-  <!-- CAMBIO: Cargar navbar y footer DENTRO de DOMContentLoaded -->
+  <!-- =============================================================== -->
+  <!-- ===== AÑADIDO: ESTRUCTURA HTML DEL MODAL PARA EL JUGADOR ===== -->
+  <!-- =============================================================== -->
+  <div class="modal fade" id="playerModal" tabindex="-1" aria-labelledby="playerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="modalPlayerName">Nombre del Jugador</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="modalPlayerDetails">
+            <!-- El contenido detallado del jugador se inyectará aquí con JavaScript -->
+            <p>Cargando detalles...</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- =============================================================== -->
+  <!-- ================= FIN DE LA ESTRUCTURA DEL MODAL ================ -->
+  <!-- =============================================================== -->
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const navPromise = fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; });

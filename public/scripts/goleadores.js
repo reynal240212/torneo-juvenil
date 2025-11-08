@@ -35,21 +35,32 @@ async function cargarGoleadores() {
   }
 
   // Renderiza la tabla
-  const tbody = document.getElementById("tablaGoleadores");
-  tbody.innerHTML = "";
-  if (error || !data) {
-    tbody.innerHTML = `<tr><td colspan="4" class="text-danger">Error al cargar goleadores.</td></tr>`;
-    return;
-  }
-  data.forEach((p, idx) => {
-    tbody.innerHTML += `
-      <tr>
-        <td>${idx + 1}</td>
-        <td>${p.jugador}</td>
-        <td>${p.equipo}</td>
-        <td class="fw-bold">${p.goles}</td>
-      </tr>
-    `;
-  });
+const tbody = document.getElementById("tablaGoleadores");
+tbody.innerHTML = "";
+
+if (error || !data) {
+  tbody.innerHTML = `<tr><td colspan="4" class="text-danger">Error al cargar goleadores.</td></tr>`;
+  return;
+}
+
+// Filtrar jugadores con goles > 0
+const goleadores = data.filter(p => p.goles > 0);
+
+if (goleadores.length === 0) {
+  tbody.innerHTML = `<tr><td colspan="4" class="text-muted">No hay jugadores con goles registrados.</td></tr>`;
+  return;
+}
+
+goleadores.forEach((p, idx) => {
+  tbody.innerHTML += `
+    <tr>
+      <td>${idx + 1}</td>
+      <td>${p.jugador}</td>
+      <td>${p.equipo}</td>
+      <td class="fw-bold">${p.goles}</td>
+    </tr>
+  `;
+});
+
 }
 document.addEventListener("DOMContentLoaded", cargarGoleadores);

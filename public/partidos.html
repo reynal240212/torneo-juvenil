@@ -37,6 +37,8 @@
       --azul-interactivo: #0036a8;
       --texto-claro: #f0f8ff;
       --texto-resaltado: #7ef0ff;
+      --color-peligro: #dc3545;
+      --color-exito: #28a745;
     }
 
     body {
@@ -109,9 +111,7 @@
       margin-bottom: 1em;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       border: 1px solid rgba(0, 130, 201, 0.3);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.5s ease;
-      position: relative;
-      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .partido-card:hover {
@@ -124,9 +124,17 @@
     }
 
     @keyframes flash-update {
-      0% { background-color: rgba(15, 37, 120, 0.6); }
-      25% { background-color: rgba(0, 130, 201, 0.8); }
-      100% { background-color: rgba(15, 37, 120, 0.6); }
+      0% {
+        background-color: rgba(15, 37, 120, 0.6);
+      }
+
+      25% {
+        background-color: rgba(0, 130, 201, 0.8);
+      }
+
+      100% {
+        background-color: rgba(15, 37, 120, 0.6);
+      }
     }
 
     .partido-grid {
@@ -171,7 +179,7 @@
       justify-content: center;
       align-items: center;
       flex-wrap: wrap;
-      gap: 1em;
+      gap: 1.5em;
       margin-top: 1.2em;
       font-size: 0.9rem;
       color: #c2e7fa;
@@ -188,55 +196,128 @@
       letter-spacing: .05em;
     }
 
-    .estado-FINALIZADO { background-color: #28a745; color: white; }
-    .estado-EN-JUEGO { background-color: #007bff; color: white; animation: pulse 1.5s infinite; }
-    .estado-PROGRAMADO { background-color: #17a2b8; color: white; }
-    .estado-OTORGADO { background-color: #ffc107; color: #212529; }
-    .estado-CANCELADO { background-color: #dc3545; color: white; }
-    .estado-DESCONOCIDO { background-color: #6c757d; color: white; }
-
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7); }
-      70% { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+    .estado-FINALIZADO {
+      background-color: var(--color-exito);
+      color: white;
     }
 
-    /* ESTILOS PARA LA SECCIÓN DE EVENTOS QUE SE VA A RENDERIZAR */
+    .estado-EN-JUEGO {
+      background-color: #007bff;
+      color: white;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+      }
+    }
+
     .eventos-destacados {
-      margin-top: 1.5em; /* Aumentamos el margen para separar bien */
+      margin-top: 1.5em;
       background: rgba(0, 0, 0, 0.2);
       border-radius: 8px;
       padding: 1em;
       border-top: 1px solid rgba(0, 130, 201, 0.2);
     }
-    .eventos-destacados h6 { 
-      font-weight: 700; 
-      margin-bottom: .75em; 
+
+    .eventos-destacados h6 {
+      font-weight: 700;
+      margin-bottom: .75em;
       color: var(--texto-resaltado);
       text-align: center;
       text-transform: uppercase;
       letter-spacing: .05em;
     }
-    .eventos-destacados ul { 
+
+    .eventos-destacados ul {
       list-style: none;
-      padding-left: 0; 
-      margin-bottom: 0; 
+      padding-left: 0;
+      margin-bottom: 0;
     }
-    .eventos-destacados li { 
-      margin-bottom: .4em; 
+
+    .eventos-destacados li {
+      margin-bottom: .4em;
       font-size: .95em;
     }
-    .eventos-destacados .fa-solid { 
+
+    .eventos-destacados .fa-solid {
       margin-right: .6em;
-      width: 20px; /* Alineación de iconos */
+      width: 20px;
       text-align: center;
     }
-    .feedback-container {
+
+    .btn-cronologia {
+      background-color: transparent;
+      border: 1px solid var(--azul-acento);
+      color: var(--texto-resaltado);
+      border-radius: 20px;
+      padding: 0.4em 1em;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cronologia:hover {
+      background-color: var(--azul-acento);
+      color: white;
+    }
+
+    /* --- ESTILOS PARA EL MODAL DE CRONOLOGÍA --- */
+    .modal-content {
+      background: var(--azul-secundario);
+      color: var(--texto-claro);
+      border: 1px solid var(--azul-acento);
+    }
+
+    .modal-header {
+      border-bottom: 1px solid rgba(0, 130, 201, 0.4);
+    }
+
+    .modal-footer {
+      border-top: 1px solid rgba(0, 130, 201, 0.4);
+    }
+
+    .btn-close {
+      filter: invert(1) grayscale(100%) brightness(200%);
+    }
+
+    .cronologia-lista {
+      list-style: none;
+      padding: 0;
+    }
+
+    .cronologia-lista li {
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding: 4em 0;
-      min-height: 200px;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cronologia-lista li:last-child {
+      border-bottom: none;
+    }
+
+    .cronologia-minuto {
+      font-weight: bold;
+      width: 40px;
+      text-align: center;
+    }
+
+    .cronologia-icono {
+      width: 30px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    .cronologia-detalle {
+      flex-grow: 1;
     }
   </style>
 </head>
@@ -246,15 +327,30 @@
   <div id="hero-placeholder"></div>
   <main class="container">
     <h1 class="titulo-pag text-center">Partidos y Resultados</h1>
-
     <div class="bg-content">
-      <!-- Contenedor para los botones de fechas -->
       <nav id="navFechas" class="nav-fechas"></nav>
-      <!-- Contenedor para la lista de partidos con atributos para accesibilidad -->
       <ul id="partidosList" class="list-unstyled" aria-live="polite" aria-atomic="true"></ul>
     </div>
   </main>
   <div id="footer-placeholder"></div>
+
+  <!-- MODAL DE CRONOLOGÍA (NUEVA ESTRUCTURA) -->
+  <div class="modal fade" id="cronologiaModal" tabindex="-1" aria-labelledby="cronologiaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cronologiaModalLabel">Cronología del Partido</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="modal-body-content">
+          <!-- El contenido de la cronología se cargará aquí -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script type="module">
@@ -267,22 +363,14 @@
     const partidosListEl = document.getElementById("partidosList");
     let realtimeChannel = null;
 
-    const renderSpinner = () => { /* ... (sin cambios) ... */ };
-    const renderFeedbackMessage = (message) => { /* ... (sin cambios) ... */ };
+    const renderSpinner = () => {
+      partidosListEl.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Cargando...</span></div></div>`;
+    };
 
-    // --- LÓGICA DE EVENTOS ---
-    
-    // Función que consulta la BD
-    async function obtenerEventosPorPartido(id_partido) {
-      if (!id_partido) return [];
-      const { data, error } = await supabase
-        .from("eventos_partido").select(`tipo_evento, minuto, jugadores (nombre, apellidos, numero_camiseta)`)
-        .eq('id_partido', id_partido).order('minuto', { ascending: true });
-      if (error) { console.error("Error al obtener eventos del partido:", error); return []; }
-      return data;
-    }
+    const renderFeedbackMessage = (message) => {
+      partidosListEl.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><p class="lead">${message}</p></div>`;
+    };
 
-    // Función que asigna un icono según el tipo de evento
     function iconoEvento(tipo) {
       const tipoNormalizado = tipo ? tipo.toUpperCase() : '';
       if (tipoNormalizado.includes('GOL')) return '<i class="fa-solid fa-futbol text-warning"></i>';
@@ -292,39 +380,11 @@
       return '<i class="fa-solid fa-flag"></i>';
     }
 
-    /**
-     * PASO CLAVE 1: CONSTRUIR EL HTML DE LOS EVENTOS
-     * Esta función es responsable de crear el bloque de HTML que se insertará en la tarjeta.
-     */
-    async function generarHtmlEventos(id_partido) {
-      const eventos = await obtenerEventosPorPartido(id_partido);
-      
-      // Si no hay eventos, devolvemos una cadena vacía. NADA se renderizará.
-      if (!eventos || eventos.length === 0) return '';
-
-      // Si hay eventos, construimos el HTML
-      let html = `<div class="eventos-destacados"><h6>Eventos destacados</h6><ul>`;
-      eventos.forEach(e => {
-        const playerName = e.jugadores ? `${e.jugadores.nombre || ''} ${e.jugadores.apellidos || ''}`.trim() : 'Jugador no identificado';
-        const playerNumber = e.jugadores && e.jugadores.numero_camiseta ? ` (#${e.jugadores.numero_camiseta})` : '';
-        const minuteInfo = e.minuto ? ` - ${e.minuto}'` : '';
-        const tipoEventoMostrado = e.tipo_evento || 'Evento';
-
-        html += `<li>
-          ${iconoEvento(tipoEventoMostrado)}
-          <strong>${playerName}${playerNumber}</strong>: ${tipoEventoMostrado}${minuteInfo}
-        </li>`;
-      });
-      html += `</ul></div>`;
-      
-      // Devolvemos el bloque de HTML completo
-      return html;
+    async function generarHtmlEventosResumidos(id_partido) {
+      // Esta función ahora solo es para la tarjeta, podría ser simplificada o removida si no se quiere el resumen
+      return ''; // Por ahora, la dejamos vacía para no duplicar info. Todo se verá en el modal.
     }
 
-
-    /**
-     * FUNCIÓN PRINCIPAL: CONSTRUIR Y RENDERIZAR LA TARJETA COMPLETA DEL PARTIDO
-     */
     async function partidoCardTemplate(p) {
       const hora = p.hora?.substring(0, 5) ?? "--:--";
       const fechaFormato = p.fecha ? new Date(p.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' }) : "Fecha no definida";
@@ -333,45 +393,77 @@
       const estado = p.estado || "Desconocido";
       const marcadorHtml = (p.goles_local !== null && p.goles_visitante !== null) ? `<div class="marcador"><span>${p.goles_local}</span> - <span>${p.goles_visitante}</span></div>` : `<div class="vs">VS</div>`;
       const estadoClase = estado.trim().replace(/\s+/g, '-').toUpperCase();
+      const eventosHtml = await generarHtmlEventosResumidos(p.id_partido);
 
-      // =================================================================================
-      // PASO CLAVE 2: LLAMAR A LA FUNCIÓN Y GUARDAR EL HTML DE LOS EVENTOS EN UNA VARIABLE
-      // =================================================================================
-      const eventosHtml = await generarHtmlEventos(p.id_partido);
-
-      // Ahora, construimos la tarjeta completa.
       return `
         <li id="partido-${p.id_partido}" class="partido-card">
-          <!-- Parte superior: Equipos y Marcador -->
           <div class="partido-grid">
-            <div class="equipo local">
-              <div class="equipo-nombre"><i class="fa-solid fa-shirt"></i> <span>${equipoLocal}</span></div>
-            </div>
+            <div class="equipo local"><div class="equipo-nombre"><i class="fa-solid fa-shirt"></i> <span>${equipoLocal}</span></div></div>
             ${marcadorHtml}
-            <div class="equipo visitante">
-              <div class="equipo-nombre"><span>${equipoVisitante}</span> <i class="fa-solid fa-shirt"></i></div>
-            </div>
+            <div class="equipo visitante"><div class="equipo-nombre"><span>${equipoVisitante}</span> <i class="fa-solid fa-shirt"></i></div></div>
           </div>
-          
-          <!-- Parte media: Información del partido -->
           <div class="partido-info">
             <span><i class="fa-regular fa-calendar-alt"></i> ${fechaFormato}</span>
             <span><i class="fa-regular fa-clock"></i> ${hora}</span>
             <span class="estado-badge estado-${estadoClase}">${estado}</span>
+            <button class="btn-cronologia" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#cronologiaModal"
+                    data-partido-id="${p.id_partido}">
+              <i class="fa-solid fa-list-ol"></i> Cronología
+            </button>
           </div>
-
-          <!-- ================================================================ -->
-          <!-- PASO CLAVE 3: INSERTAR EL BLOQUE DE HTML DE LOS EVENTOS AQUÍ     -->
-          <!-- Si 'eventosHtml' está vacío, no se insertará nada.               -->
-          <!-- Si tiene contenido, se renderizará el div con la lista.         -->
-          <!-- ================================================================ -->
           ${eventosHtml}
-          
         </li>
       `;
     }
 
-    // --- Resto de funciones (sin cambios estructurales importantes) ---
+    const cronologiaModal = document.getElementById('cronologiaModal');
+    cronologiaModal.addEventListener('show.bs.modal', async (event) => {
+      const button = event.relatedTarget;
+      const partidoId = button.getAttribute('data-partido-id');
+      const modalBody = document.getElementById('modal-body-content');
+
+      modalBody.innerHTML = `<div class="d-flex justify-content-center p-4"><div class="spinner-border" role="status"><span class="visually-hidden">Cargando...</span></div></div>`;
+
+      const { data: eventos, error } = await supabase
+        .from('eventos_partido')
+        .select(`minuto, tipo_evento, jugadores (nombres, apellidos, numero_camiseta)`)
+        .eq('id_partido', partidoId)
+        .order('minuto', { ascending: true });
+
+      if (error) {
+        console.error("Error al obtener cronología:", error);
+        modalBody.innerHTML = `<p class="text-center text-danger p-4">Error al cargar la cronología.</p>`;
+        return;
+      }
+
+      if (!eventos || eventos.length === 0) {
+        modalBody.innerHTML = `<p class="text-center p-4">No hay eventos registrados para este partido.</p>`;
+        return;
+      }
+
+      let html = '<ul class="cronologia-lista">';
+      eventos.forEach(e => {
+        const jugador = e.jugadores;
+        const nombreCompleto = jugador ? `${jugador.nombres || ''} ${jugador.apellidos || ''}`.trim() : 'Jugador no identificado';
+        const camiseta = jugador && jugador.numero_camiseta ? ` (#${jugador.numero_camiseta})` : '';
+        const minuto = e.minuto ? `${e.minuto}'` : '-';
+
+        html += `
+          <li>
+            <div class="cronologia-minuto">${minuto}</div>
+            <div class="cronologia-icono">${iconoEvento(e.tipo_evento)}</div>
+            <div class="cronologia-detalle">
+              <strong>${nombreCompleto}${camiseta}</strong> - ${e.tipo_evento}
+            </div>
+          </li>
+        `;
+      });
+      html += '</ul>';
+
+      modalBody.innerHTML = html;
+    });
 
     async function renderPartidos(partidos) {
       if (!partidos || partidos.length === 0) {
@@ -382,14 +474,117 @@
       partidosListEl.innerHTML = cardsHtml.join('');
     }
 
-    const renderTabsFechas = (fechasArr, fechaActiva) => { /* ... (sin cambios) ... */ };
-    const getLocalISODate = (date) => { /* ... (sin cambios) ... */ };
-    const obtenerFechasTabs = (base = new Date()) => { /* ... (sin cambios) ... */ };
-    async function cargarPartidosPorFecha(fechaISO) { /* ... (sin cambios) ... */ }
-    function suscribirseACambios() { /* ... (sin cambios) ... */ }
-    async function fetchPartidoActualizado(partidoId) { /* ... (sin cambios) ... */ }
-    
-    document.addEventListener("DOMContentLoaded", async () => { /* ... (sin cambios) ... */ });
+    const getLocalISODate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    const obtenerFechasTabs = (base = new Date()) => {
+      const fechas = [];
+      for (let i = -7; i <= 7; i++) {
+        const f = new Date(base);
+        f.setDate(base.getDate() + i);
+        fechas.push(f);
+      }
+      return fechas.map(f => ({
+        label: f.toLocaleDateString('es-CO', { weekday: "short", day: "2-digit", month: "short" }).replace('.', ''),
+        value: getLocalISODate(f),
+      }));
+    };
+
+    const renderTabsFechas = (fechasArr, fechaActiva) => {
+      navFechasEl.innerHTML = fechasArr.map(f =>
+        `<button class="nav-fecha-btn${f.value === fechaActiva ? " active" : ""}" data-fecha="${f.value}">${f.label}</button>`
+      ).join("");
+    };
+
+    async function cargarPartidosPorFecha(fechaISO) {
+      renderSpinner();
+      const desde = `${fechaISO} 00:00:00`;
+      const hasta = `${fechaISO} 23:59:59`;
+      try {
+        const { data, error } = await supabase.from("vista_resultados").select("*")
+          .gte('fecha', desde).lte('fecha', hasta).order("hora", { ascending: true });
+        if (error) throw error;
+        await renderPartidos(data);
+        suscribirseACambios();
+      } catch (error) {
+        console.error("Error al cargar partidos:", error);
+        renderFeedbackMessage("Error al cargar los partidos. Inténtelo de nuevo.");
+      }
+    }
+
+    function suscribirseACambios() {
+      if (realtimeChannel) {
+        supabase.removeChannel(realtimeChannel);
+      }
+      realtimeChannel = supabase.channel('vista_resultados_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'partidos' }, (payload) => {
+          const partidoId = payload.new?.id_partido || payload.old?.id_partido;
+          if (partidoId) {
+            if (payload.eventType === 'DELETE') {
+              const cardElement = document.getElementById(`partido-${partidoId}`);
+              if (cardElement) cardElement.remove();
+            } else {
+              fetchPartidoActualizado(partidoId);
+            }
+          }
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos_partido' }, (payload) => {
+          const partidoId = payload.new?.id_partido || payload.old?.id_partido;
+          if (partidoId) {
+            fetchPartidoActualizado(partidoId);
+          }
+        })
+        .subscribe();
+    }
+
+    async function fetchPartidoActualizado(partidoId) {
+      try {
+        const { data, error } = await supabase.from('vista_resultados').select('*').eq('id_partido', partidoId).single();
+        if (error) {
+          if (error.code !== 'PGRST116') throw error;
+          return;
+        }
+        if (!data) return;
+        const cardElement = document.getElementById(`partido-${data.id_partido}`);
+        const nuevaCardHtml = await partidoCardTemplate(data);
+        if (cardElement) {
+          cardElement.outerHTML = nuevaCardHtml;
+          const newCardElement = document.getElementById(`partido-${data.id_partido}`);
+          if (newCardElement) {
+            newCardElement.classList.add('is-updating');
+            setTimeout(() => { newCardElement.classList.remove('is-updating'); }, 1500);
+          }
+        }
+      } catch (error) {
+        console.error("Error al obtener datos actualizados del partido:", error);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const hoy = new Date();
+      const hoyISO = getLocalISODate(hoy);
+      const tabs = obtenerFechasTabs(hoy);
+      renderTabsFechas(tabs, hoyISO);
+      await cargarPartidosPorFecha(hoyISO);
+      navFechasEl.addEventListener('click', async (e) => {
+        const targetButton = e.target.closest('.nav-fecha-btn');
+        if (!targetButton) return;
+        const nuevaFecha = targetButton.getAttribute("data-fecha");
+        document.querySelector('.nav-fecha-btn.active')?.classList.remove('active');
+        targetButton.classList.add('active');
+        await cargarPartidosPorFecha(nuevaFecha);
+      });
+      Promise.all([
+        fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; }),
+        fetch('layout/hero.html').then(r => r.text()).then(h => { document.getElementById('hero-placeholder').innerHTML = h; }),
+        fetch('layout/footer.html').then(r => r.text()).then(h => { document.getElementById('footer-placeholder').innerHTML = h; })
+      ]).catch(console.error);
+    });
   </script>
 </body>
+
 </html>

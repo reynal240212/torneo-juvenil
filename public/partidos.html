@@ -13,16 +13,6 @@
   <meta name="author" content="Organización Torneo Juvenil La Pradera">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0082C9">
-  <meta property="og:title" content="Partidos y Resultados - Torneo Juvenil La Pradera">
-  <meta property="og:description"
-    content="Programación actualizada, resultados y horarios de los partidos del Torneo Juvenil La Pradera. Consulta equipos, jornadas y sigue tu equipo favorito.">
-  <meta property="og:image" content="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://torneo-juvenil.vercel.app/partidos">
-  <meta property="og:type" content="website">
-  <meta property="og:locale" content="es_CO">
-  <meta property="og:site_name" content="Torneo Juvenil La Pradera">
 
   <!-- Dependencias (Bootstrap y FontAwesome) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -221,40 +211,6 @@
       }
     }
 
-    .eventos-destacados {
-      margin-top: 1.5em;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 8px;
-      padding: 1em;
-      border-top: 1px solid rgba(0, 130, 201, 0.2);
-    }
-
-    .eventos-destacados h6 {
-      font-weight: 700;
-      margin-bottom: .75em;
-      color: var(--texto-resaltado);
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-    }
-
-    .eventos-destacados ul {
-      list-style: none;
-      padding-left: 0;
-      margin-bottom: 0;
-    }
-
-    .eventos-destacados li {
-      margin-bottom: .4em;
-      font-size: .95em;
-    }
-
-    .eventos-destacados .fa-solid {
-      margin-right: .6em;
-      width: 20px;
-      text-align: center;
-    }
-
     .btn-cronologia {
       background-color: transparent;
       border: 1px solid var(--azul-acento);
@@ -269,7 +225,6 @@
       color: white;
     }
 
-    /* --- ESTILOS PARA EL MODAL DE CRONOLOGÍA --- */
     .modal-content {
       background: var(--azul-secundario);
       color: var(--texto-claro);
@@ -334,7 +289,7 @@
   </main>
   <div id="footer-placeholder"></div>
 
-  <!-- MODAL DE CRONOLOGÍA (NUEVA ESTRUCTURA) -->
+  <!-- MODAL DE CRONOLOGÍA -->
   <div class="modal fade" id="cronologiaModal" tabindex="-1" aria-labelledby="cronologiaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -342,9 +297,7 @@
           <h5 class="modal-title" id="cronologiaModalLabel">Cronología del Partido</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" id="modal-body-content">
-          <!-- El contenido de la cronología se cargará aquí -->
-        </div>
+        <div class="modal-body" id="modal-body-content"></div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
@@ -362,14 +315,7 @@
     const navFechasEl = document.getElementById("navFechas");
     const partidosListEl = document.getElementById("partidosList");
     let realtimeChannel = null;
-
-    const renderSpinner = () => {
-      partidosListEl.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Cargando...</span></div></div>`;
-    };
-
-    const renderFeedbackMessage = (message) => {
-      partidosListEl.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><p class="lead">${message}</p></div>`;
-    };
+    let partidosData = []; // Caché para guardar los datos de los partidos de la vista
 
     function iconoEvento(tipo) {
       const tipoNormalizado = tipo ? tipo.toUpperCase() : '';
@@ -380,20 +326,14 @@
       return '<i class="fa-solid fa-flag"></i>';
     }
 
-    async function generarHtmlEventosResumidos(id_partido) {
-      // Esta función ahora solo es para la tarjeta, podría ser simplificada o removida si no se quiere el resumen
-      return ''; // Por ahora, la dejamos vacía para no duplicar info. Todo se verá en el modal.
-    }
-
-    async function partidoCardTemplate(p) {
+    function partidoCardTemplate(p) {
       const hora = p.hora?.substring(0, 5) ?? "--:--";
       const fechaFormato = p.fecha ? new Date(p.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' }) : "Fecha no definida";
-      const equipoLocal = p.equipo_local || "Equipo Local";
-      const equipoVisitante = p.equipo_visitante || "Equipo Visitante";
+      const equipoLocal = p.equipo_local_nombre || "Equipo Local";
+      const equipoVisitante = p.equipo_visitante_nombre || "Equipo Visitante";
       const estado = p.estado || "Desconocido";
       const marcadorHtml = (p.goles_local !== null && p.goles_visitante !== null) ? `<div class="marcador"><span>${p.goles_local}</span> - <span>${p.goles_visitante}</span></div>` : `<div class="vs">VS</div>`;
       const estadoClase = estado.trim().replace(/\s+/g, '-').toUpperCase();
-      const eventosHtml = await generarHtmlEventosResumidos(p.id_partido);
 
       return `
         <li id="partido-${p.id_partido}" class="partido-card">
@@ -406,59 +346,45 @@
             <span><i class="fa-regular fa-calendar-alt"></i> ${fechaFormato}</span>
             <span><i class="fa-regular fa-clock"></i> ${hora}</span>
             <span class="estado-badge estado-${estadoClase}">${estado}</span>
-            <button class="btn-cronologia" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#cronologiaModal"
-                    data-partido-id="${p.id_partido}">
+            <button class="btn-cronologia" data-bs-toggle="modal" data-bs-target="#cronologiaModal" data-partido-id="${p.id_partido}">
               <i class="fa-solid fa-list-ol"></i> Cronología
             </button>
           </div>
-          ${eventosHtml}
         </li>
       `;
     }
 
     const cronologiaModal = document.getElementById('cronologiaModal');
-    cronologiaModal.addEventListener('show.bs.modal', async (event) => {
+    cronologiaModal.addEventListener('show.bs.modal', (event) => {
       const button = event.relatedTarget;
-      const partidoId = button.getAttribute('data-partido-id');
       const modalBody = document.getElementById('modal-body-content');
+      if (!button) return;
 
-      modalBody.innerHTML = `<div class="d-flex justify-content-center p-4"><div class="spinner-border" role="status"><span class="visually-hidden">Cargando...</span></div></div>`;
+      const partidoId = parseInt(button.getAttribute('data-partido-id'), 10);
+      // Busca el partido en los datos ya cargados (caché)
+      const partido = partidosData.find(p => p.id_partido === partidoId);
 
-      const { data: eventos, error } = await supabase
-        .from('eventos_partido')
-        .select(`minuto, tipo_evento, jugadores (nombres, apellidos, numero_camiseta)`)
-        .eq('id_partido', partidoId)
-        .order('minuto', { ascending: true });
-
-      if (error) {
-        console.error("Error al obtener cronología:", error);
-        modalBody.innerHTML = `<p class="text-center text-danger p-4">Error al cargar la cronología.</p>`;
-        return;
-      }
-
-      if (!eventos || eventos.length === 0) {
+      if (!partido || !partido.eventos_json || partido.eventos_json.length === 0) {
         modalBody.innerHTML = `<p class="text-center p-4">No hay eventos registrados para este partido.</p>`;
         return;
       }
 
+      // Construye el HTML usando el campo eventos_json de la vista
       let html = '<ul class="cronologia-lista">';
-      eventos.forEach(e => {
-        const jugador = e.jugadores;
-        const nombreCompleto = jugador ? `${jugador.nombres || ''} ${jugador.apellidos || ''}`.trim() : 'Jugador no identificado';
-        const camiseta = jugador && jugador.numero_camiseta ? ` (#${jugador.numero_camiseta})` : '';
+      partido.eventos_json.forEach(e => {
+        const nombreCompleto = `${e.jugador_nombres || ''} ${e.jugador_apellidos || ''}`.trim();
+        const camiseta = e.jugador_camiseta ? ` (#${e.jugador_camiseta})` : '';
         const minuto = e.minuto ? `${e.minuto}'` : '-';
 
         html += `
-          <li>
-            <div class="cronologia-minuto">${minuto}</div>
-            <div class="cronologia-icono">${iconoEvento(e.tipo_evento)}</div>
-            <div class="cronologia-detalle">
-              <strong>${nombreCompleto}${camiseta}</strong> - ${e.tipo_evento}
-            </div>
-          </li>
-        `;
+              <li>
+                <div class="cronologia-minuto">${minuto}</div>
+                <div class="cronologia-icono">${iconoEvento(e.tipo_evento)}</div>
+                <div class="cronologia-detalle">
+                  <strong>${nombreCompleto}${camiseta}</strong> - ${e.tipo_evento}
+                </div>
+              </li>
+            `;
       });
       html += '</ul>';
 
@@ -467,102 +393,36 @@
 
     async function renderPartidos(partidos) {
       if (!partidos || partidos.length === 0) {
-        renderFeedbackMessage("No hay partidos programados para esta fecha.");
+        partidosListEl.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><p class="lead">No hay partidos programados para esta fecha.</p></div>`;
         return;
       }
-      const cardsHtml = await Promise.all(partidos.map(p => partidoCardTemplate(p)));
-      partidosListEl.innerHTML = cardsHtml.join('');
+      partidosListEl.innerHTML = partidos.map(partidoCardTemplate).join('');
     }
 
-    const getLocalISODate = (date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    const obtenerFechasTabs = (base = new Date()) => {
-      const fechas = [];
-      for (let i = -7; i <= 7; i++) {
-        const f = new Date(base);
-        f.setDate(base.getDate() + i);
-        fechas.push(f);
-      }
-      return fechas.map(f => ({
-        label: f.toLocaleDateString('es-CO', { weekday: "short", day: "2-digit", month: "short" }).replace('.', ''),
-        value: getLocalISODate(f),
-      }));
-    };
-
-    const renderTabsFechas = (fechasArr, fechaActiva) => {
-      navFechasEl.innerHTML = fechasArr.map(f =>
-        `<button class="nav-fecha-btn${f.value === fechaActiva ? " active" : ""}" data-fecha="${f.value}">${f.label}</button>`
-      ).join("");
-    };
-
     async function cargarPartidosPorFecha(fechaISO) {
-      renderSpinner();
+      partidosListEl.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Cargando...</span></div></div>`;
       const desde = `${fechaISO} 00:00:00`;
       const hasta = `${fechaISO} 23:59:59`;
       try {
-        const { data, error } = await supabase.from("vista_resultados").select("*")
+        // --- CONSULTA ÚNICA Y EFICIENTE A LA VISTA ---
+        const { data, error } = await supabase.from("vista_partidos_completa").select("*")
           .gte('fecha', desde).lte('fecha', hasta).order("hora", { ascending: true });
+
         if (error) throw error;
-        await renderPartidos(data);
-        suscribirseACambios();
+
+        partidosData = data; // Guardamos los datos en la caché local
+        await renderPartidos(partidosData);
+        // suscribirseACambios(); // Puedes habilitar esto si necesitas realtime
       } catch (error) {
         console.error("Error al cargar partidos:", error);
-        renderFeedbackMessage("Error al cargar los partidos. Inténtelo de nuevo.");
+        partidosListEl.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><p class="lead text-danger">Error al cargar los partidos.</p></div>`;
       }
     }
 
-    function suscribirseACambios() {
-      if (realtimeChannel) {
-        supabase.removeChannel(realtimeChannel);
-      }
-      realtimeChannel = supabase.channel('vista_resultados_changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'partidos' }, (payload) => {
-          const partidoId = payload.new?.id_partido || payload.old?.id_partido;
-          if (partidoId) {
-            if (payload.eventType === 'DELETE') {
-              const cardElement = document.getElementById(`partido-${partidoId}`);
-              if (cardElement) cardElement.remove();
-            } else {
-              fetchPartidoActualizado(partidoId);
-            }
-          }
-        })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos_partido' }, (payload) => {
-          const partidoId = payload.new?.id_partido || payload.old?.id_partido;
-          if (partidoId) {
-            fetchPartidoActualizado(partidoId);
-          }
-        })
-        .subscribe();
-    }
-
-    async function fetchPartidoActualizado(partidoId) {
-      try {
-        const { data, error } = await supabase.from('vista_resultados').select('*').eq('id_partido', partidoId).single();
-        if (error) {
-          if (error.code !== 'PGRST116') throw error;
-          return;
-        }
-        if (!data) return;
-        const cardElement = document.getElementById(`partido-${data.id_partido}`);
-        const nuevaCardHtml = await partidoCardTemplate(data);
-        if (cardElement) {
-          cardElement.outerHTML = nuevaCardHtml;
-          const newCardElement = document.getElementById(`partido-${data.id_partido}`);
-          if (newCardElement) {
-            newCardElement.classList.add('is-updating');
-            setTimeout(() => { newCardElement.classList.remove('is-updating'); }, 1500);
-          }
-        }
-      } catch (error) {
-        console.error("Error al obtener datos actualizados del partido:", error);
-      }
-    }
+    // --- Resto de funciones auxiliares ---
+    const getLocalISODate = (date) => { const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; };
+    const obtenerFechasTabs = (base = new Date()) => { const fechas = []; for (let i = -7; i <= 7; i++) { const f = new Date(base); f.setDate(base.getDate() + i); fechas.push(f); } return fechas.map(f => ({ label: f.toLocaleDateString('es-CO', { weekday: "short", day: "2-digit", month: "short" }).replace('.', ''), value: getLocalISODate(f), })); };
+    const renderTabsFechas = (fechasArr, fechaActiva) => { navFechasEl.innerHTML = fechasArr.map(f => `<button class="nav-fecha-btn${f.value === fechaActiva ? " active" : ""}" data-fecha="${f.value}">${f.label}</button>`).join(""); };
 
     document.addEventListener("DOMContentLoaded", async () => {
       const hoy = new Date();
@@ -570,6 +430,7 @@
       const tabs = obtenerFechasTabs(hoy);
       renderTabsFechas(tabs, hoyISO);
       await cargarPartidosPorFecha(hoyISO);
+
       navFechasEl.addEventListener('click', async (e) => {
         const targetButton = e.target.closest('.nav-fecha-btn');
         if (!targetButton) return;
@@ -578,10 +439,11 @@
         targetButton.classList.add('active');
         await cargarPartidosPorFecha(nuevaFecha);
       });
+
       Promise.all([
-        fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; }),
-        fetch('layout/hero.html').then(r => r.text()).then(h => { document.getElementById('hero-placeholder').innerHTML = h; }),
-        fetch('layout/footer.html').then(r => r.text()).then(h => { document.getElementById('footer-placeholder').innerHTML = h; })
+        fetch('layout/navbar.html').then(r => r.text()).then(h => document.getElementById('nav-placeholder').innerHTML = h),
+        fetch('layout/hero.html').then(r => r.text()).then(h => document.getElementById('hero-placeholder').innerHTML = h),
+        fetch('layout/footer.html').then(r => r.text()).then(h => document.getElementById('footer-placeholder').innerHTML = h)
       ]).catch(console.error);
     });
   </script>

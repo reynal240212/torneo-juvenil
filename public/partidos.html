@@ -288,14 +288,14 @@
       return data;
     }
 
+    // ---- FUNCIÓN CORREGIDA ----
     function iconoEvento(tipo) {
-      switch (tipo) {
-        case 'Gol': return '<i class="fa-solid fa-futbol text-warning"></i>';
-        case 'T_A': return '<i class="fa-solid fa-square text-warning"></i>'; // Tarjeta Amarilla
-        case 'T_R': return '<i class="fa-solid fa-square text-danger"></i>';  // Tarjeta Roja
-        case 'T_AZ': return '<i class="fa-solid fa-square text-info"></i>';   // Tarjeta Azul
-        default: return '<i class="fa-solid fa-flag"></i>';
-      }
+      const tipoNormalizado = tipo.toUpperCase(); // Convertimos a mayúsculas para ser más flexibles
+      if (tipoNormalizado.includes('GOL')) return '<i class="fa-solid fa-futbol text-warning"></i>';
+      if (tipoNormalizado.includes('T_A') || tipoNormalizado.includes('AMARILLA')) return '<i class="fa-solid fa-square text-warning"></i>'; // Tarjeta Amarilla
+      if (tipoNormalizado.includes('T_R') || tipoNormalizado.includes('ROJA')) return '<i class="fa-solid fa-square text-danger"></i>';  // Tarjeta Roja
+      if (tipoNormalizado.includes('T_AZ') || tipoNormalizado.includes('AZUL')) return '<i class="fa-solid fa-square text-info"></i>';   // Tarjeta Azul
+      return '<i class="fa-solid fa-flag"></i>'; // Default
     }
 
     async function generarHtmlEventos(id_partido) {

@@ -263,9 +263,7 @@
 
     // ---- EVENTOS POR PARTIDO ----
     async function obtenerEventosPorPartido(id_partido) {
-      // FIX: Añadir una guarda para prevenir llamadas con un id_partido inválido.
       if (!id_partido) {
-        // Si el id es nulo o undefined, no hacemos la consulta y devolvemos un array vacío.
         return [];
       }
       
@@ -363,7 +361,6 @@
         renderFeedbackMessage("No hay partidos programados para esta fecha.");
         return;
       }
-      // Usamos Promise.all para construir todas las tarjetas en paralelo, es más eficiente.
       const cardsHtml = await Promise.all(partidos.map(p => partidoCardTemplate(p)));
       partidosListEl.innerHTML = cardsHtml.join('');
     }
@@ -428,12 +425,10 @@
           'postgres_changes',
           { event: '*', schema: 'public', table: 'partidos' },
           (payload) => {
-            // FIX: Hacer más robusta la obtención del ID para manejar INSERT, UPDATE y DELETE.
             const partidoId = payload.new?.id_partido || payload.old?.id_partido;
             if (partidoId) {
                 console.log(`Cambio en Partidos (ID: ${partidoId}):`, payload);
                 if (payload.eventType === 'DELETE') {
-                    // Si el partido se borra, eliminamos la tarjeta del DOM.
                     const cardElement = document.getElementById(`partido-${partidoId}`);
                     if (cardElement) cardElement.remove();
                 } else {
@@ -465,11 +460,10 @@
           .single();
 
         if (error) {
-          // Si el error es "PGRST116" significa que el partido ya no se encontró (quizás se borró).
           if (error.code !== 'PGRST116') {
             throw error;
           }
-          return; // No hacemos nada si el partido no se encuentra.
+          return;
         }
         if (!data) return;
 

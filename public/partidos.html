@@ -210,7 +210,7 @@
     .eventos-destacados h6 { font-weight: 700; margin-bottom: .5em; }
     .eventos-destacados ul { padding-left: 1em; margin-bottom: 0; }
     .eventos-destacados li { margin-bottom: .25em; font-size: .97em;}
-    .eventos-destacados .fa { margin-right: .4em;}
+    .eventos-destacados .fa-solid { margin-right: .5em;}
     .feedback-container {
       display: flex;
       justify-content: center;
@@ -263,41 +263,51 @@
 
     // ---- EVENTOS POR PARTIDO ----
     async function obtenerEventosPorPartido(id_partido) {
-      // Consultar eventos y traer nombre jugador, tipo, minuto
+      // Consulta los eventos y trae datos del jugador relacionado
       const { data, error } = await supabase
         .from("eventos_partido")
         .select(`
           tipo_evento,
           minuto,
-          fecha,
-          jugadores:nombre,
-          jugadores:apellidos,
-          jugadores:id_equipo,
-          jugadores:numero_camiseta
+          jugadores (
+            nombre,
+            apellidos,
+            numero_camiseta
+          )
         `)
         .eq('id_partido', id_partido)
         .order('minuto', { ascending: true });
-      if (error) { console.error(error); return []; }
+        
+      if (error) { 
+        console.error("Error al obtener eventos del partido:", error);
+        return []; 
+      }
       return data;
     }
 
     function iconoEvento(tipo) {
-      if (tipo === 'Gol') return '<i class="fa-solid fa-futbol text-warning"></i>';
-      if (tipo === 'T_A') return '<i class="fa-solid fa-square text-warning"></i>';
-      if (tipo === 'T_R') return '<i class="fa-solid fa-square text-danger"></i>';
-      if (tipo === 'T_AZ') return '<i class="fa-solid fa-square text-info"></i>';
-      return '';
+      switch (tipo) {
+        case 'Gol': return '<i class="fa-solid fa-futbol text-warning"></i>';
+        case 'T_A': return '<i class="fa-solid fa-square text-warning"></i>'; // Tarjeta Amarilla
+        case 'T_R': return '<i class="fa-solid fa-square text-danger"></i>';  // Tarjeta Roja
+        case 'T_AZ': return '<i class="fa-solid fa-square text-info"></i>';   // Tarjeta Azul
+        default: return '<i class="fa-solid fa-flag"></i>';
+      }
     }
 
-    async function eventoCardHtml(id_partido) {
+    async function generarHtmlEventos(id_partido) {
       const eventos = await obtenerEventosPorPartido(id_partido);
-      if(!eventos.length) return '';
+      if(!eventos || eventos.length === 0) return '';
+
       let html = `<div class="eventos-destacados"><h6>Eventos destacados:</h6><ul>`;
       eventos.forEach(e => {
-        html += `<li>${iconoEvento(e.tipo_evento)}
-        <strong>${e.jugadores_nombres || ''} ${e.jugadores_apellidos || ''}</strong>
-        (${e.tipo_evento}${e.jugadores_numero_camiseta ? ' #'+e.jugadores_numero_camiseta : ''})
-        ${e.minuto ? '- Min ' + e.minuto : ''}
+        const playerName = e.jugadores ? `${e.jugadores.nombre || ''} ${e.jugadores.apellidos || ''}`.trim() : 'Jugador no identificado';
+        const playerNumber = e.jugadores && e.jugadores.numero_camiseta ? ` #${e.jugadores.numero_camiseta}` : '';
+        const minuteInfo = e.minuto ? ` - Min ${e.minuto}` : '';
+
+        html += `<li>
+          ${iconoEvento(e.tipo_evento)}
+          <strong>${playerName}</strong> (${e.tipo_evento}${playerNumber})${minuteInfo}
         </li>`;
       });
       html += `</ul></div>`;
@@ -320,7 +330,8 @@
 
       const estadoClase = estado.trim().replace(/\s+/g, '-').toUpperCase();
 
-      const eventosHtml = await eventoCardHtml(p.id_partido);
+      // Generar el HTML para los eventos de este partido
+      const eventosHtml = await generarHtmlEventos(p.id_partido);
 
       return `
         <li id="partido-${p.id_partido}" class="partido-card">
@@ -349,7 +360,7 @@
         return;
       }
       let html = '';
-      for(let p of partidos){
+      for(const p of partidos){
         html += await partidoCardTemplate(p);
       }
       partidosListEl.innerHTML = html;
@@ -413,10 +424,21 @@
       realtimeChannel = supabase.channel('vista_resultados_changes')
         .on(
           'postgres_changes',
-          { event: 'UPDATE', schema: 'public', table: 'partidos' },
+          { event: '*', schema: 'public', table: 'partidos' }, // Escucha cualquier cambio en partidos
           (payload) => {
-            console.log('Cambio recibido en tiempo real:', payload.new);
+            console.log('Cambio en Partidos recibido:', payload.new);
             fetchPartidoActualizado(payload.new.id_partido);
+          }
+        )
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'eventos_partido' }, // Escucha cualquier cambio en eventos
+          (payload) => {
+            const partidoId = payload.new?.id_partido || payload.old?.id_partido;
+            if (partidoId) {
+                console.log(`Cambio en Eventos para el partido ${partidoId}:`, payload);
+                fetchPartidoActualizado(partidoId);
+            }
           }
         )
         .subscribe();
@@ -435,7 +457,9 @@
 
         const cardElement = document.getElementById(`partido-${data.id_partido}`);
         if (cardElement) {
-          cardElement.outerHTML = await partidoCardTemplate(data);
+          const nuevaCardHtml = await partidoCardTemplate(data);
+          // Usar un método que no cause un parpadeo completo si es posible
+          cardElement.outerHTML = nuevaCardHtml;
           const newCardElement = document.getElementById(`partido-${data.id_partido}`);
           if(newCardElement) {
             newCardElement.classList.add('is-updating');

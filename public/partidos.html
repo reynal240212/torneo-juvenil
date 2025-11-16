@@ -263,7 +263,12 @@
 
     // ---- EVENTOS POR PARTIDO ----
     async function obtenerEventosPorPartido(id_partido) {
-      // Consulta los eventos y trae datos del jugador relacionado
+      // FIX: Añadir una guarda para prevenir llamadas con un id_partido inválido.
+      if (!id_partido) {
+        // Si el id es nulo o undefined, no hacemos la consulta y devolvemos un array vacío.
+        return [];
+      }
+      
       const { data, error } = await supabase
         .from("eventos_partido")
         .select(`
@@ -330,7 +335,6 @@
 
       const estadoClase = estado.trim().replace(/\s+/g, '-').toUpperCase();
 
-      // Generar el HTML para los eventos de este partido
       const eventosHtml = await generarHtmlEventos(p.id_partido);
 
       return `
@@ -359,11 +363,9 @@
         renderFeedbackMessage("No hay partidos programados para esta fecha.");
         return;
       }
-      let html = '';
-      for(const p of partidos){
-        html += await partidoCardTemplate(p);
-      }
-      partidosListEl.innerHTML = html;
+      // Usamos Promise.all para construir todas las tarjetas en paralelo, es más eficiente.
+      const cardsHtml = await Promise.all(partidos.map(p => partidoCardTemplate(p)));
+      partidosListEl.innerHTML = cardsHtml.join('');
     }
 
     const renderTabsFechas = (fechasArr, fechaActiva) => {
@@ -424,15 +426,25 @@
       realtimeChannel = supabase.channel('vista_resultados_changes')
         .on(
           'postgres_changes',
-          { event: '*', schema: 'public', table: 'partidos' }, // Escucha cualquier cambio en partidos
+          { event: '*', schema: 'public', table: 'partidos' },
           (payload) => {
-            console.log('Cambio en Partidos recibido:', payload.new);
-            fetchPartidoActualizado(payload.new.id_partido);
+            // FIX: Hacer más robusta la obtención del ID para manejar INSERT, UPDATE y DELETE.
+            const partidoId = payload.new?.id_partido || payload.old?.id_partido;
+            if (partidoId) {
+                console.log(`Cambio en Partidos (ID: ${partidoId}):`, payload);
+                if (payload.eventType === 'DELETE') {
+                    // Si el partido se borra, eliminamos la tarjeta del DOM.
+                    const cardElement = document.getElementById(`partido-${partidoId}`);
+                    if (cardElement) cardElement.remove();
+                } else {
+                    fetchPartidoActualizado(partidoId);
+                }
+            }
           }
         )
         .on(
           'postgres_changes',
-          { event: '*', schema: 'public', table: 'eventos_partido' }, // Escucha cualquier cambio en eventos
+          { event: '*', schema: 'public', table: 'eventos_partido' },
           (payload) => {
             const partidoId = payload.new?.id_partido || payload.old?.id_partido;
             if (partidoId) {
@@ -452,13 +464,19 @@
           .eq('id_partido', partidoId)
           .single();
 
-        if (error) throw error;
+        if (error) {
+          // Si el error es "PGRST116" significa que el partido ya no se encontró (quizás se borró).
+          if (error.code !== 'PGRST116') {
+            throw error;
+          }
+          return; // No hacemos nada si el partido no se encuentra.
+        }
         if (!data) return;
 
         const cardElement = document.getElementById(`partido-${data.id_partido}`);
+        const nuevaCardHtml = await partidoCardTemplate(data);
+        
         if (cardElement) {
-          const nuevaCardHtml = await partidoCardTemplate(data);
-          // Usar un método que no cause un parpadeo completo si es posible
           cardElement.outerHTML = nuevaCardHtml;
           const newCardElement = document.getElementById(`partido-${data.id_partido}`);
           if(newCardElement) {

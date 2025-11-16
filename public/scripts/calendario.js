@@ -26,7 +26,6 @@ async function cargarPartidos() {
   const { data, error } = await supabase
     .from("vista_resultados")
     .select("*")
-    .order("jornada")
     .order("fecha")
     .order("hora");
 
@@ -44,7 +43,6 @@ async function cargarPartidos() {
     const estadoClase = obtenerClaseEstado(p.estado || "");
     tabla.innerHTML += `
       <tr>
-        <td class="text-center">${p.jornada || '-'}</td>
         <td class="text-center">${fechaFormateada}</td>
         <td class="text-center">${p.hora || '-'}</td>
         <td class="text-end fw-bold">${p.equipo_local}</td>

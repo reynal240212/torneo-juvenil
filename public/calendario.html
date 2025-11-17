@@ -20,13 +20,11 @@
       --azul-acento: #0082C9;
       --texto-claro: #f0f8ff;
     }
-
     body {
-      background: linear-gradient(90deg, #ffffff 70%, #ffffff 100%);
+      background: linear-gradient(90deg, #002B3C 70%, #0082C9 100%);
       min-height: 100vh;
       color: var(--texto-claro);
     }
-
     .card-torneo {
       background: rgba(15, 37, 120, 0.6);
       border-radius: 12px;
@@ -35,7 +33,6 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       border: 1px solid rgba(0, 130, 201, 0.3);
     }
-
     .table {
       --bs-table-bg: transparent;
       --bs-table-color: var(--texto-claro);
@@ -43,17 +40,14 @@
       --bs-table-hover-bg: rgba(0, 130, 201, 0.1);
       --bs-table-hover-color: var(--texto-claro);
     }
-
     .btn-primary {
       background-color: var(--azul-acento);
       border-color: var(--azul-acento);
     }
-
     .btn-primary:hover {
       background-color: #006ca8;
       border-color: #006ca8;
     }
-
     thead th {
       color: var(--texto-claro);
       font-weight: 600;
@@ -109,15 +103,11 @@
 
   <!-- Lógica de la página y generación de PDF -->
   <script type="module">
-    // Importamos el cliente de Supabase desde el CDN
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
-    // Configuración de Supabase
     const supabaseUrl = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Referencias a elementos del DOM
     const tablaPartidosBody = document.getElementById('tablaPartidos');
     const btnDescargarPdf = document.getElementById('btnDescargarPdf');
 
@@ -131,19 +121,15 @@
           .order('hora', { ascending: true });
 
         if (error) throw error;
-
         if (partidos.length === 0) {
           tablaPartidosBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No hay partidos para mostrar.</td></tr>`;
           return;
         }
-
         tablaPartidosBody.innerHTML = '';
         partidos.forEach(p => {
           const fecha = new Date(p.fecha).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
           const hora = p.hora ? p.hora.substring(0, 5) : '--:--';
-          const resultado = (p.goles_local !== null && p.goles_visitante !== null)
-            ? `<b>${p.goles_local} - ${p.goles_visitante}</b>`
-            : '-';
+          const resultado = (p.goles_local !== null && p.goles_visitante !== null) ? `<b>${p.goles_local} - ${p.goles_visitante}</b>` : '-';
           const estadoBadgeClass = p.estado === 'Finalizado' ? 'bg-success' : 'bg-info';
           const fila = `
             <tr>
@@ -165,78 +151,86 @@
     }
 
     /**
-     * FUNCIÓN MEJORADA PARA GENERAR Y MOSTRAR EL PDF
+     * FUNCIÓN MEJORADA PARA GENERAR UN PDF LIMPIO Y LEGIBLE
      */
     async function descargarTablaComoPdf() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF('p', 'mm', 'a4');
-      const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
-      const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.height;
+      const pageWidth = doc.internal.pageSize.getWidth();
 
-      // Función para cargar una imagen como Base64 (para incluirla en el PDF)
       const loadImageAsBase64 = async (url) => {
         try {
-          const response = await fetch(url);
-          const blob = await response.blob();
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
+            const response = await fetch(url);
+            if (!response.ok) return null;
+            const blob = await response.blob();
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
         } catch (error) {
-          console.error("No se pudo cargar el logo:", error);
-          return null; // Devuelve null si el logo no se encuentra
+            console.error("No se pudo cargar el logo:", error);
+            return null;
         }
       };
-
-      // Intenta cargar el logo. Asegúrate de que la ruta sea correcta.
-      // Por ejemplo: 'images/logo.png'
-      const logoBase64 = await loadImageAsBase64('images/logo.png');
+      
+      const logoBase64 = await loadImageAsBase64('images/logo.png'); // Asegúrate que esta ruta es correcta
       if (logoBase64) {
-        doc.addImage(logoBase64, 'PNG', 15, 10, 30, 30); // Dibuja el logo
+        doc.addImage(logoBase64, 'PNG', 15, 10, 30, 30);
       }
-
-      // Título del documento
+      
       doc.setFontSize(18);
-      doc.setTextColor(15, 37, 120); // Color azul oscuro
+      doc.setTextColor(15, 37, 120); // Azul oscuro
       doc.text("Calendario de Partidos", pageWidth / 2, 25, { align: 'center' });
       doc.setFontSize(12);
-      doc.setTextColor(100); // Color gris
+      doc.setTextColor(100);
       doc.text("Torneo Juvenil La Pradera", pageWidth / 2, 32, { align: 'center' });
 
-      // Generación de la tabla con AutoTable
       doc.autoTable({
         html: '#tablaCalendario',
         startY: 45,
         theme: 'grid',
+        // --- ESTILOS PARA LA CABECERA (AZUL Y BLANCO) ---
         headStyles: {
-          fillColor: [15, 37, 120], // Azul oscuro para la cabecera
+          fillColor: [15, 37, 120], // Azul oscuro
           textColor: [255, 255, 255], // Texto blanco
           fontStyle: 'bold',
-          fontSize: 10,
+          fontSize: 11, // Letra más grande
           halign: 'center'
         },
+        // --- ESTILOS PARA EL CUERPO (BLANCO Y GRIS OSCURO) ---
         bodyStyles: {
-          textColor: [40, 40, 40], // Texto oscuro para legibilidad
-          fontSize: 9
+          textColor: [40, 40, 40], // Texto gris oscuro para legibilidad
+          fontSize: 10, // Letra más grande
+          cellPadding: 3
         },
+        // Filas alternas para facilitar la lectura
         alternateRowStyles: {
-          fillColor: [240, 240, 240] // Un gris muy claro para filas alternas
+          fillColor: [245, 245, 245]
+        },
+        // --- ANCHO DE COLUMNAS PARA MEJOR DISTRIBUCIÓN ---
+        columnStyles: {
+          0: { cellWidth: 28 }, // Fecha
+          1: { cellWidth: 15 }, // Hora
+          2: { cellWidth: 'auto' }, // Local (espacio flexible)
+          3: { cellWidth: 'auto' }, // Visitante (espacio flexible)
+          4: { cellWidth: 22 }, // Resultado
+          5: { cellWidth: 22 }  // Estado
         },
         styles: {
           valign: 'middle',
           halign: 'center'
         },
-        didParseCell: function (data) {
-          // Asegurar que los resultados en negrita se vean bien
+        didParseCell: (data) => {
           if (data.cell.raw?.tagName === 'B') {
             data.cell.styles.fontStyle = 'bold';
           }
         }
       });
 
-      // Añadir pie de página con número
+      // --- PIE DE PÁGINA ---
       const pageCount = doc.internal.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
@@ -245,7 +239,6 @@
         doc.text(`Página ${i} de ${pageCount}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
       }
 
-      // Abrir el PDF en la misma pestaña
       window.open(doc.output('bloburl'), '_self');
     }
 
@@ -253,5 +246,4 @@
     document.addEventListener('DOMContentLoaded', cargarCalendario);
   </script>
 </body>
-
 </html>

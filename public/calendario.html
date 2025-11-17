@@ -1,21 +1,79 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Calendario - Torneo Juvenil La Pradera</title>
-  <link rel="stylesheet" href="style/style.css" />
+
+  <!-- Dependencias Externas (CDN) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Estilos Internos -->
+  <style>
+    :root {
+      --azul-primario: #0f2578;
+      --azul-secundario: #002B3C;
+      --azul-acento: #0082C9;
+      --texto-claro: #f0f8ff;
+    }
+
+    body {
+      background: linear-gradient(90deg, #002B3C 70%, #0082C9 100%);
+      min-height: 100vh;
+      color: var(--texto-claro);
+    }
+
+    .card-torneo {
+      background: rgba(15, 37, 120, 0.6);
+      border-radius: 12px;
+      padding: 2em;
+      margin-bottom: 1em;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(0, 130, 201, 0.3);
+    }
+
+    .table {
+      --bs-table-bg: transparent;
+      --bs-table-color: var(--texto-claro);
+      --bs-table-border-color: rgba(0, 130, 201, 0.3);
+      --bs-table-hover-bg: rgba(0, 130, 201, 0.1);
+      --bs-table-hover-color: var(--texto-claro);
+    }
+
+    .btn-primary {
+      background-color: var(--azul-acento);
+      border-color: var(--azul-acento);
+    }
+
+    .btn-primary:hover {
+      background-color: #006ca8;
+      border-color: #006ca8;
+    }
+
+    thead th {
+      color: var(--texto-claro);
+      font-weight: 600;
+    }
+  </style>
 </head>
+
 <body>
   <div id="nav-placeholder"></div>
 
   <main class="container" style="max-width:1240px;">
     <div class="card-torneo mt-4">
-      <h3 class="mb-3"><i class="fas fa-calendar-days"></i> Encuentros Recientes y Próximos</h3>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0"><i class="fas fa-calendar-days"></i> Encuentros del Torneo</h3>
+        <button id="btnDescargarPdf" class="btn btn-primary" disabled>
+          <i class="fas fa-file-pdf"></i> Descargar PDF
+        </button>
+      </div>
       <div class="table-responsive">
-        <table class="table align-middle text-center table-hover mb-0">
+        <table id="tablaCalendario" class="table align-middle text-center table-hover mb-0">
           <thead>
             <tr>
               <th>Fecha</th>
@@ -28,7 +86,11 @@
           </thead>
           <tbody id="tablaPartidos">
             <tr>
-              <td colspan="7" class="text-muted">Cargando partidos...</td>
+              <td colspan="6" class="text-center">
+                <div class="spinner-border text-light" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -37,11 +99,127 @@
   </main>
 
   <div id="footer-placeholder"></div>
+
+  <!-- Scripts de Bootstrap y Layout -->
   <script>
     fetch('layout/navbar.html').then(res => res.text()).then(html => { document.getElementById('nav-placeholder').innerHTML = html; });
     fetch('layout/footer.html').then(res => res.text()).then(html => { document.getElementById('footer-placeholder').innerHTML = html; });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="scripts/calendario.js"></script>
+
+  <!-- Lógica de la página y generación de PDF -->
+  <script type="module">
+    // Importamos el cliente de Supabase desde el CDN
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    // Configuración de Supabase
+    const supabaseUrl = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Referencias a elementos del DOM
+    const tablaPartidosBody = document.getElementById('tablaPartidos');
+    const btnDescargarPdf = document.getElementById('btnDescargarPdf');
+
+    // Función para cargar y mostrar los partidos
+    async function cargarCalendario() {
+      btnDescargarPdf.disabled = true; // Desactivamos el botón mientras se carga
+
+      try {
+        // Consultamos la vista que ya tienes creada
+        const { data: partidos, error } = await supabase
+          .from('vista_partidos_completa')
+          .select('*')
+          .order('fecha', { ascending: false }) // Ordenamos por fecha, los más recientes primero
+          .order('hora', { ascending: true });
+
+        if (error) throw error;
+
+        if (partidos.length === 0) {
+          tablaPartidosBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No hay partidos para mostrar.</td></tr>`;
+          return;
+        }
+
+        tablaPartidosBody.innerHTML = '';
+
+        partidos.forEach(p => {
+          const fecha = new Date(p.fecha).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+          const hora = p.hora ? p.hora.substring(0, 5) : '--:--';
+          const resultado = (p.goles_local !== null && p.goles_visitante !== null)
+            ? `<b>${p.goles_local} - ${p.goles_visitante}</b>`
+            : '-';
+
+          const estadoBadgeClass = p.estado === 'Finalizado' ? 'bg-success' : 'bg-info';
+
+          const fila = `
+            <tr>
+              <td>${fecha}</td>
+              <td>${hora}</td>
+              <td>${p.equipo_local_nombre}</td>
+              <td>${p.equipo_visitante_nombre}</td>
+              <td>${resultado}</td>
+              <td><span class="badge ${estadoBadgeClass}">${p.estado}</span></td>
+            </tr>
+          `;
+          tablaPartidosBody.innerHTML += fila;
+        });
+
+        btnDescargarPdf.disabled = false;
+
+      } catch (err) {
+        console.error("Error al cargar el calendario:", err);
+        tablaPartidosBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error al cargar los datos.</td></tr>`;
+      }
+    }
+
+    // Función para generar y mostrar el PDF
+    function descargarTablaComoPdf() {
+      // Usamos la variable global `jspdf` que fue cargada desde el CDN
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: 'portrait', // 'portrait' o 'landscape'
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      // Añadimos un título al documento
+      doc.setFontSize(16);
+      doc.text("Calendario de Partidos - Torneo Juvenil La Pradera", doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+      doc.setFontSize(10);
+      doc.text(`Generado el: ${new Date().toLocaleDateString('es-CO')}`, doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+
+      // Usamos el plugin autoTable para convertir la tabla HTML a PDF
+      doc.autoTable({
+        html: '#tablaCalendario',
+        startY: 25,
+        theme: 'grid',
+        styles: {
+          halign: 'center',
+          valign: 'middle',
+          fontSize: 8
+        },
+        headStyles: {
+          fillColor: [15, 37, 120], // Color azul oscuro para la cabecera
+          textColor: [255, 255, 255]
+        },
+        // Esto es para que el contenido HTML como `<b>` no se muestre como texto plano
+        didParseCell: function (data) {
+          if (data.cell.raw.tagName === 'B') {
+            data.cell.styles.fontStyle = 'bold';
+          }
+        }
+      });
+
+      // Abrimos el PDF en la misma pestaña
+      window.open(doc.output('bloburl'), '_self');
+    }
+
+    // Añadimos el listener al botón de descarga
+    btnDescargarPdf.addEventListener('click', descargarTablaComoPdf);
+
+    // Cargamos el calendario cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', cargarCalendario);
+  </script>
 </body>
+
 </html>

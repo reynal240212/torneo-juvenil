@@ -4,181 +4,130 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 let supabaseClient = null;
 
-// INICIALIZAR SUPABASE CUANDO EL DOCUMENTO ESTÉ LISTO
+// INICIAR AL CARGAR
 document.addEventListener('DOMContentLoaded', () => {
-  initializeSupabase();
-  attachFormListener();
+    initializeSupabase();
+    attachFormListener();
 });
 
-// FUNCIÓN: Inicializar cliente de Supabase
+// Inicializar
 function initializeSupabase() {
-  try {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    console.log('✅ Supabase inicializado correctamente');
-  } catch (error) {
-    console.error('❌ Error al inicializar Supabase:', error);
-    showError('Error en la configuración. Por favor, recargue la página.');
-  }
+    try {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        console.log('✅ Supabase inicializado');
+    } catch (error) {
+        console.error('❌ Error al inicializar Supabase:', error);
+        alert('Error interno. Recargue la página.');
+    }
 }
 
-// FUNCIÓN: Adjuntar listener al formulario
+// Listener formulario
 function attachFormListener() {
-  const loginForm = document.getElementById('loginForm');
-  if (loginForm) {
-    loginForm.addEventListener('submit', handleLogin);
-    console.log('✅ Formulario de login configurado');
-  } else {
-    console.error('❌ Formulario no encontrado');
-  }
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    }
 }
 
-// FUNCIÓN: Manejar envío del formulario
+// LOGIN PRINCIPAL
 async function handleLogin(e) {
-  e.preventDefault();
-  
-  // Obtener elementos del formulario
-  const usuarioInput = document.getElementById('usuario');
-  const passwordInput = document.getElementById('password');
-  const loginMsg = document.getElementById('loginMsg');
-  const loginBtn = document.getElementById('loginBtn');
-  const loadingSpinner = document.getElementById('loadingSpinner');
-  const btnText = document.getElementById('btnText');
-  
-  // Validar que los campos no estén vacíos
-  const usuario = usuarioInput.value.trim();
-  const password = passwordInput.value;
-  
-  if (!usuario || !password) {
-    showError(loginMsg, 'Por favor, completa todos los campos.');
-    return;
-  }
-  
-  // Deshabilitar interfaz durante el login
-  disableForm(loginBtn, loadingSpinner, btnText);
-  clearMessage(loginMsg);
-  
-  try {
-    console.log('🔄 Iniciando autenticación para usuario:', usuario);
-    
-    // PASO 1: Obtener usuario de la base de datos
-    const userData = await fetchUserFromDatabase(usuario);
-    if (!userData) {
-      throw new Error('Usuario no encontrado.');
+    e.preventDefault();
+
+    const usuarioInput = document.getElementById('usuario');
+    const passwordInput = document.getElementById('password');
+    const loginMsg = document.getElementById('loginMsg');
+    const loginBtn = document.getElementById('loginBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const btnText = document.getElementById('btnText');
+
+    const usuario = usuarioInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!usuario || !password) {
+        showError(loginMsg, 'Completa todos los campos.');
+        return;
     }
-    
-    console.log('✅ Usuario encontrado:', userData.usuario);
-    
-    // PASO 2: Verificar si el usuario está activo
-    if (userData.estado !== 'activo') {
-      throw new Error('Usuario inactivo. Contacte al administrador.');
+
+    disableForm(loginBtn, loadingSpinner, btnText);
+    clearMessage(loginMsg);
+
+    try {
+        console.log("🔐 Intentando login con Supabase Auth...");
+
+        // 1. Buscar correo por usuario (tu tabla)
+        const { data: userRow, error: userError } = await supabaseClient
+            .from('usuarios')
+            .select('email, rol, estado')
+            .eq('usuario', usuario)
+            .single();
+
+        if (userError || !userRow) {
+            throw new Error("Usuario no encontrado.");
+        }
+
+        if (userRow.estado !== "activo") {
+            throw new Error("Usuario inactivo. Contacte al administrador.");
+        }
+
+        // 2. Iniciar sesión nativa en Supabase Auth
+        const { data: authData, error: authError } =
+            await supabaseClient.auth.signInWithPassword({
+                email: userRow.email,
+                password: password
+            });
+
+        if (authError) {
+            console.error(authError);
+            throw new Error("Usuario o contraseña incorrectos.");
+        }
+
+        // 3. Guardar sesión
+        localStorage.setItem("usuario_admin", usuario);
+        localStorage.setItem("email_admin", userRow.email);
+        localStorage.setItem("rol", userRow.rol);
+        localStorage.setItem("login_timestamp", new Date().toISOString());
+
+        showSuccess(loginMsg, 'Acceso correcto. Redirigiendo...');
+
+        setTimeout(() => {
+            window.location.href = "administracion.html";
+        }, 1200);
+
+    } catch (err) {
+        showError(loginMsg, err.message);
+    } finally {
+        enableForm(loginBtn, loadingSpinner, btnText);
     }
-    
-    console.log('✅ Usuario está activo');
-    
-    // PASO 3: Verificar la contraseña con bcrypt
-    const passwordValid = await verifyPassword(password, userData.password_hash);
-    if (!passwordValid) {
-      throw new Error('Usuario o contraseña incorrectos.');
-    }
-    
-    console.log('✅ Contraseña válida');
-    
-    // PASO 4: Guardar datos en localStorage
-    saveUserSession(userData);
-    console.log('✅ Sesión guardada');
-    
-    // PASO 5: Mostrar mensaje de éxito y redirigir
-    showSuccess(loginMsg, 'Acceso concedido. Redirigiendo...');
-    setTimeout(() => {
-      window.location.href = 'administracion.html';
-    }, 1500);
-    
-  } catch (error) {
-    console.error('❌ Error en login:', error.message);
-    showError(loginMsg, error.message || 'Error al iniciar sesión.');
-  } finally {
-    // Re-habilitar interfaz
-    enableForm(loginBtn, loadingSpinner, btnText);
-  }
 }
 
-// FUNCIÓN: Obtener usuario de la base de datos
-async function fetchUserFromDatabase(usuario) {
-  try {
-    const { data, error } = await supabaseClient
-      .from('usuarios')
-      .select('id_usuario, usuario, email, rol, estado, password_hash')
-      .eq('usuario', usuario)
-      .single();
-    
-    if (error) {
-      console.error('Error en consulta a BD:', error);
-      return null;
-    }
-    
-    return data;
-  } catch (err) {
-    console.error('Excepción al obtener usuario:', err);
-    return null;
-  }
-}
-
-// FUNCIÓN: Verificar contraseña con bcrypt
-async function verifyPassword(password, hash) {
-  try {
-    // Usar bcrypt.compare para verificación de contraseña
-    const isValid = await bcrypt.compare(password, hash);
-    return isValid;
-  } catch (error) {
-    console.error('Error al comparar contraseña:', error);
-    throw new Error('Error al verificar la contraseña.');
-  }
-}
-
-// FUNCIÓN: Guardar sesión del usuario
-function saveUserSession(userData) {
-  localStorage.setItem('usuario_admin', userData.usuario);
-  localStorage.setItem('email_admin', userData.email);
-  localStorage.setItem('rol', userData.rol);
-  localStorage.setItem('id_usuario', userData.id_usuario);
-  localStorage.setItem('login_timestamp', new Date().toISOString());
-}
-
-// FUNCIÓN: Mostrar mensaje de error
+// ERRORES / UI
 function showError(msgElement, message) {
-  msgElement.classList.remove('alert-success');
-  msgElement.classList.add('alert-danger', 'active');
-  msgElement.textContent = message;
-  msgElement.style.color = '#dc3545';
+    msgElement.classList.add('active');
+    msgElement.textContent = message;
+    msgElement.style.color = "#dc3545";
 }
 
-// FUNCIÓN: Mostrar mensaje de éxito
 function showSuccess(msgElement, message) {
-  msgElement.classList.remove('alert-danger');
-  msgElement.classList.add('alert-success', 'active');
-  msgElement.textContent = message;
-  msgElement.style.color = '#28a745';
+    msgElement.classList.add('active');
+    msgElement.textContent = message;
+    msgElement.style.color = "#28a745";
 }
 
-// FUNCIÓN: Limpiar mensaje
 function clearMessage(msgElement) {
-  msgElement.classList.remove('active', 'alert-danger', 'alert-success');
-  msgElement.textContent = '';
+    msgElement.classList.remove('active');
+    msgElement.textContent = "";
 }
 
-// FUNCIÓN: Deshabilitar formulario durante la autenticación
 function disableForm(btn, spinner, btnText) {
-  btn.disabled = true;
-  spinner.style.display = 'inline-block';
-  btnText.textContent = 'Verificando...';
+    btn.disabled = true;
+    spinner.style.display = "inline-block";
+    btnText.textContent = "Verificando...";
 }
 
-// FUNCIÓN: Re-habilitar formulario después de la autenticación
 function enableForm(btn, spinner, btnText) {
-  btn.disabled = false;
-  spinner.style.display = 'none';
-  btnText.textContent = 'Entrar';
+    btn.disabled = false;
+    spinner.style.display = "none";
+    btnText.textContent = "Entrar";
 }
 
-// LOG: Indicar que el script está cargado
-console.log('✅ login.js cargado correctamente');
+console.log("✅ login.js cargado");

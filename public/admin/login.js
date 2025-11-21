@@ -1,187 +1,184 @@
-// ========================================
-// LOGIN.JS - Autenticacion Nativa Supabase
-// ========================================
-
-// Configuracion de Supabase
+// CONFIGURACIÓN DE SUPABASE
 const SUPABASE_URL = 'https://cwlvpzossqmpuzdpjrsh.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwemo3b3NzcXRpZHdqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzcwMzQ0NzIsImV4cCI6MTk5MzAwNDQ3Mn0.qQsEfCe8Qi23u0_T-IIqZS5Ej4JVVP4gvNHrq0-0Zb4';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go';
 
 let supabaseClient = null;
 
-// Inicializar Supabase
-function initSupabase() {
-  console.log('Inicializando Supabase...');
+// INICIALIZAR SUPABASE CUANDO EL DOCUMENTO ESTÉ LISTO
+document.addEventListener('DOMContentLoaded', () => {
+  initializeSupabase();
+  attachFormListener();
+});
+
+// FUNCIÓN: Inicializar cliente de Supabase
+function initializeSupabase() {
   try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    console.log('Supabase inicializado correctamente');
+    console.log('✅ Supabase inicializado correctamente');
   } catch (error) {
-    console.error('Error al inicializar Supabase:', error);
-    showError('Error al inicializar el sistema de autenticacion');
+    console.error('❌ Error al inicializar Supabase:', error);
+    showError('Error en la configuración. Por favor, recargue la página.');
   }
 }
 
-// Esperar a que el DOM este listo
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM cargado');
-  initSupabase();
-  
+// FUNCIÓN: Adjuntar listener al formulario
+function attachFormListener() {
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
-    loginForm.onsubmit = handleLogin;
+    loginForm.addEventListener('submit', handleLogin);
+    console.log('✅ Formulario de login configurado');
   } else {
-    console.error('No se encontro el formulario con id loginForm');
+    console.error('❌ Formulario no encontrado');
   }
-});
+}
 
-// Manejador principal de login
+// FUNCIÓN: Manejar envío del formulario
 async function handleLogin(e) {
   e.preventDefault();
   
-  const usuario = document.getElementById('usuario')?.value?.trim();
-  const password = document.getElementById('password')?.value;
+  // Obtener elementos del formulario
+  const usuarioInput = document.getElementById('usuario');
+  const passwordInput = document.getElementById('password');
+  const loginMsg = document.getElementById('loginMsg');
   const loginBtn = document.getElementById('loginBtn');
   const loadingSpinner = document.getElementById('loadingSpinner');
   const btnText = document.getElementById('btnText');
   
-  // Validaciones
+  // Validar que los campos no estén vacíos
+  const usuario = usuarioInput.value.trim();
+  const password = passwordInput.value;
+  
   if (!usuario || !password) {
-    showError('Por favor completa todos los campos');
+    showError(loginMsg, 'Por favor, completa todos los campos.');
     return;
   }
   
+  // Deshabilitar interfaz durante el login
+  disableForm(loginBtn, loadingSpinner, btnText);
+  clearMessage(loginMsg);
+  
   try {
-    // Mostrar estado de carga
-    disableForm(loginBtn, loadingSpinner, btnText);
-    clearMessage();
+    console.log('🔄 Iniciando autenticación para usuario:', usuario);
     
-    console.log('Buscando usuario:', usuario);
-    
-    // PASO 1: Buscar el usuario en la tabla public.usuarios
-    const { data: usuarioData, error: searchError } = await supabaseClient
-      .from('usuarios')
-      .select('id, email, estado, rol, nombre_completo')
-      .eq('usuario', usuario)
-      .single();
-    
-    if (searchError || !usuarioData) {
-      console.error('Usuario no encontrado:', searchError?.message);
-      throw new Error('Usuario no encontrado');
+    // PASO 1: Obtener usuario de la base de datos
+    const userData = await fetchUserFromDatabase(usuario);
+    if (!userData) {
+      throw new Error('Usuario no encontrado.');
     }
     
-    console.log('Usuario encontrado:', usuarioData.usuario);
+    console.log('✅ Usuario encontrado:', userData.usuario);
     
-    // PASO 2: Verificar si el usuario esta activo
-    if (!usuarioData.estado) {
-      console.warn('Usuario inactivo:', usuario);
-      throw new Error('Usuario inactivo. Contacta al administrador.');
+    // PASO 2: Verificar si el usuario está activo
+    if (userData.estado !== 'activo') {
+      throw new Error('Usuario inactivo. Contacte al administrador.');
     }
     
-    console.log('Usuario activo');
+    console.log('✅ Usuario está activo');
     
-    // PASO 3: Autenticar con Supabase usando el email y contrasena
-    console.log('Autenticando con email:', usuarioData.email);
-    
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email: usuarioData.email,
-      password: password
-    });
-    
-    if (error) {
-      console.error('Error de autenticacion:', error.message);
-      throw new Error('Contrasena incorrecta');
+    // PASO 3: Verificar la contraseña con bcrypt
+    const passwordValid = await verifyPassword(password, userData.password_hash);
+    if (!passwordValid) {
+      throw new Error('Usuario o contraseña incorrectos.');
     }
     
-    console.log('Autenticacion exitosa:', data.user.id);
+    console.log('✅ Contraseña válida');
     
-    // PASO 4: Guardar sesion en localStorage
-    const sessionData = {
-      user_id: data.user.id,
-      email: data.user.email,
-      usuario: usuarioData.usuario,
-      rol: usuarioData.rol,
-      nombre_completo: usuarioData.nombre_completo,
-      login_time: new Date().toISOString()
-    };
+    // PASO 4: Guardar datos en localStorage
+    saveUserSession(userData);
+    console.log('✅ Sesión guardada');
     
-    localStorage.setItem('session', JSON.stringify(sessionData));
-    localStorage.setItem('supabase_session', JSON.stringify(data.session));
-    
-    console.log('Sesion guardada:', sessionData);
-    
-    // PASO 5: Mostrar mensaje de exito y redirigir
-    showSuccess('Acceso concedido Redirigiendo...');
-    console.log('Acceso exitoso. Redirigiendo a administracion...');
-    
-    // Redirigir despues de 1.5 segundos
+    // PASO 5: Mostrar mensaje de éxito y redirigir
+    showSuccess(loginMsg, 'Acceso concedido. Redirigiendo...');
     setTimeout(() => {
       window.location.href = 'administracion.html';
     }, 1500);
     
   } catch (error) {
-    console.error('Error en login:', error.message);
+    console.error('❌ Error en login:', error.message);
+    showError(loginMsg, error.message || 'Error al iniciar sesión.');
+  } finally {
+    // Re-habilitar interfaz
     enableForm(loginBtn, loadingSpinner, btnText);
-    showError(error.message || 'Ocurrio un error durante el login. Intenta de nuevo.');
   }
 }
 
-// ========================================
-// FUNCIONES DE UI
-// ========================================
-
-function showError(message) {
-  const loginMsg = document.getElementById('loginMsg');
-  if (!loginMsg) return;
-  
-  loginMsg.classList.remove('alert-success', 'active');
-  loginMsg.classList.add('alert-danger', 'active');
-  loginMsg.textContent = message;
-  loginMsg.style.color = '#dc3545';
-  
-  console.log('Error mostrado:', message);
+// FUNCIÓN: Obtener usuario de la base de datos
+async function fetchUserFromDatabase(usuario) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('usuarios')
+      .select('id_usuario, usuario, email, rol, estado, password_hash')
+      .eq('usuario', usuario)
+      .single();
+    
+    if (error) {
+      console.error('Error en consulta a BD:', error);
+      return null;
+    }
+    
+    return data;
+  } catch (err) {
+    console.error('Excepción al obtener usuario:', err);
+    return null;
+  }
 }
 
-function showSuccess(message) {
-  const loginMsg = document.getElementById('loginMsg');
-  if (!loginMsg) return;
-  
-  loginMsg.classList.remove('alert-danger', 'active');
-  loginMsg.classList.add('alert-success', 'active');
-  loginMsg.textContent = message;
-  loginMsg.style.color = '#28a745';
-  
-  console.log('Exito mostrado:', message);
+// FUNCIÓN: Verificar contraseña con bcrypt
+async function verifyPassword(password, hash) {
+  try {
+    // Usar bcrypt.compare para verificación de contraseña
+    const isValid = await bcrypt.compare(password, hash);
+    return isValid;
+  } catch (error) {
+    console.error('Error al comparar contraseña:', error);
+    throw new Error('Error al verificar la contraseña.');
+  }
 }
 
-function clearMessage() {
-  const loginMsg = document.getElementById('loginMsg');
-  if (!loginMsg) return;
-  
-  loginMsg.classList.remove('alert-danger', 'alert-success', 'active');
-  loginMsg.textContent = '';
+// FUNCIÓN: Guardar sesión del usuario
+function saveUserSession(userData) {
+  localStorage.setItem('usuario_admin', userData.usuario);
+  localStorage.setItem('email_admin', userData.email);
+  localStorage.setItem('rol', userData.rol);
+  localStorage.setItem('id_usuario', userData.id_usuario);
+  localStorage.setItem('login_timestamp', new Date().toISOString());
 }
 
+// FUNCIÓN: Mostrar mensaje de error
+function showError(msgElement, message) {
+  msgElement.classList.remove('alert-success');
+  msgElement.classList.add('alert-danger', 'active');
+  msgElement.textContent = message;
+  msgElement.style.color = '#dc3545';
+}
+
+// FUNCIÓN: Mostrar mensaje de éxito
+function showSuccess(msgElement, message) {
+  msgElement.classList.remove('alert-danger');
+  msgElement.classList.add('alert-success', 'active');
+  msgElement.textContent = message;
+  msgElement.style.color = '#28a745';
+}
+
+// FUNCIÓN: Limpiar mensaje
+function clearMessage(msgElement) {
+  msgElement.classList.remove('active', 'alert-danger', 'alert-success');
+  msgElement.textContent = '';
+}
+
+// FUNCIÓN: Deshabilitar formulario durante la autenticación
 function disableForm(btn, spinner, btnText) {
   btn.disabled = true;
   spinner.style.display = 'inline-block';
   btnText.textContent = 'Verificando...';
-  console.log('Formulario deshabilitado');
 }
 
+// FUNCIÓN: Re-habilitar formulario después de la autenticación
 function enableForm(btn, spinner, btnText) {
   btn.disabled = false;
   spinner.style.display = 'none';
   btnText.textContent = 'Entrar';
-  console.log('Formulario habilitado');
 }
 
-// Verificar sesion existente al cargar la pagina
-function checkExistingSession() {
-  const sessionData = localStorage.getItem('session');
-  if (sessionData) {
-    console.log('Sesion existente encontrada, redirigiendo...');
-    window.location.href = 'administracion.html';
-  }
-}
-
-// Ejecutar verificacion de sesion
-checkExistingSession();
+// LOG: Indicar que el script está cargado
+console.log('✅ login.js cargado correctamente');

@@ -39,12 +39,12 @@ function attachFormListener() {
 }
 
 // ===============================
-// LOGIN PRINCIPAL
+// LOGIN PRINCIPAL (POR EMAIL)
 // ===============================
 async function handleLogin(e) {
   e.preventDefault();
 
-  const usuario = document.getElementById("usuario").value.trim();
+  const email = document.getElementById("usuario").value.trim(); // ahora es email
   const password = document.getElementById("password").value.trim();
 
   const loginMsg = document.getElementById("loginMsg");
@@ -52,7 +52,7 @@ async function handleLogin(e) {
   const loadingSpinner = document.getElementById("loadingSpinner");
   const btnText = document.getElementById("btnText");
 
-  if (!usuario || !password) {
+  if (!email || !password) {
     showError(loginMsg, "Completa todos los campos.");
     return;
   }
@@ -61,26 +61,26 @@ async function handleLogin(e) {
   clearMessage(loginMsg);
 
   try {
-    console.log("🔍 Verificando usuario en tabla 'usuarios'...");
+    console.log("🔍 Buscando usuario en tabla 'usuarios'...");
 
-    // 1. Buscar usuario en tabla
+    // 1. Buscar por EMAIL en la tabla usuarios
     const { data: userRow, error: userError } = await supabaseClient
       .from("usuarios")
       .select("email, rol, estado")
-      .eq("usuario", usuario)
+      .eq("email", email)
       .single();
 
     if (userError || !userRow) {
-      throw new Error("Usuario no encontrado.");
+      throw new Error("Este correo no está registrado.");
     }
 
     if (!userRow.estado) {
-      throw new Error("Usuario inactivo. Contacte al administrador.");
+      throw new Error("Tu usuario está inactivo. Contacta al administrador.");
     }
 
-    console.log("🔐 Intentando iniciar sesión con Supabase Auth...");
+    console.log("🔐 Iniciando sesión con Supabase Auth...");
 
-    // 2. Autenticación en Supabase
+    // 2. Autenticación real usando Email + Password
     const { error: authError } = await supabaseClient.auth.signInWithPassword({
       email: userRow.email,
       password: password,
@@ -88,11 +88,10 @@ async function handleLogin(e) {
 
     if (authError) {
       console.error(authError);
-      throw new Error("Usuario o contraseña incorrectos.");
+      throw new Error("Correo o contraseña incorrectos.");
     }
 
-    // 3. Guardar sesión en localStorage
-    localStorage.setItem("usuario_admin", usuario);
+    // 3. Guardar sesión
     localStorage.setItem("email_admin", userRow.email);
     localStorage.setItem("rol", userRow.rol);
     localStorage.setItem("login_timestamp", new Date().toISOString());

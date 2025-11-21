@@ -3,33 +3,109 @@
 <head>
   <meta charset="UTF-8">
   <title>Panel Admin - Torneo Juvenil La Pradera</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f8f9fa;
+    }
+
+    .navbar-custom {
+      background: linear-gradient(90deg, #002B3C 70%, #0082C9 100%);
+    }
+
+    .navbar-brand {
+      font-size: 1.3rem;
+    }
+
+    h2 {
+      font-weight: 700;
+    }
+  </style>
 </head>
+
 <body>
-  <nav class="navbar navbar-expand-md navbar-dark" style="background: linear-gradient(90deg,#002B3C 70%,#0082C9 100%);">
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-md navbar-dark navbar-custom shadow-sm">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="#">Admin Torneo Juvenil</a>
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link fw-bold" href="jugadores.html">Jugadores</a></li>
-        <li class="nav-item"><a class="nav-link" href="equipos.html">Equipos</a></li>
-        <li class="nav-item"><a class="nav-link" href="goleadores.html">Goleadores</a></li>
-        <li class="nav-item"><a class="nav-link" href="partidos.html">Partidos</a></li>
-        <li class="nav-item"><a class="nav-link" href="posiciones.html">Posiciones</a></li>
-        <li class="nav-item"><a class="nav-link text-danger" href="#" onclick="logout()">Salir</a></li>
-      </ul>
+
+      <a class="navbar-brand fw-bold" href="administracion.html">
+        Admin Torneo Juvenil
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navAdmin">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navAdmin">
+        <ul class="navbar-nav ms-auto">
+
+          <li class="nav-item">
+            <a class="nav-link fw-bold" href="jugadores.html">Jugadores</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link fw-bold" href="equipos.html">Equipos</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link fw-bold" href="goleadores.html">Goleadores</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link fw-bold" href="partidos.html">Partidos</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link fw-bold" href="posiciones.html">Posiciones</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link text-danger fw-bold" style="cursor:pointer;" onclick="logout()">
+              Salir
+            </a>
+          </li>
+
+        </ul>
+      </div>
+
     </div>
   </nav>
+
+  <!-- CONTENIDO -->
   <div class="container py-5 text-center">
-    <h2 class="mb-4 text-primary">Bienvenido al Panel de Administración</h2>
-    <p><strong>Utiliza el menú para gestionar datos del torneo.</strong></p>
+    <h2 class="mb-3 text-primary">Bienvenido al Panel de Administración</h2>
+    <p class="text-secondary">
+      <strong>Utiliza el menú superior para gestionar toda la información del torneo.</strong>
+    </p>
   </div>
-  <!-- <script>
-    function logout(){
-      localStorage.removeItem('jwt_token');
-      window.location.href = 'login.html';
+
+  <!-- BOOTSTRAP -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- PROTECCIÓN Y LOGOUT -->
+  <script>
+    // Protección de ruta: si no hay sesión, redirige
+    if (!localStorage.getItem("usuario_admin")) {
+      window.location.href = "login.html";
     }
-    // (opcional: redirigir si no hay token)
-    if(!localStorage.getItem('jwt_token')) window.location.href = 'login.html';
-  </script> -->
+
+    // Cerrar sesión
+    function logout() {
+      localStorage.removeItem("usuario_admin");
+      localStorage.removeItem("email_admin");
+      localStorage.removeItem("rol");
+      localStorage.removeItem("login_timestamp");
+
+      window.location.href = "login.html";
+    }
+  </script>
+
 </body>
 </html>

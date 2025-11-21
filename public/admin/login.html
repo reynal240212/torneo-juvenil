@@ -154,6 +154,7 @@
                 // Puedes guardar info en localStorage si deseas
                 localStorage.setItem('usuario_admin', data.usuario);
                 localStorage.setItem('rol', data.rol);
+                 console.log('Login ok, redirigiendo...'); // <-- Agrega esto
                 window.location.href = 'home.html';
             }
         }

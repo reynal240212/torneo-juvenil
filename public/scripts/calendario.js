@@ -24,7 +24,7 @@ function obtenerClaseEstado(estado) {
 async function cargarPartidos() {
   // Usar la instancia de supabase importada
   const { data, error } = await supabase
-    .from("vista_resultados") // Asumo que 'vista_resultados' es una VIEW o FUNCTION
+    .from("vista_resultados") 
     .select("*")
     .order("fecha", { ascending: true })
     .order("hora", { ascending: true });

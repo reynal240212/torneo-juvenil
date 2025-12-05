@@ -1,9 +1,10 @@
 // Archivo: public/scripts/calendario.js
 
-// 🟢 CORREGIDO: Importar la instancia de supabase desde el archivo centralizado
+// Importar la instancia de supabase desde el archivo centralizado
 import { supabase } from "./supabaseClient.js"; 
 
 function obtenerClaseEstado(estado) {
+  // Personaliza según los estados que tienes en la BD
   switch (estado.toUpperCase()) {
     case "FINALIZADO":
       return "badge bg-success text-white";
@@ -23,7 +24,7 @@ function obtenerClaseEstado(estado) {
 async function cargarPartidos() {
   // Usar la instancia de supabase importada
   const { data, error } = await supabase
-    .from("vista_resultados") 
+    .from("vista_resultados") // Asumo que 'vista_resultados' es una VIEW o FUNCTION
     .select("*")
     .order("fecha", { ascending: true })
     .order("hora", { ascending: true });

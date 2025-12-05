@@ -1,231 +1,629 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta-name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Administración de Jugadores - Torneo Juvenil La Pradera</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link rel="icon" type="image/png" href="../images/EscudoTorneo.png">
+    <meta charset="UTF-8">
+    <meta-name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Torneo Juvenil La Pradera</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="icon" type="image/png" href="../images/EscudoTorneo.png">
 
-  <style>
-    :root {
-      --color-blue: #0082C9;
-      --color-cyan: #00B7DF;
-      --color-dark: #002B3C;
-      --color-light: #D5F6FC;
-    }
+    <!-- REUSANDO TUS ESTILOS -->
+    <style>
+        :root {
+            --color-blue: #0082C9;
+            --color-cyan: #00B7DF;
+            --color-dark: #002B3C;
+            --color-light: #D5F6FC;
+        }
 
-    body {
-      background: linear-gradient(120deg,#0082C9 22%,#00B7DF 70%,#D5F6FC 100%);
-      color: var(--color-dark);
-      font-family: 'Poppins','Roboto',sans-serif;
-    }
+        body {
+            /* Dejamos el fondo más simple para el cuerpo principal de la SPA */
+            background-color: #f8f9fa;
+            color: var(--color-dark);
+            font-family: 'Poppins','Roboto',sans-serif;
+        }
 
-    .navbar {
-      background: linear-gradient(90deg, #002B3C 70%, #0082C9 100%) !important;
-      border-bottom: 3px solid #00B7DF;
-    }
+        .navbar-custom {
+            background: linear-gradient(90deg, #002B3C 70%, #0082C9 100%) !important;
+            border-bottom: 3px solid #00B7DF;
+        }
 
-    .navbar-brand { color: #00B7DF !important; font-weight: 900; }
+        .navbar-brand { color: #00B7DF !important; font-weight: 900; }
+        
+        .nav-link.active {
+            color: var(--color-cyan) !important;
+            border-bottom: 2px solid var(--color-cyan);
+        }
 
-    .table-dark {
-      --bs-table-bg: var(--color-blue);
-      --bs-table-hover-bg: #45b3e6;
-      color: #fff;
-    }
+        .table-dark {
+            --bs-table-bg: var(--color-blue);
+            --bs-table-hover-bg: #45b3e6;
+            color: #fff;
+        }
 
-    .table-secondary { --bs-table-bg: #00B7DF; color: #fff !important; }
-    .table-secondary th { color: #fff; }
+        .table-secondary { --bs-table-bg: #00B7DF; color: #fff !important; }
+        .table-secondary th { color: #fff; }
 
-    .btn-admin, .btn-success, .btn-info {
-      background: var(--color-cyan)!important;
-      color: var(--color-dark)!important;
-      font-weight:700;
-    }
+        .btn-admin, .btn-success, .btn-info {
+            background: var(--color-cyan)!important;
+            color: var(--color-dark)!important;
+            font-weight:700;
+        }
 
-    .btn-admin:hover, .btn-success:hover, .btn-info:hover {
-      background: var(--color-blue)!important;
-      color: var(--color-light)!important;
-    }
+        .btn-admin:hover, .btn-success:hover, .btn-info:hover {
+            background: var(--color-blue)!important;
+            color: var(--color-light)!important;
+        }
 
-    form.d-flex input[type="search"], .form-select {
-      border: 2px solid #00B7DF;
-      border-radius: 8px;
-    }
-  </style>
+        /* Ocultar el contenido inicialmente para evitar parpadeo */
+        #content-area { opacity: 0; transition: opacity 0.3s; }
+        #content-area.loaded { opacity: 1; }
+    </style>
 </head>
 
 <body>
 
-  <!-- 🔐 PROTECCIÓN DE RUTA -->
-  <script>
-    const usuario = localStorage.getItem("usuario_admin");
-    const rol = localStorage.getItem("rol");
+    <!-- 🔐 PROTECCIÓN DE RUTA -->
+    <script>
+        const usuario = localStorage.getItem("email_admin");
+        const rol = localStorage.getItem("rol");
 
-    if (!usuario || !rol) {
-      window.location.href = "login.html";
-    }
-  </script>
+        if (!usuario || !rol) {
+            window.location.href = "login.html";
+        }
 
-  <nav class="navbar navbar-expand-lg navbar-dark shadow">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="../index.html">
-        <img src="../images/EscudoTorneo.png" alt="Logo Torneo" height="35" class="me-2">
-        Torneo Juvenil La Pradera - Admin Jugadores
-      </a>
-    </div>
-  </nav>
+        function logout() {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+    </script>
 
-  <div class="container mt-5 pt-4">
+    <!-- NAVBAR (Único y centralizado) -->
+    <nav class="navbar navbar-expand-md navbar-dark navbar-custom shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="administracion.html">
+                <img src="../images/EscudoTorneo.png" alt="Logo Torneo" height="35" class="me-2">
+                Admin Torneo Juvenil
+            </a>
 
-    <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Gestión de Jugadores</h2>
-
-    <!-- Busqueda -->
-    <form class="d-flex gap-2 mb-3 flex-wrap" id="busqueda-rapida-jugadores" autocomplete="off">
-      <select id="selectFiltroJugador" class="form-select" style="max-width:140px">
-        <option value="nombres">Nombre</option>
-        <option value="apellidos">Apellido</option>
-        <option value="posicion">Posición</option>
-        <option value="numero_id">Doc</option>
-        <option value="estado">Estado</option>
-      </select>
-
-      <input type="search" class="form-control" id="inputFiltroJugador" placeholder="Buscar...">
-
-      <select id="selectEquipoJugador" class="form-select" style="max-width:170px">
-        <option value="">Todos los equipos</option>
-      </select>
-
-      <button class="btn btn-admin" type="submit"><i class="bi bi-search"></i> Filtrar</button>
-      <button class="btn btn-info" type="button" id="btnMostrarTodos">Mostrar Todos</button>
-    </form>
-
-    <!-- Tabla -->
-    <div class="table-responsive">
-      <table class="table table-dark table-hover align-middle text-center shadow" id="tablaJugadores">
-        <thead class="table-secondary">
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Tipo</th>
-            <th>Doc</th>
-            <th># Camiseta</th>
-            <th>Posición</th>
-            <th>Equipo</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-
-    <div id="msgJugadores" class="alert alert-info mt-3" style="display:none;">
-      Haz una búsqueda o pulsa "Mostrar Todos" para ver jugadores.
-    </div>
-  </div>
-
-  <script>
-    const API_JUGADORES = "http://localhost:3000/api/jugadores";
-    const API_EQUIPOS = "http://localhost:3000/api/equipos";
-
-    // Cargar equipos
-    async function cargarEquipos() {
-      const res = await fetch(API_EQUIPOS);
-      const data = await res.json();
-      const select = document.getElementById("selectEquipoJugador");
-
-      data.forEach(eq => {
-        const option = document.createElement("option");
-        option.value = eq.id_equipo;
-        option.textContent = eq.nombre;
-        select.appendChild(option);
-      });
-    }
-
-    // Render tabla
-    function renderJugadores(jugadores) {
-      const cuerpo = document.querySelector("#tablaJugadores tbody");
-      cuerpo.innerHTML = "";
-
-      if (jugadores.length === 0) {
-        document.getElementById("msgJugadores").style.display = "";
-        return;
-      }
-
-      document.getElementById("msgJugadores").style.display = "none";
-
-      jugadores.forEach(j => {
-        cuerpo.innerHTML += `
-        <tr>
-          <td>${j.id_jugador}</td>
-          <td>${j.nombres}</td>
-          <td>${j.apellidos}</td>
-          <td>${j.tipo_id || ""}</td>
-          <td>${j.numero_id || ""}</td>
-          <td>${j.numero_camiseta || ""}</td>
-          <td>${j.posicion || ""}</td>
-          <td>${j.equipo_nombre || j.equipo || ""}</td>
-          <td>
-            <span class="badge ${j.estado === 'Activo' ? 'bg-success' : 'bg-danger'}">${j.estado}</span>
-          </td>
-          <td>
-            <button class="btn btn-warning btn-sm">
-              <i class="bi bi-pencil-fill"></i>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navAdmin">
+                <span class="navbar-toggler-icon"></span>
             </button>
-          </td>
-        </tr>`;
-      });
-    }
 
-    // Cargar jugadores
-    async function cargarJugadores(filtro = "", valor = "", id_equipo = "") {
-      let url = API_JUGADORES;
-      let params = [];
+            <div class="collapse navbar-collapse" id="navAdmin">
+                <ul class="navbar-nav ms-auto" id="admin-nav-links">
+                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="dashboard">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="jugadores">Jugadores</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="equipos">Equipos</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="partidos">Partidos</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="goleadores">Goleadores</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="posiciones">Posiciones</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger fw-bold" style="cursor:pointer;" onclick="logout()">
+                            <i class="bi bi-box-arrow-right"></i> Salir
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-      if (filtro && valor)
-        params.push(`filtro=${filtro}&valor=${encodeURIComponent(valor)}`);
+    <!-- CONTENIDO DINÁMICO -->
+    <div class="container py-5 pt-4" id="content-area">
+        <!-- El contenido de la vista seleccionada se cargará aquí -->
+    </div>
 
-      if (id_equipo)
-        params.push(`id_equipo=${id_equipo}`);
+    <!-- ============================================== -->
+    <!-- MODAL ÚNICO PARA OPERACIONES CRUD (EQUIPOS/JUGADORES) -->
+    <!-- Se actualiza con JS antes de mostrarse. -->
+    <!-- ============================================== -->
+    <div class="modal fade" id="crudModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crudModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="crudModalBody">
+                    <!-- Formulario de Equipo o Jugador se insertará aquí -->
+                </div>
+                <!-- El botón de submit debe estar dentro del formulario en el body -->
+            </div>
+        </div>
+    </div>
 
-      if (params.length)
-        url += "?" + params.join("&");
 
-      const res = await fetch(url);
-      const data = await res.json();
-      renderJugadores(data);
-    }
+    <!-- BOOTSTRAP -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    // Eventos
-    document.addEventListener("DOMContentLoaded", () => {
-      cargarEquipos();
-      document.getElementById("msgJugadores").style.display = "";
-    });
+    <!-- LÓGICA DE LA SPA -->
+    <script>
+        const API_BASE = "http://localhost:3000/api";
+        const contentArea = document.getElementById('content-area');
+        const crudModal = new bootstrap.Modal(document.getElementById('crudModal'));
+        const navLinks = document.querySelectorAll('#admin-nav-links .nav-link');
+        let currentView = 'dashboard';
+        const teamsCache = []; // Para almacenar equipos y usarlos en la vista Jugadores
 
-    document.getElementById("busqueda-rapida-jugadores").addEventListener("submit", e => {
-      e.preventDefault();
+        document.addEventListener('DOMContentLoaded', () => {
+            // Manejador de navegación
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const view = e.target.getAttribute('data-view');
+                    if (view) {
+                        loadView(view);
+                    }
+                });
+            });
 
-      const filtro = document.getElementById("selectFiltroJugador").value;
-      const valor = document.getElementById("inputFiltroJugador").value.trim();
-      const id_equipo = document.getElementById("selectEquipoJugador").value;
+            // Cargar la vista por defecto
+            loadView('dashboard');
+        });
 
-      if (valor || id_equipo)
-        cargarJugadores(filtro, valor, id_equipo);
-    });
+        // ===============================
+        // LÓGICA DE VISTAS
+        // ===============================
 
-    document.getElementById("btnMostrarTodos").addEventListener("click", () => {
-      document.getElementById("msgJugadores").style.display = "none";
-      cargarJugadores();
-    });
+        function loadView(viewName) {
+            currentView = viewName;
+            contentArea.classList.remove('loaded');
+            
+            // Marcar el enlace activo
+            navLinks.forEach(l => l.classList.remove('active'));
+            document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
 
-    document.getElementById("selectEquipoJugador").addEventListener("change", function() {
-      if (this.value)
-        cargarJugadores("", "", this.value);
-    });
-  </script>
+            contentArea.innerHTML = `<h2 class="fw-bold mb-3 text-center" style="color:var(--color-blue)">Cargando ${viewName.toUpperCase()}...</h2>`;
+            
+            switch (viewName) {
+                case 'dashboard':
+                    renderDashboard();
+                    break;
+                case 'equipos':
+                    renderEquiposView();
+                    break;
+                case 'jugadores':
+                    renderJugadoresView();
+                    break;
+                // Agrega más casos aquí
+                default:
+                    contentArea.innerHTML = `<h2 class="mt-4 text-danger">Vista "${viewName}" no implementada.</h2>`;
+            }
+            // Mostrar contenido después de una pequeña espera para la animación
+            setTimeout(() => contentArea.classList.add('loaded'), 50);
+        }
+        
+        // Vistas
+        function renderDashboard() {
+            contentArea.innerHTML = `
+                <h2 class="fw-bold mb-3 text-center" style="color:var(--color-blue)">Bienvenido al Panel de Administración</h2>
+                <div class="row text-center mt-5">
+                    <div class="col-md-4">
+                        <div class="card shadow p-3 bg-light">
+                            <h3>Total Equipos</h3>
+                            <p class="fs-1 fw-bold text-primary" id="stat-equipos">...</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow p-3 bg-light">
+                            <h3>Total Jugadores</h3>
+                            <p class="fs-1 fw-bold text-success" id="stat-jugadores">...</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow p-3 bg-light">
+                            <h3>Partidos Jugados</h3>
+                            <p class="fs-1 fw-bold text-info" id="stat-partidos">...</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            // Lógica para cargar stats iría aquí
+        }
+
+        // ===============================
+        // MÓDULO EQUIPOS
+        // ===============================
+
+        async function renderEquiposView() {
+            contentArea.innerHTML = `
+                <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Gestión de Equipos</h2>
+                <div class="d-flex justify-content-end mb-3">
+                    <button class="btn btn-success btn-admin" id="btnAgregarEquipo">
+                        <i class="bi bi-plus-circle"></i> Agregar Equipo
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle text-center shadow" id="tablaEquipos">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>ID</th>
+                                <th>Logo</th>
+                                <th>Nombre del Equipo</th>
+                                <th>Delegado</th>
+                                <th>Teléfono</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody><tr><td colspan="6">Cargando equipos...</td></tr></tbody>
+                    </table>
+                </div>
+            `;
+            document.getElementById('btnAgregarEquipo').addEventListener('click', () => prepararCrud('equipo'));
+            await cargarEquipos();
+        }
+
+        async function cargarEquipos() {
+            try {
+                const res = await fetch(`${API_BASE}/equipos`);
+                if (!res.ok) throw new Error("Error al cargar equipos.");
+                const data = await res.json();
+                
+                // Actualizar caché para otras vistas (Jugadores)
+                teamsCache.splice(0, teamsCache.length, ...data); 
+
+                const cuerpo = document.querySelector("#tablaEquipos tbody");
+                cuerpo.innerHTML = "";
+                if (data.length === 0) {
+                    cuerpo.innerHTML = `<tr><td colspan="6">No hay equipos registrados.</td></tr>`;
+                    return;
+                }
+
+                data.forEach(eq => {
+                    const logo = eq.logo_url ? `<img src="${eq.logo_url}" alt="Logo" height="30" class="rounded-circle">` : '<i class="bi bi-shield-fill-exclamation" style="font-size: 1.5rem;"></i>';
+                    cuerpo.innerHTML += `
+                    <tr>
+                      <td>${eq.id_equipo}</td>
+                      <td>${logo}</td>
+                      <td class="text-start">${eq.nombre_equipo}</td>
+                      <td>${eq.delegado || "N/A"}</td>
+                      <td>${eq.telefono || "N/A"}</td>
+                      <td>
+                        <button class="btn btn-warning btn-sm" onclick="prepararCrud('equipo', ${eq.id_equipo}, '${eq.nombre_equipo}', '${eq.delegado || ''}', '${eq.telefono || ''}', '${eq.logo_url || ''}')">
+                          <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarEntidad('equipos', ${eq.id_equipo}, '${eq.nombre_equipo}')">
+                          <i class="bi bi-trash-fill"></i>
+                        </button>
+                      </td>
+                    </tr>`;
+                });
+            } catch (error) {
+                console.error("Error cargando equipos:", error);
+                document.querySelector("#tablaEquipos tbody").innerHTML = 
+                    `<tr><td colspan="6" class="text-danger">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // ===============================
+        // MÓDULO JUGADORES
+        // ===============================
+
+        async function renderJugadoresView() {
+            // Si la caché de equipos está vacía, la cargamos primero
+            if (teamsCache.length === 0) await cargarEquipos(); 
+
+            // Generar las opciones del select de equipo
+            const equipoOptions = teamsCache.map(eq => 
+                `<option value="${eq.id_equipo}">${eq.nombre_equipo}</option>`
+            ).join('');
+
+            contentArea.innerHTML = `
+                <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Gestión de Jugadores</h2>
+                
+                <!-- Busqueda y Filtro -->
+                <form class="d-flex gap-2 mb-3 flex-wrap" id="busqueda-rapida-jugadores" autocomplete="off">
+                    <select id="selectFiltroJugador" class="form-select" style="max-width:140px">
+                        <option value="nombres">Nombre</option>
+                        <option value="apellidos">Apellido</option>
+                        <option value="posicion">Posición</option>
+                        <option value="numero_id">Doc</option>
+                        <option value="estado">Estado</option>
+                    </select>
+                    <input type="search" class="form-control" id="inputFiltroJugador" placeholder="Buscar...">
+                    <select id="selectEquipoJugador" class="form-select" style="max-width:170px">
+                        <option value="">Todos los equipos</option>
+                        ${equipoOptions}
+                    </select>
+                    <button class="btn btn-admin" type="submit"><i class="bi bi-search"></i> Filtrar</button>
+                    <button class="btn btn-info" type="button" id="btnMostrarTodos"><i class="bi bi-list-columns-reverse"></i> Mostrar Todos</button>
+                    <button class="btn btn-success btn-admin ms-auto" type="button" id="btnAgregarJugador">
+                        <i class="bi bi-plus-circle"></i> Agregar Jugador
+                    </button>
+                </form>
+
+                <!-- Tabla -->
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle text-center shadow" id="tablaJugadores">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Equipo</th>
+                                <th># Camiseta</th>
+                                <th>Posición</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody><tr><td colspan="8">Haz una búsqueda o pulsa "Mostrar Todos" para ver jugadores.</td></tr></tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Reasignar eventos
+            document.getElementById("btnAgregarJugador").addEventListener('click', () => prepararCrud('jugador'));
+            document.getElementById("busqueda-rapida-jugadores").addEventListener("submit", handleFiltroJugador);
+            document.getElementById("btnMostrarTodos").addEventListener("click", () => cargarJugadores());
+            document.getElementById("selectEquipoJugador").addEventListener("change", handleFiltroJugador);
+
+            // Cargar jugadores automáticamente si ya habías cargado antes
+            if (document.querySelector("#tablaJugadores tbody").textContent !== 'Cargando jugadores...') {
+                 cargarJugadores();
+            }
+        }
+        
+        async function cargarJugadores(filtro = "", valor = "", id_equipo = "") {
+            let url = `${API_BASE}/jugadores`;
+            let params = [];
+
+            if (filtro && valor) params.push(`filtro=${filtro}&valor=${encodeURIComponent(valor)}`);
+            if (id_equipo) params.push(`id_equipo=${id_equipo}`);
+
+            if (params.length) url += "?" + params.join("&");
+
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Error al cargar jugadores.");
+                const data = await res.json();
+                renderJugadores(data);
+            } catch (error) {
+                console.error("Error cargando jugadores:", error);
+                document.querySelector("#tablaJugadores tbody").innerHTML = 
+                    `<tr><td colspan="8" class="text-danger">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        function handleFiltroJugador(e) {
+            e.preventDefault();
+            const filtro = document.getElementById("selectFiltroJugador")?.value || "";
+            const valor = document.getElementById("inputFiltroJugador")?.value.trim() || "";
+            const id_equipo = document.getElementById("selectEquipoJugador")?.value || "";
+
+            if (valor || id_equipo) cargarJugadores(filtro, valor, id_equipo);
+            else if (e.target.id === 'selectEquipoJugador') cargarJugadores("", "", id_equipo);
+        }
+
+        function renderJugadores(jugadores) {
+            const cuerpo = document.querySelector("#tablaJugadores tbody");
+            cuerpo.innerHTML = "";
+
+            if (jugadores.length === 0) {
+                cuerpo.innerHTML = `<tr><td colspan="8">No se encontraron jugadores.</td></tr>`;
+                return;
+            }
+
+            jugadores.forEach(j => {
+                const equipoNombre = teamsCache.find(t => t.id_equipo == j.id_equipo)?.nombre_equipo || 'Sin Equipo';
+                const editParams = JSON.stringify(j).replace(/'/g, "\\'"); // Escapar comillas para pasar el objeto
+                
+                cuerpo.innerHTML += `
+                <tr>
+                    <td>${j.id_jugador}</td>
+                    <td>${j.nombres}</td>
+                    <td>${j.apellidos}</td>
+                    <td>${equipoNombre}</td>
+                    <td>${j.numero_camiseta || "N/A"}</td>
+                    <td>${j.posicion || "N/A"}</td>
+                    <td>
+                        <span class="badge ${j.estado === 'Activo' ? 'bg-success' : 'bg-danger'}">${j.estado}</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="prepararCrud('jugador', ${editParams})">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarEntidad('jugadores', ${j.id_jugador}, '${j.nombres} ${j.apellidos}')">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        // ===============================
+        // LÓGICA CRUD ÚNICA (Compartida)
+        // ===============================
+
+        /**
+         * Prepara el modal con el formulario correcto (Equipo o Jugador)
+         */
+        function prepararCrud(tipo, ...params) {
+            const modalLabel = document.getElementById('crudModalLabel');
+            const modalBody = document.getElementById('crudModalBody');
+            
+            modalBody.innerHTML = '';
+            
+            if (tipo === 'equipo') {
+                const [id, nombre, delegado, telefono, logo] = params;
+                modalLabel.textContent = id ? `Editar Equipo: ${nombre}` : 'Agregar Nuevo Equipo';
+                modalBody.innerHTML = getEquipoForm(id, nombre, delegado, telefono, logo);
+                document.getElementById('equipoForm').addEventListener('submit', handleEquipoSubmit);
+            } else if (tipo === 'jugador') {
+                const jugador = params[0] || {}; // Puede ser un objeto vacío para crear
+                modalLabel.textContent = jugador.id_jugador ? `Editar Jugador: ${jugador.nombres}` : 'Agregar Nuevo Jugador';
+                modalBody.innerHTML = getJugadorForm(jugador);
+                document.getElementById('jugadorForm').addEventListener('submit', handleJugadorSubmit);
+            }
+
+            crudModal.show();
+        }
+
+        // --- FORMULARIOS HTML ---
+
+        function getEquipoForm(id = '', nombre = '', delegado = '', telefono = '', logo = '') {
+            return `
+            <form id="equipoForm">
+                <input type="hidden" id="equipo_id" value="${id}">
+                <div class="mb-3">
+                    <label for="nombre_equipo" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre_equipo" value="${nombre}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="delegado" class="form-label">Delegado</label>
+                    <input type="text" class="form-control" id="delegado" value="${delegado}">
+                </div>
+                <div class="mb-3">
+                    <label for="telefono" class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" id="telefono" value="${telefono}">
+                </div>
+                <div class="mb-3">
+                    <label for="logo_url" class="form-label">URL del Logo (Opcional)</label>
+                    <input type="url" class="form-control" id="logo_url" value="${logo}">
+                </div>
+                <button type="submit" class="btn btn-admin w-100">Guardar Equipo</button>
+            </form>`;
+        }
+
+        function getJugadorForm(j = {}) {
+            const equipoOptions = teamsCache.map(eq => 
+                `<option value="${eq.id_equipo}" ${j.id_equipo == eq.id_equipo ? 'selected' : ''}>${eq.nombre_equipo}</option>`
+            ).join('');
+
+            return `
+            <form id="jugadorForm">
+                <input type="hidden" id="jugador_id" value="${j.id_jugador || ''}">
+
+                <div class="mb-3">
+                    <label for="nombres" class="form-label">Nombres</label>
+                    <input type="text" class="form-control" id="nombres" value="${j.nombres || ''}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="apellidos" class="form-label">Apellidos</label>
+                    <input type="text" class="form-control" id="apellidos" value="${j.apellidos || ''}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_equipo_jugador" class="form-label">Equipo</label>
+                    <select class="form-select" id="id_equipo_jugador" required>
+                        <option value="">-- Seleccionar Equipo --</option>
+                        ${equipoOptions}
+                    </select>
+                </div>
+                
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label for="numero_camiseta" class="form-label"># Camiseta</label>
+                        <input type="number" class="form-control" id="numero_camiseta" value="${j.numero_camiseta || ''}">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="posicion" class="form-label">Posición</label>
+                        <input type="text" class="form-control" id="posicion" value="${j.posicion || ''}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="estado_jugador" class="form-label">Estado</label>
+                    <select class="form-select" id="estado_jugador" required>
+                        <option value="Activo" ${j.estado === 'Activo' ? 'selected' : ''}>Activo</option>
+                        <option value="Inactivo" ${j.estado === 'Inactivo' ? 'selected' : ''}>Inactivo</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-admin w-100">Guardar Jugador</button>
+            </form>`;
+        }
+
+        // --- MANEJADORES DE SUBMIT ---
+
+        async function handleEquipoSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('equipo_id').value;
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API_BASE}/equipos/${id}` : `${API_BASE}/equipos`;
+            
+            const equipoData = {
+                nombre_equipo: document.getElementById('nombre_equipo').value,
+                delegado: document.getElementById('delegado').value,
+                telefono: document.getElementById('telefono').value,
+                logo_url: document.getElementById('logo_url').value,
+            };
+
+            await crudOperation(url, method, equipoData, id, cargarEquipos);
+        }
+
+        async function handleJugadorSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('jugador_id').value;
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API_BASE}/jugadores/${id}` : `${API_BASE}/jugadores`;
+            
+            const jugadorData = {
+                id_equipo: document.getElementById('id_equipo_jugador').value,
+                nombres: document.getElementById('nombres').value,
+                apellidos: document.getElementById('apellidos').value,
+                numero_camiseta: document.getElementById('numero_camiseta').value || null,
+                posicion: document.getElementById('posicion').value,
+                estado: document.getElementById('estado_jugador').value,
+            };
+            
+            await crudOperation(url, method, jugadorData, id, () => cargarJugadores());
+        }
+
+        // --- FUNCIÓN CRUD GENÉRICA ---
+
+        async function crudOperation(url, method, data, id, successCallback) {
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!res.ok) {
+                    const errorDetails = await res.text();
+                    throw new Error(`Error en la operación: ${errorDetails}`);
+                }
+
+                alert(`${method === 'POST' ? 'Creado' : 'Actualizado'} correctamente.`);
+                crudModal.hide();
+                successCallback(); // Recargar la vista actual
+            } catch (error) {
+                console.error("Error CRUD:", error);
+                alert(`Hubo un error al guardar: ${error.message}`);
+            }
+        }
+
+        // --- FUNCIÓN ELIMINAR GENÉRICA ---
+
+        window.eliminarEntidad = async (entidad, id, nombre) => {
+            if (!confirm(`¿Estás seguro de eliminar "${nombre}" de ${entidad}? Esta acción es irreversible.`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/${entidad}/${id}`, { method: 'DELETE' });
+
+                if (!res.ok) {
+                     const errorDetails = await res.text();
+                     throw new Error(`Error al eliminar: ${errorDetails}`);
+                }
+
+                alert(`"${nombre}" eliminado correctamente.`);
+                // Recargar la vista dependiendo de la entidad actual
+                if (currentView === entidad) {
+                    if (entidad === 'equipos') cargarEquipos();
+                    if (entidad === 'jugadores') cargarJugadores();
+                }
+
+            } catch (error) {
+                console.error("Error al eliminar:", error);
+                alert(`No se pudo eliminar: ${error.message}. Asegúrate de que no tenga dependencias.`);
+            }
+        };
+
+    </script>
 
 </body>
 </html>

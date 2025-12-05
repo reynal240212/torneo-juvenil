@@ -8,22 +8,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="../images/EscudoTorneo.png">
 
-    <!-- ESTILOS UNIFICADOS Y DE LAYOUT PROFESIONAL -->
+    <!-- ESTILOS (Se mantienen) -->
     <style>
         :root {
-            --color-blue: #0082C9;
-            --color-cyan: #00B7DF;
-            --color-dark: #002B3C;
-            --color-light: #D5F6FC;
+            --color-blue: #0082C9; --color-cyan: #00B7DF; --color-dark: #002B3C; --color-light: #D5F6FC;
         }
 
-        body {
-            background-color: #f8f9fa;
-            color: var(--color-dark);
-            font-family: 'Poppins','Roboto',sans-serif;
-            overflow: hidden; 
-        }
-
+        body { background-color: #f8f9fa; color: var(--color-dark); font-family: 'Poppins','Roboto',sans-serif; overflow: hidden; }
         #page-container { min-height: 100vh; }
         #sidebar-wrapper {
             width: 250px; min-width: 250px; height: 100vh; position: fixed; background-color: var(--color-dark) !important;
@@ -50,7 +41,7 @@
 
 <body>
     
-    <!-- 🔐 PROTECCIÓN DE RUTA (Se mantiene en HTML) -->
+    <!-- 🔐 PROTECCIÓN DE RUTA -->
     <script>
         const usuario = localStorage.getItem("email_admin");
         const rol = localStorage.getItem("rol");

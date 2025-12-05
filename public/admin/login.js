@@ -11,6 +11,12 @@ let supabaseClient = null;
 // INICIAR AL CARGAR
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
+  // Opcional: Si ya hay sesión guardada y no ha expirado, redirigir directamente
+  if (localStorage.getItem("email_admin") && localStorage.getItem("rol")) {
+    window.location.href = "administracion.html";
+    return;
+  }
+  
   initializeSupabase();
   attachFormListener();
 });
@@ -44,7 +50,7 @@ function attachFormListener() {
 async function handleLogin(e) {
   e.preventDefault();
 
-  const email = document.getElementById("usuario").value.trim(); // ahora es email
+  const email = document.getElementById("usuario").value.trim();
   const password = document.getElementById("password").value.trim();
 
   const loginMsg = document.getElementById("loginMsg");
@@ -61,26 +67,24 @@ async function handleLogin(e) {
   clearMessage(loginMsg);
 
   try {
-    console.log("🔍 Buscando usuario en tabla 'usuarios'...");
-
-    // 1. Buscar por EMAIL en la tabla usuarios
+    // 1. Buscar por EMAIL en la tabla usuarios para obtener ROL y ESTADO
+    // NOTA: Se requiere configurar RLS para que el rol 'anon' pueda leer esta tabla
     const { data: userRow, error: userError } = await supabaseClient
       .from("usuarios")
-      .select("email, rol, estado")
+      .select("id, email, rol, estado")
       .eq("email", email)
       .single();
 
     if (userError || !userRow) {
-      throw new Error("Este correo no está registrado.");
+      // Si hay error (406, 404) o no encuentra la fila, el usuario no existe.
+      throw new Error("Credenciales incorrectas o usuario no registrado.");
     }
 
     if (!userRow.estado) {
       throw new Error("Tu usuario está inactivo. Contacta al administrador.");
     }
 
-    console.log("🔐 Iniciando sesión con Supabase Auth...");
-
-    // 2. Autenticación real usando Email + Password
+    // 2. Autenticación real usando Email + Password con Supabase Auth
     const { error: authError } = await supabaseClient.auth.signInWithPassword({
       email: userRow.email,
       password: password,
@@ -91,16 +95,18 @@ async function handleLogin(e) {
       throw new Error("Correo o contraseña incorrectos.");
     }
 
-    // 3. Guardar sesión
+    // 3. Guardar sesión y redirigir
+    localStorage.setItem("usuario_id", userRow.id); // Guardar el ID del usuario
     localStorage.setItem("email_admin", userRow.email);
     localStorage.setItem("rol", userRow.rol);
     localStorage.setItem("login_timestamp", new Date().toISOString());
 
     showSuccess(loginMsg, "Acceso correcto. Redirigiendo...");
 
+    // Redirección al panel de administración
     setTimeout(() => {
       window.location.href = "administracion.html";
-    }, 1200);
+    }, 800);
   } catch (err) {
     showError(loginMsg, err.message);
   } finally {

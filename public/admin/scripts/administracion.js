@@ -1,7 +1,7 @@
 // Archivo: public/admin/scripts/administracion.js
 
 // 1. IMPORTAR CLIENTE Y CONFIGURACIÓN CENTRALIZADA
-import { supabase, API_BASE, SUPABASE_KEY_EXPORT } from "../scripts/supabaseClient.js"; 
+import { supabase, API_BASE, SUPABASE_KEY_EXPORT } from "../../scripts/supabaseClient.js"; 
 // NOTA: Asegúrate de que 'supabaseClient.js' esté en la carpeta 'public/scripts/'
 
 // 2. VARIABLES GLOBALES

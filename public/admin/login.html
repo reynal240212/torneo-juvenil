@@ -16,6 +16,7 @@
             font-family: 'Poppins', Arial, sans-serif;
         }
 
+        /* La ruta de la imagen es correcta: "../images/Parque.png" */
         .bg-login-futbol {
             position: fixed;
             inset: 0;
@@ -61,7 +62,7 @@
             </div>
 
             <form id="loginForm">
-                <input type="text" id="usuario" class="form-control mb-3" placeholder="Usuario" required>
+                <input type="text" id="usuario" class="form-control mb-3" placeholder="Email o Usuario" required>
                 <input type="password" id="password" class="form-control mb-2" placeholder="Contraseña" required>
 
                 <button type="submit" id="loginBtn" class="btn btn-login-torneo w-100">
@@ -79,8 +80,8 @@
     <!-- SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- LOGIN JS -->
-    <script src="login.js"></script>
+    <!-- LOGIN JS: Se carga el script desde el mismo directorio -->
+    <script src="../admin/login.js"></script>
 
 </body>
 </html>

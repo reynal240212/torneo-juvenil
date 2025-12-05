@@ -1,8 +1,7 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+// Archivo: public/scripts/goleadores.js
 
-const supabaseUrl = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Usar la instancia de supabase centralizada
+import { supabase } from "./supabaseClient.js"; 
 
 async function cargarGoleadores() {
   const { data, error } = await supabase
@@ -12,6 +11,8 @@ async function cargarGoleadores() {
 
   // Renderiza top 3 en cards arriba
   const topDiv = document.getElementById('topGoleadores');
+  if (!topDiv) return; // Salir si el elemento no existe
+
   topDiv.innerHTML = "";
   if (data && data.length > 0) {
     data.slice(0, 3).forEach((j, idx) => {
@@ -35,32 +36,33 @@ async function cargarGoleadores() {
   }
 
   // Renderiza la tabla
-const tbody = document.getElementById("tablaGoleadores");
-tbody.innerHTML = "";
+  const tbody = document.getElementById("tablaGoleadores");
+  if (!tbody) return; // Salir si el elemento no existe
 
-if (error || !data) {
-  tbody.innerHTML = `<tr><td colspan="4" class="text-danger">Error al cargar goleadores.</td></tr>`;
-  return;
-}
+  tbody.innerHTML = "";
 
-// Filtrar jugadores con goles > 0
-const goleadores = data.filter(p => p.goles > 0);
+  if (error || !data) {
+    tbody.innerHTML = `<tr><td colspan="4" class="text-danger">Error al cargar goleadores.</td></tr>`;
+    return;
+  }
 
-if (goleadores.length === 0) {
-  tbody.innerHTML = `<tr><td colspan="4" class="text-muted">No hay jugadores con goles registrados.</td></tr>`;
-  return;
-}
+  // Filtrar jugadores con goles > 0
+  const goleadores = data.filter(p => p.goles > 0);
 
-goleadores.forEach((p, idx) => {
-  tbody.innerHTML += `
-    <tr>
-      <td>${idx + 1}</td>
-      <td>${p.jugador}</td>
-      <td>${p.equipo}</td>
-      <td class="fw-bold">${p.goles}</td>
-    </tr>
-  `;
-});
+  if (goleadores.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" class="text-muted">No hay jugadores con goles registrados.</td></tr>`;
+    return;
+  }
 
+  goleadores.forEach((p, idx) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${idx + 1}</td>
+        <td>${p.jugador}</td>
+        <td>${p.equipo}</td>
+        <td class="fw-bold">${p.goles}</td>
+      </tr>
+    `;
+  });
 }
 document.addEventListener("DOMContentLoaded", cargarGoleadores);

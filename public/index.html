@@ -148,6 +148,7 @@
   </main>
   <div id="footer-placeholder"></div>
   <script>
+    // Carga de Layouts (Se asume que esta lógica es para el navbar, hero y footer)
     Promise.all([
       fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; }),
       fetch('layout/hero.html').then(r => r.text()).then(h => { document.getElementById('hero-placeholder').innerHTML = h; }),
@@ -155,8 +156,7 @@
     ]).catch(console.error);
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="scripts/posiciones.js"></script>
-  <script type="module" src="scripts/calendario.js"></script>
+  
+  <script type="module" src="scripts/script.js"></script> 
 </body>
-
 </html>

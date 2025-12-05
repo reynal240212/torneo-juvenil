@@ -1,10 +1,7 @@
 // Archivo: scripts/jugadores.js
 
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
-const supabaseUrl = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Usar la instancia de supabase centralizada
+import { supabase } from "./supabaseClient.js"; 
 
 // Referencias a los elementos del DOM
 const equipoSelect = document.getElementById("equipoSelect");
@@ -116,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (playerModal) {
     playerModal.addEventListener('show.bs.modal', function (event) {
       const card = event.relatedTarget; // Obtenemos la carta en la que se hizo clic
+      // Usamos el Map para asegurar que el ID es un número entero para la búsqueda
       const playerId = parseInt(card.dataset.playerId, 10); // Extraemos el ID
       const jugador = jugadoresMap.get(playerId); // Buscamos los datos del jugador
 

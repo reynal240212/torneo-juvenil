@@ -4,8 +4,7 @@
 // RUTA CORREGIDA: Sube de /admin/scripts/ a /admin/, luego sale a /public/, luego entra a /scripts/
 import { supabase, API_BASE, SUPABASE_KEY_EXPORT } from "../../scripts/supabaseClient.js"; 
 
-// 2. VARIABLES GLOBALES (Y el resto de tu código JS)
-
+// 2. VARIABLES GLOBALES
 const contentArea = document.getElementById('content-area');
 const crudModal = new bootstrap.Modal(document.getElementById('crudModal'));
 const navLinks = document.querySelectorAll('#admin-nav-links a'); 
@@ -618,11 +617,11 @@ async function renderPosicionesView() {
                     </tr>
                 </thead>
                 <tbody><tr><td colspan="10">Cargando tabla de posiciones...</td></tr></tbody>
-                    </table>
-                </div>
-            `;
-            await cargarPosiciones();
-        }
+            </table>
+        </div>
+    `;
+    await cargarPosiciones();
+}
 
 async function cargarPosiciones() {
      try {
@@ -909,7 +908,7 @@ async function handleUsuarioSubmit(e) {
             }, null, cargarUsuarios);
             
             alert('Usuario creado y registrado en la base de datos.');
-            crudModal.hide();
+            if (crudModal._isShown) crudModal.hide();
             return;
 
         } catch (error) {
@@ -1008,7 +1007,7 @@ window.eliminarEntidad = async (entidad, id, nombre) => {
 };
 
 // --- Módulos auxiliares de formularios (necesitan estar en el ámbito global del módulo) ---
-
+// NOTA: Se definen fuera de la función de manejo de DOMContentLoaded
 function getEquipoForm(id = '', nombre = '', delegado = '', telefono = '', logo = '') {
     return `
     <form id="equipoForm">

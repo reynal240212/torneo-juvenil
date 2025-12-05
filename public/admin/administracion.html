@@ -8,9 +8,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="../images/EscudoTorneo.png">
 
-    <!-- ESTILOS UNIFICADOS -->
+    <!-- ESTILOS UNIFICADOS Y DE LAYOUT PROFESIONAL -->
     <style>
-        /* ... (Tu código CSS se mantiene intacto) ... */
         :root {
             --color-blue: #0082C9;
             --color-cyan: #00B7DF;
@@ -22,96 +21,137 @@
             background-color: #f8f9fa;
             color: var(--color-dark);
             font-family: 'Poppins','Roboto',sans-serif;
+            overflow: hidden; /* Controla el scroll globalmente */
         }
 
+        /* --- LAYOUT DEL PANEL (Sidebar + Content) --- */
+        #page-container {
+            min-height: 100vh;
+        }
+
+        #sidebar-wrapper {
+            width: 250px;
+            min-width: 250px;
+            height: 100vh;
+            position: fixed; /* Sidebar fijo */
+            background-color: var(--color-dark) !important;
+            padding-top: 20px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        #sidebar-wrapper .list-group-item {
+            color: #ccc;
+            background-color: transparent !important;
+            border: none;
+            padding-left: 30px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        #sidebar-wrapper .list-group-item:hover {
+            color: #fff;
+            background-color: #1a1a1a !important;
+        }
+        #sidebar-wrapper .list-group-item.active {
+            color: var(--color-cyan) !important;
+            border-left: 4px solid var(--color-cyan);
+            background-color: #1a1a1a !important;
+        }
+
+
+        /* --- CONTENIDO PRINCIPAL (Nav + Main) --- */
+        #main-wrapper {
+            margin-left: 250px; /* Compensar el ancho del sidebar */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- NAVBAR TOP --- */
         .navbar-custom {
             background: linear-gradient(90deg, #002B3C 70%, #0082C9 100%) !important;
-            border-bottom: 3px solid #00B7DF;
+            border-bottom: 3px solid var(--color-cyan);
+            z-index: 999;
         }
 
         .navbar-brand { color: var(--color-cyan) !important; font-weight: 900; }
         
-        .nav-link.active {
-            color: var(--color-cyan) !important;
-            border-bottom: 2px solid var(--color-cyan);
-        }
-
-        .table-dark {
-            --bs-table-bg: var(--color-blue);
-            --bs-table-hover-bg: #45b3e6;
-            color: #fff;
-        }
-
-        .table-secondary { --bs-table-bg: var(--color-cyan); color: #fff !important; }
-        .table-secondary th { color: #fff; }
-
-        .btn-admin, .btn-success, .btn-info {
-            background: var(--color-cyan)!important;
-            color: var(--color-dark)!important;
-            font-weight:700;
-        }
-
-        .btn-admin:hover, .btn-success:hover, .btn-info:hover {
-            background: var(--color-blue)!important;
-            color: var(--color-light)!important;
-        }
-
+        /* Contenido Dinámico */
         #content-area { opacity: 0; transition: opacity 0.3s; }
         #content-area.loaded { opacity: 1; }
+
+        /* Estilos de Tablas y Botones (Tus estilos) */
+        .table-dark { --bs-table-bg: var(--color-blue); --bs-table-hover-bg: #45b3e6; color: #fff; }
+        .table-secondary { --bs-table-bg: var(--color-cyan); color: #fff !important; }
+        .table-secondary th { color: #fff; }
+        .btn-admin, .btn-success, .btn-info { background: var(--color-cyan)!important; color: var(--color-dark)!important; font-weight:700; }
+        .btn-admin:hover, .btn-success:hover, .btn-info:hover { background: var(--color-blue)!important; color: var(--color-light)!important; }
     </style>
 </head>
 
 <body>
+    
+    <!-- CONTENEDOR PRINCIPAL (Sidebar + Main) -->
+    <div id="page-container" class="d-flex">
 
-    <!-- 🔐 PROTECCIÓN DE RUTA -->
-    <script>
-        const usuario = localStorage.getItem("email_admin");
-        const rol = localStorage.getItem("rol");
-
-        if (!usuario || !rol) {
-            window.location.href = "login.html";
-        }
-
-        function logout() {
-            localStorage.clear();
-            window.location.href = "login.html";
-        }
-    </script>
-
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-md navbar-dark navbar-custom shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="administracion.html">
-                <img src="../images/EscudoTorneo.png" alt="Logo Torneo" height="35" class="me-2">
-                Admin Torneo Juvenil
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navAdmin">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navAdmin">
-                <ul class="navbar-nav ms-auto" id="admin-nav-links">
-                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="dashboard">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="equipos">Equipos</a></li>
-                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="jugadores">Jugadores</a></li>
-                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="partidos">Partidos</a></li>
-                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="goleadores">Goleadores</a></li>
-                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="posiciones">Posiciones</a></li>
-                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="usuarios">Usuarios</a></li>
-                    <li class="nav-item">
-                        <a class="nav-link text-danger fw-bold" style="cursor:pointer;" onclick="logout()">
-                            <i class="bi bi-box-arrow-right"></i> Salir
-                        </a>
-                    </li>
-                </ul>
+        <!-- ASIDE / BARRA LATERAL (Navegación Primaria) -->
+        <aside id="sidebar-wrapper" class="shadow">
+            <div class="p-3 text-white fw-bold border-bottom mb-3" style="font-size: 1.2rem;">
+                <i class="bi bi-gear-fill me-2"></i> Gestión Torneo
             </div>
-        </div>
-    </nav>
+            
+            <div class="list-group list-group-flush" id="admin-nav-links">
+                <a class="list-group-item list-group-item-action" href="#" data-view="dashboard">
+                    <i class="bi bi-house-door-fill me-2"></i> Dashboard
+                </a>
+                <a class="list-group-item list-group-item-action" href="#" data-view="equipos">
+                    <i class="bi bi-shield-fill me-2"></i> Equipos
+                </a>
+                <a class="list-group-item list-group-item-action" href="#" data-view="jugadores">
+                    <i class="bi bi-person-lines-fill me-2"></i> Jugadores
+                </a>
+                <a class="list-group-item list-group-item-action" href="#" data-view="partidos">
+                    <i class="bi bi-calendar-event-fill me-2"></i> Partidos/Fixture
+                </a>
+                <a class="list-group-item list-group-item-action" href="#" data-view="goleadores">
+                    <i class="bi bi-trophy-fill me-2"></i> Goleadores
+                </a>
+                <a class="list-group-item list-group-item-action" href="#" data-view="posiciones">
+                    <i class="bi bi-list-ol me-2"></i> Posiciones
+                </a>
+                <a class="list-group-item list-group-item-action" href="#" data-view="usuarios">
+                    <i class="bi bi-people-fill me-2"></i> Usuarios Admin
+                </a>
+            </div>
+        </aside>
 
-    <!-- CONTENIDO DINÁMICO -->
-    <div class="container py-5 pt-4" id="content-area">
-        <!-- Contenido SPA -->
+        <!-- CONTENIDO PRINCIPAL (Nav Top + Área Dinámica) -->
+        <div id="main-wrapper">
+            
+            <!-- NAVBAR (Información de Sesión y Acciones Globales) -->
+            <nav class="navbar navbar-expand-md navbar-custom shadow-sm sticky-top">
+                <div class="container-fluid">
+                    
+                    <span class="navbar-text text-white fw-bold me-auto">
+                        <span id="user-display-email"></span> | Rol: <span id="user-display-rol"></span>
+                    </span>
+
+                    <button class="btn btn-sm btn-outline-light text-danger fw-bold" onclick="logout()">
+                        <i class="bi bi-box-arrow-right"></i> Salir
+                    </button>
+                </div>
+            </nav>
+
+            <!-- ÁREA DE CONTENIDO DINÁMICO -->
+            <main class="flex-grow-1 overflow-auto">
+                <div class="container-fluid py-4" id="content-area">
+                    <!-- Contenido SPA (Secciones dinámicas) -->
+                </div>
+            </main>
+
+        </div>
+
     </div>
 
     <!-- MODAL ÚNICO PARA OPERACIONES CRUD -->
@@ -132,7 +172,7 @@
 
     <!-- BOOTSTRAP -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- SUPABASE JS (Añadido) -->
+    <!-- SUPABASE JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- LÓGICA DE LA SPA -->
@@ -143,28 +183,27 @@
         const SUPABASE_URL = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
         
-        // Cliente Supabase global (Para funciones de Auth como signOut)
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        // API_BASE es ahora la URL REST de Supabase
         const API_BASE = SUPABASE_URL + "/rest/v1"; 
 
         const contentArea = document.getElementById('content-area');
         const crudModal = new bootstrap.Modal(document.getElementById('crudModal'));
-        const navLinks = document.querySelectorAll('#admin-nav-links .nav-link');
+        const navLinks = document.querySelectorAll('#admin-nav-links a'); // Selectores actualizados a 'a'
         let currentView = 'dashboard';
         const teamsCache = []; 
         
-        let USER_TOKEN = null; // Token del usuario autenticado (CRUCIAL)
+        let USER_TOKEN = null; 
 
-        // 🔐 PROTECCIÓN DE RUTA Y CARGA DE SESIÓN
+        // 🔐 CARGA DE SESIÓN Y DISPLAY DE USUARIO
         async function loadAuthSession() {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session) {
                     USER_TOKEN = session.access_token;
+                    // Actualizar el display de usuario en el NavBar
+                    document.getElementById('user-display-email').textContent = localStorage.getItem("email_admin");
+                    document.getElementById('user-display-rol').textContent = localStorage.getItem("rol");
                 } else {
-                    // Si no hay sesión Auth activa, forzar login (seguridad)
                     window.location.href = "login.html";
                 }
             } catch (error) {
@@ -174,23 +213,23 @@
         }
         
         document.addEventListener('DOMContentLoaded', async () => {
-            // Esperar a tener el token antes de intentar cargar cualquier vista
             await loadAuthSession(); 
             
-            // Manejador de navegación (mantener)
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const view = e.target.getAttribute('data-view');
+                    const view = e.target.getAttribute('data-view') || e.target.closest('a').getAttribute('data-view'); // Manejar clic en <i>
                     if (view) loadView(view);
                 });
             });
 
+            // Iniciar en dashboard y marcarlo activo
             loadView('dashboard');
+            document.querySelector('[data-view="dashboard"]').classList.add('active');
         });
 
         function logout() {
-            supabaseClient.auth.signOut(); // Cierra sesión en Auth
+            supabaseClient.auth.signOut(); 
             localStorage.clear();
             window.location.href = "login.html";
         }
@@ -200,15 +239,16 @@
         // ===============================
 
         function loadView(viewName) {
-            // ... (resto de loadView) ...
             currentView = viewName;
             contentArea.classList.remove('loaded');
             
+            // Marcar el enlace activo en el sidebar
             navLinks.forEach(l => l.classList.remove('active'));
             document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
 
             contentArea.innerHTML = `<h2 class="fw-bold mb-3 text-center" style="color:var(--color-blue)">Cargando ${viewName.toUpperCase()}...</h2>`;
             
+            // ... (SWITCH CASE para renderizar vistas) ...
             switch (viewName) {
                 case 'dashboard':
                     renderDashboard();
@@ -238,31 +278,35 @@
         }
         
         function renderDashboard() {
-            // ... (Módulo Dashboard sin cambios) ...
+            // ... (Módulo Dashboard se mantiene) ...
              contentArea.innerHTML = `
-                <h2 class="fw-bold mb-3 text-center" style="color:var(--color-blue)">Bienvenido al Panel de Administración</h2>
+                <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Dashboard y Resumen del Torneo</h2>
+                <p class="text-secondary">Visión general de las estadísticas principales del torneo.</p>
                 <div class="row text-center mt-5">
                     <div class="col-md-4">
                         <div class="card shadow p-3 bg-light">
                             <h3>Total Equipos</h3>
-                            <p class="fs-1 fw-bold text-primary" id="stat-equipos">...</p>
+                            <p class="fs-1 fw-bold text-primary" id="stat-equipos">0</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card shadow p-3 bg-light">
                             <h3>Total Jugadores</h3>
-                            <p class="fs-1 fw-bold text-success" id="stat-jugadores">...</p>
+                            <p class="fs-1 fw-bold text-success" id="stat-jugadores">0</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card shadow p-3 bg-light">
                             <h3>Partidos Jugados</h3>
-                            <p class="fs-1 fw-bold text-info" id="stat-partidos">...</p>
+                            <p class="fs-1 fw-bold text-info" id="stat-partidos">0</p>
                         </div>
                     </div>
                 </div>
+                <div class="alert alert-info mt-4">
+                    <i class="bi bi-info-circle-fill"></i> Para ver las estadísticas reales, necesitarás funciones SQL (RPC) que cuenten los registros.
+                </div>
             `;
-            // Lógica de stats
+            // Implementar la carga de estadísticas reales aquí
         }
 
         // ===============================
@@ -270,7 +314,7 @@
         // ===============================
 
         async function renderEquiposView() {
-            contentArea.innerHTML = `
+             contentArea.innerHTML = `
                 <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Gestión de Equipos</h2>
                 <div class="d-flex justify-content-end mb-3">
                     <button class="btn btn-success btn-admin" id="btnAgregarEquipo">
@@ -316,7 +360,7 @@
                 teamsCache.splice(0, teamsCache.length, ...data); 
 
                 const cuerpo = document.querySelector("#tablaEquipos tbody");
-                if (!cuerpo) return; // FIX: Si la vista cambió, salir.
+                if (!cuerpo) return; 
 
                 cuerpo.innerHTML = "";
                 if (data.length === 0) {
@@ -418,6 +462,7 @@
         }
         
         async function cargarJugadores(filtro = "", valor = "", id_equipo = "") {
+            // Se usa el JOIN para obtener el nombre del equipo: ?select=*,equipos(nombre_equipo)
             let url = `${API_BASE}/jugadores?select=*,equipos(nombre_equipo)`;
             let params = [];
             
@@ -468,7 +513,7 @@
             }
 
             jugadores.forEach(j => {
-                // Obtener el nombre del equipo, ya sea del JOIN (j.equipos[0].nombre_equipo) o de la caché.
+                // Obtener el nombre del equipo del JOIN
                 const equipoNombre = j.equipos ? j.equipos.nombre_equipo : teamsCache.find(t => t.id_equipo == j.id_equipo)?.nombre_equipo || 'Sin Equipo';
                 const editParams = JSON.stringify(j).replace(/'/g, "\\'"); 
                 
@@ -500,7 +545,6 @@
         // ===============================
 
         async function renderUsuariosView() {
-            // ... (HTML de la vista usuarios) ...
              contentArea.innerHTML = `
                 <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Gestión de Usuarios Admin</h2>
                 <div class="d-flex justify-content-end mb-3">
@@ -585,7 +629,6 @@
         // ===============================
 
         async function renderPartidosView() {
-            // ... (HTML de la vista partidos) ...
              contentArea.innerHTML = `
                 <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Gestión de Partidos / Fixture</h2>
                 <div class="table-responsive">
@@ -605,16 +648,14 @@
                     </table>
                 </div>
             `;
-            // Cargar equipos DEBE ser el primer paso, solo si no están en caché
             if (teamsCache.length === 0) await cargarEquipos(); 
             await cargarPartidos();
         }
 
         async function cargarPartidos() {
             try {
-                // LLAMADA DIRECTA A SUPABASE REST (usando rpc para una vista/función compleja si es necesario)
-                // Usaremos una vista que haga JOIN con fixture y equipos
-                const res = await fetch(`${API_BASE}/vw_partidos_resultados?select=*`, {
+                // LLAMADA DIRECTA A SUPABASE REST: Usamos la tabla 'partidos' y hacemos JOIN con equipos y fixture_futbol
+                const res = await fetch(`${API_BASE}/partidos?select=*,id_equipo_local:equipos!fk_equipo_local(nombre_equipo),id_equipo_visitante:equipos!fk_equipo_visitante(nombre_equipo)`, {
                      headers: { 
                         'apikey': SUPABASE_KEY,
                         'Authorization': `Bearer ${USER_TOKEN}` 
@@ -632,9 +673,9 @@
                 cuerpo.innerHTML = "";
 
                 data.forEach(p => {
-                    // Si el backend no hace el JOIN, lo buscamos en caché (teamsCache ya cargado)
-                    const local = teamsCache.find(t => t.id_equipo == p.id_equipo_local)?.nombre_equipo || 'Local Desconocido';
-                    const visitante = teamsCache.find(t => t.id_equipo == p.id_equipo_visitante)?.nombre_equipo || 'Visitante Desconocido';
+                    // Obtener nombres usando el JOIN implícito de PostgREST
+                    const local = p.id_equipo_local.nombre_equipo || 'Local Desconocido';
+                    const visitante = p.id_equipo_visitante.nombre_equipo || 'Visitante Desconocido';
                     
                     const marcador = p.estado === 'Jugado' ? 
                                      `${p.marcador_local || 0} - ${p.marcador_visitante || 0}` : 'vs';
@@ -667,38 +708,197 @@
             }
         }
         
-        // ... (el resto de módulos Goleadores y Posiciones deben seguir el mismo patrón de fetch con headers) ...
-        // Ya que son de lectura, se usarán llamadas directas a la API REST o a una función rpc.
-        
+        // ===============================
+        // 5. MÓDULO GOLEADORES (Ranking)
+        // ===============================
+
+        async function renderGoleadoresView() {
+             contentArea.innerHTML = `
+                <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Tabla de Goleadores (Ranking)</h2>
+                <p class="text-muted">Esta tabla se actualiza automáticamente con los goles registrados en los partidos.</p>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle text-center shadow" id="tablaGoleadores">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre Completo</th>
+                                <th>Equipo</th>
+                                <th>Goles</th>
+                                <th>Foto</th> 
+                            </tr>
+                        </thead>
+                        <tbody><tr><td colspan="5">Cargando ranking...</td></tr></tbody>
+                    </table>
+                </div>
+            `;
+            await cargarGoleadores();
+        }
+
         async function cargarGoleadores() {
              try {
-                // Supongamos que tienes una función rpc para el ranking
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_goleadores_ranking`, {
-                    method: 'POST',
+                // LLAMADA RPC (función SQL de Supabase) para obtener el ranking
+                const res = await fetch(`${API_BASE}/rpc/get_goleadores_ranking`, { // Suponemos una función rpc llamada get_goleadores_ranking
+                    method: 'POST', // Las RPC (Remote Procedure Calls) son POST
                     headers: { 
                         'Content-Type': 'application/json',
                         'apikey': SUPABASE_KEY,
                         'Authorization': `Bearer ${USER_TOKEN}` 
                     },
-                    body: JSON.stringify({}) // Cuerpo vacío para RPC sin parámetros
+                    body: JSON.stringify({}) // Si la función no necesita parámetros
                 }); 
-                // ... (código para manejar la respuesta) ...
-            } catch (error) { /* ... */ }
+
+                 if (!res.ok) {
+                    const errorDetails = await res.json();
+                    throw new Error(`Error al cargar: ${errorDetails.message || 'Error desconocido'}`);
+                }
+                const data = await res.json();
+                
+                const cuerpo = document.querySelector("#tablaGoleadores tbody");
+                if (!cuerpo) return;
+                cuerpo.innerHTML = "";
+                
+                data.forEach((g, index) => {
+                    cuerpo.innerHTML += `
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td class="text-start">${g.nombres} ${g.apellidos}</td>
+                      <td>${g.nombre_equipo || 'N/A'}</td>
+                      <td class="fw-bold">${g.goles}</td>
+                      <td><i class="bi bi-person-circle" style="font-size: 1.5rem;"></i></td>
+                    </tr>`;
+                });
+
+            } catch (error) { 
+                console.error("Error cargando goleadores:", error);
+                const cuerpo = document.querySelector("#tablaGoleadores tbody");
+                if (cuerpo) cuerpo.innerHTML = `<tr><td colspan="5" class="text-danger">Error: ${error.message}. Asegura que la función RPC 'get_goleadores_ranking' existe.</td></tr>`;
+            }
+        }
+        
+        // ===============================
+        // 6. MÓDULO POSICIONES (Tabla)
+        // ===============================
+
+        async function renderPosicionesView() {
+            contentArea.innerHTML = `
+                <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Tabla de Posiciones</h2>
+                <p class="text-muted">Esta tabla se calcula con los resultados de los partidos.</p>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle text-center shadow" id="tablaPosiciones">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>#</th>
+                                <th>Equipo</th>
+                                <th>PJ</th>
+                                <th>PG</th>
+                                <th>PE</th>
+                                <th>PP</th>
+                                <th>GF</th>
+                                <th>GC</th>
+                                <th>DIF</th>
+                                <th>PTS</th>
+                            </tr>
+                        </thead>
+                        <tbody><tr><td colspan="10">Cargando tabla de posiciones...</td></tr></tbody>
+                    </table>
+                </div>
+            `;
+            await cargarPosiciones();
         }
 
+        async function cargarPosiciones() {
+             try {
+                // LLAMADA RPC (función SQL de Supabase) para obtener las posiciones
+                const res = await fetch(`${API_BASE}/rpc/get_posiciones_table`, { // Suponemos una función rpc llamada get_posiciones_table
+                    method: 'POST', 
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${USER_TOKEN}` 
+                    },
+                    body: JSON.stringify({})
+                }); 
+
+                if (!res.ok) {
+                    const errorDetails = await res.json();
+                    throw new Error(`Error al cargar: ${errorDetails.message || 'Error desconocido'}`);
+                }
+                const data = await res.json();
+                
+                const cuerpo = document.querySelector("#tablaPosiciones tbody");
+                if (!cuerpo) return;
+                cuerpo.innerHTML = "";
+
+                data.forEach((p, index) => {
+                    cuerpo.innerHTML += `
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td class="text-start fw-bold">${p.nombre_equipo}</td>
+                      <td>${p.pj}</td>
+                      <td>${p.pg}</td>
+                      <td>${p.pe}</td>
+                      <td>${p.pp}</td>
+                      <td>${p.gf}</td>
+                      <td>${p.gc}</td>
+                      <td class="fw-bold">${p.dif}</td>
+                      <td class="fw-bold bg-warning text-dark">${p.pts}</td>
+                    </tr>`;
+                });
+            } catch (error) { 
+                console.error("Error cargando posiciones:", error);
+                const cuerpo = document.querySelector("#tablaPosiciones tbody");
+                if (cuerpo) cuerpo.innerHTML = `<tr><td colspan="10" class="text-danger">Error: ${error.message}. Asegura que la función RPC 'get_posiciones_table' existe.</td></tr>`;
+            }
+        }
 
         // ===============================
         // 7. LÓGICA CRUD ÚNICA (Modals & Forms)
         // ===============================
 
-        // ... (código de prepararCrud y formularios HTML se mantiene) ...
+        function prepararCrud(tipo, ...params) {
+            // ... (código de prepararCrud) ...
+            const modalLabel = document.getElementById('crudModalLabel');
+            const modalBody = document.getElementById('crudModalBody');
+            modalBody.innerHTML = '';
+            
+            if (tipo === 'equipo') {
+                const [id, nombre, delegado, telefono, logo] = params;
+                modalLabel.textContent = id ? `Editar Equipo: ${nombre}` : 'Agregar Nuevo Equipo';
+                modalBody.innerHTML = getEquipoForm(id, nombre, delegado, telefono, logo);
+                document.getElementById('equipoForm').addEventListener('submit', handleEquipoSubmit);
+            } else if (tipo === 'jugador') {
+                const jugador = params[0] || {}; 
+                modalLabel.textContent = jugador.id_jugador ? `Editar Jugador: ${jugador.nombres}` : 'Agregar Nuevo Jugador';
+                modalBody.innerHTML = getJugadorForm(jugador);
+                document.getElementById('jugadorForm').addEventListener('submit', handleJugadorSubmit);
+            } else if (tipo === 'usuario') { // NUEVO
+                const usuario = params[0] || {};
+                modalLabel.textContent = usuario.id ? `Editar Usuario: ${usuario.email}` : 'Crear Nuevo Usuario';
+                modalBody.innerHTML = getUsuarioForm(usuario);
+                document.getElementById('usuarioForm').addEventListener('submit', handleUsuarioSubmit);
+            } else if (tipo === 'resultado') { // NUEVO
+                const partido = params[0] || {};
+                modalLabel.textContent = `Gestión de Resultado: Jornada ${partido.jornada || 'N/A'}`;
+                modalBody.innerHTML = getResultadoForm(partido);
+                document.getElementById('resultadoForm').addEventListener('submit', handleResultadoSubmit);
+            }
+
+            crudModal.show();
+        }
+
+        // --- FORMULARIOS HTML se mantienen ---
+
+        function getEquipoForm(id = '', nombre = '', delegado = '', telefono = '', logo = '') { /* ... */ return `...`; }
+        function getJugadorForm(j = {}) { /* ... */ return `...`; }
+        function getUsuarioForm(u = {}) { /* ... */ return `...`; }
+        function getResultadoForm(p = {}) { /* ... */ return `...`; }
 
         // --- MANEJADORES DE SUBMIT (Compartidos) ---
 
         async function handleEquipoSubmit(e) {
             e.preventDefault();
             const id = document.getElementById('equipo_id').value;
-            const method = id ? 'PATCH' : 'POST'; // Usar PATCH para UPDATE
+            const method = id ? 'PATCH' : 'POST'; 
             const url = `${API_BASE}/equipos`;
             
             const equipoData = {
@@ -714,7 +914,7 @@
         async function handleJugadorSubmit(e) {
             e.preventDefault();
             const id = document.getElementById('jugador_id').value;
-            const method = id ? 'PATCH' : 'POST'; // Usar PATCH para UPDATE
+            const method = id ? 'PATCH' : 'POST'; 
             const url = `${API_BASE}/jugadores`;
             
             const jugadorData = {
@@ -738,14 +938,12 @@
             const isEdit = !!id;
 
             const usuarioData = {
-                // Solo enviar los campos que se pueden editar
                 nombre_completo: document.getElementById('nombre_completo').value,
                 rol: document.getElementById('rol').value,
                 estado: document.getElementById('estado_usuario').value === 'true',
             };
 
             if (!isEdit) {
-                // Para CREAR un usuario, usamos la función de Auth de Supabase (no el CRUD normal)
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
                 
@@ -757,7 +955,6 @@
 
                     if (authError) throw authError;
 
-                    // Insertar metadatos en la tabla 'usuarios'
                     await crudOperation(url, 'POST', {
                         id: authData.user.id,
                         email: email,
@@ -777,14 +974,12 @@
                 }
             }
             
-            // Si es UPDATE, usamos el CRUD normal
             await crudOperation(url, 'PATCH', usuarioData, `id=eq.${id}`, cargarUsuarios);
         }
 
         async function handleResultadoSubmit(e) {
             e.preventDefault();
             const id_partido = document.getElementById('partido_id_resultado').value;
-            // Usamos la tabla 'partidos' para actualizar el resultado/estado
             const url = `${API_BASE}/partidos`; 
             
             const resultadoData = {
@@ -794,25 +989,22 @@
                 observaciones: document.getElementById('observaciones').value,
             };
 
-            // PATCH para actualizar, usando el filtro WHERE
             await crudOperation(url, 'PATCH', resultadoData, `id_partido=eq.${id_partido}`, cargarPartidos);
         }
 
         // --- FUNCIÓN CRUD GENÉRICA (Base) ---
 
-        // NOTA: 'filter' es el parámetro WHERE (ej: 'id=eq.5' o 'email=eq.test@.com')
         async function crudOperation(url, method, data, filter, successCallback) {
             try {
                 const headers = { 
                     'Content-Type': 'application/json',
                     'apikey': SUPABASE_KEY, 
                     'Authorization': `Bearer ${USER_TOKEN}`,
-                    'Prefer': 'return=representation' // Necesario para devolver los datos actualizados
+                    'Prefer': 'return=representation' 
                 };
                 
                 let finalUrl = url;
 
-                // Para UPDATE (PATCH) y DELETE, necesitamos el filtro WHERE
                 if (method === 'PATCH' || method === 'DELETE') {
                     if (!filter) throw new Error("Se requiere un filtro (WHERE) para PATCH y DELETE.");
                     finalUrl += `?${filter}`; 
@@ -849,7 +1041,6 @@
                 return;
             }
 
-            // Usamos el filtro de la clave primaria
             const filter = entidad === 'usuarios' ? `id=eq.${id}` : `id_${entidad.slice(0, -1)}=eq.${id}`;
             const url = `${API_BASE}/${entidad}`;
 
@@ -871,6 +1062,140 @@
             }
         };
 
+        // --- Módulos auxiliares de formularios (se mantienen fuera del scope para ser llamados globalmente) ---
+
+        function getEquipoForm(id = '', nombre = '', delegado = '', telefono = '', logo = '') {
+            return `
+            <form id="equipoForm">
+                <input type="hidden" id="equipo_id" value="${id}">
+                <div class="mb-3">
+                    <label for="nombre_equipo" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre_equipo" value="${nombre}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="delegado" class="form-label">Delegado</label>
+                    <input type="text" class="form-control" id="delegado" value="${delegado}">
+                </div>
+                <div class="mb-3">
+                    <label for="telefono" class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" id="telefono" value="${telefono}">
+                </div>
+                <div class="mb-3">
+                    <label for="logo_url" class="form-label">URL del Logo (Opcional)</label>
+                    <input type="url" class="form-control" id="logo_url" value="${logo}">
+                </div>
+                <button type="submit" class="btn btn-admin w-100">Guardar Equipo</button>
+            </form>`;
+        }
+
+        function getJugadorForm(j = {}) {
+            const equipoOptions = teamsCache.map(eq => 
+                `<option value="${eq.id_equipo}" ${j.id_equipo == eq.id_equipo ? 'selected' : ''}>${eq.nombre_equipo}</option>`
+            ).join('');
+
+            return `
+            <form id="jugadorForm">
+                <input type="hidden" id="jugador_id" value="${j.id_jugador || ''}">
+                <div class="mb-3"><label for="nombres" class="form-label">Nombres</label><input type="text" class="form-control" id="nombres" value="${j.nombres || ''}" required></div>
+                <div class="mb-3"><label for="apellidos" class="form-label">Apellidos</label><input type="text" class="form-control" id="apellidos" value="${j.apellidos || ''}" required></div>
+                <div class="mb-3">
+                    <label for="id_equipo_jugador" class="form-label">Equipo</label>
+                    <select class="form-select" id="id_equipo_jugador" required>
+                        <option value="">-- Seleccionar Equipo --</option>
+                        ${equipoOptions}
+                    </select>
+                </div>
+                <div class="row">
+                    <div class="col-6 mb-3"><label for="numero_camiseta" class="form-label"># Camiseta</label><input type="number" class="form-control" id="numero_camiseta" value="${j.numero_camiseta || ''}"></div>
+                    <div class="col-6 mb-3"><label for="posicion" class="form-label">Posición</label><input type="text" class="form-control" id="posicion" value="${j.posicion || ''}"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="estado_jugador" class="form-label">Estado</label>
+                    <select class="form-select" id="estado_jugador" required>
+                        <option value="Activo" ${j.estado === 'Activo' ? 'selected' : ''}>Activo</option>
+                        <option value="Inactivo" ${j.estado === 'Inactivo' ? 'selected' : ''}>Inactivo</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-admin w-100">Guardar Jugador</button>
+            </form>`;
+        }
+
+        function getUsuarioForm(u = {}) {
+            const isEdit = !!u.id;
+            return `
+            <form id="usuarioForm">
+                <input type="hidden" id="usuario_id" value="${u.id || ''}">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" value="${u.email || ''}" ${isEdit ? 'disabled' : ''} required>
+                    ${isEdit ? '<small class="text-muted">El email no se puede editar.</small>' : ''}
+                </div>
+                <div class="mb-3 ${isEdit ? 'd-none' : ''}">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="password" ${isEdit ? '' : 'required'} placeholder="${isEdit ? 'Solo para nuevos usuarios' : 'Mínimo 6 caracteres'}">
+                </div>
+                <div class="mb-3">
+                    <label for="nombre_completo" class="form-label">Nombre Completo</label>
+                    <input type="text" class="form-control" id="nombre_completo" value="${u.nombre_completo || ''}">
+                </div>
+                <div class="mb-3">
+                    <label for="rol" class="form-label">Rol</label>
+                    <select class="form-select" id="rol" required>
+                        <option value="usuario" ${u.rol === 'usuario' ? 'selected' : ''}>Usuario (Web Pública)</option>
+                        <option value="admin" ${u.rol === 'admin' ? 'selected' : ''}>Administrador (Panel Total)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="estado_usuario" class="form-label">Estado</label>
+                    <select class="form-select" id="estado_usuario" required>
+                        <option value="true" ${u.estado ? 'selected' : ''}>Activo</option>
+                        <option value="false" ${!u.estado ? 'selected' : ''}>Inactivo</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-admin w-100">${isEdit ? 'Actualizar Usuario' : 'Crear Usuario'}</button>
+            </form>`;
+        }
+
+        function getResultadoForm(p = {}) {
+            const local = teamsCache.find(t => t.id_equipo == p.id_equipo_local)?.nombre_equipo || 'Local';
+            const visitante = teamsCache.find(t => t.id_equipo == p.id_equipo_visitante)?.nombre_equipo || 'Visitante';
+            
+            const golesLocal = p.marcador_local || p.goles_local || 0;
+            const golesVisitante = p.marcador_visitante || p.goles_visitante || 0;
+
+            return `
+            <form id="resultadoForm">
+                <input type="hidden" id="partido_id_resultado" value="${p.id_partido}">
+                <h4 class="text-center mb-4">${local} vs ${visitante}</h4>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label for="goles_local" class="form-label">${local} (Goles)</label>
+                        <input type="number" class="form-control" id="goles_local" value="${golesLocal}" min="0" required>
+                    </div>
+                    <div class="col-6">
+                        <label for="goles_visitante" class="form-label">${visitante} (Goles)</label>
+                        <input type="number" class="form-control" id="goles_visitante" value="${golesVisitante}" min="0" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="estado_partido" class="form-label">Estado del Partido</label>
+                    <select class="form-select" id="estado_partido" required>
+                        <option value="Pendiente" ${p.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                        <option value="Jugado" ${p.estado === 'Jugado' ? 'selected' : ''}>Finalizado (Actualizar marcador)</option>
+                        <option value="Aplazado" ${p.estado === 'Aplazado' ? 'selected' : ''}>Aplazado</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="observaciones" class="form-label">Observaciones</label>
+                    <textarea class="form-control" id="observaciones">${p.observaciones || ''}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-admin w-100">Guardar Resultado y Estado</button>
+            </form>`;
+        }
     </script>
 
 </body>

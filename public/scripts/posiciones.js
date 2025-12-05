@@ -1,9 +1,8 @@
 // Archivo: public/scripts/posiciones.js
 
-// Importar la instancia de supabase desde el archivo centralizado
+// 🟢 CORREGIDO: Importar la instancia de supabase desde el archivo centralizado
 import { supabase } from "./supabaseClient.js";
 
-// Vista: vista_posiciones
 async function cargarPosiciones() {
   const { data, error } = await supabase
     .from("vista_posiciones")

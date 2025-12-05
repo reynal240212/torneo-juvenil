@@ -1,10 +1,9 @@
 // Archivo: public/scripts/calendario.js
 
-// Importar la instancia de supabase desde el archivo centralizado
+// 🟢 CORREGIDO: Importar la instancia de supabase desde el archivo centralizado
 import { supabase } from "./supabaseClient.js"; 
 
 function obtenerClaseEstado(estado) {
-  // Personaliza según los estados que tienes en la BD
   switch (estado.toUpperCase()) {
     case "FINALIZADO":
       return "badge bg-success text-white";

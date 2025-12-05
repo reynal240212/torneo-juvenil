@@ -1,6 +1,6 @@
 // Archivo: public/scripts/goleadores.js
 
-// Importar la instancia de supabase desde el archivo centralizado
+// 🟢 CORREGIDO: Importar la instancia de supabase desde el archivo centralizado
 import { supabase } from "./supabaseClient.js";
 
 async function cargarGoleadores() {

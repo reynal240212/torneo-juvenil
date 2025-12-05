@@ -1,3 +1,4 @@
+<!-- Archivo: public/calendario.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -38,10 +39,16 @@
 
   <div id="footer-placeholder"></div>
   <script>
+    // Carga de Layouts
     fetch('layout/navbar.html').then(res => res.text()).then(html => { document.getElementById('nav-placeholder').innerHTML = html; });
     fetch('layout/footer.html').then(res => res.text()).then(html => { document.getElementById('footer-placeholder').innerHTML = html; });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- 1. Librería Supabase CDN (Necesario para que el módulo funcione) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- 2. MÓDULO PRINCIPAL (Type="module" llama a supabaseClient.js internamente) -->
   <script type="module" src="scripts/calendario.js"></script>
 </body>
 </html>

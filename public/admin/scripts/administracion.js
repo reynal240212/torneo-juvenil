@@ -1,10 +1,11 @@
 // Archivo: public/admin/scripts/administracion.js
 
 // 1. IMPORTAR CLIENTE Y CONFIGURACIÓN CENTRALIZADA
+// RUTA CORREGIDA: Sube de /admin/scripts/ a /admin/, luego sale a /public/, luego entra a /scripts/
 import { supabase, API_BASE, SUPABASE_KEY_EXPORT } from "../../scripts/supabaseClient.js"; 
-// NOTA: Asegúrate de que 'supabaseClient.js' esté en la carpeta 'public/scripts/'
 
-// 2. VARIABLES GLOBALES
+// 2. VARIABLES GLOBALES (Y el resto de tu código JS)
+
 const contentArea = document.getElementById('content-area');
 const crudModal = new bootstrap.Modal(document.getElementById('crudModal'));
 const navLinks = document.querySelectorAll('#admin-nav-links a'); 
@@ -126,7 +127,6 @@ function renderDashboard() {
             <i class="bi bi-info-circle-fill"></i> Para ver las estadísticas reales, necesitarás funciones SQL (RPC) que cuenten los registros.
         </div>
     `;
-    // Implementar la carga de estadísticas reales aquí
 }
 
 // ===============================
@@ -618,11 +618,11 @@ async function renderPosicionesView() {
                     </tr>
                 </thead>
                 <tbody><tr><td colspan="10">Cargando tabla de posiciones...</td></tr></tbody>
-            </table>
-        </div>
-    `;
-    await cargarPosiciones();
-}
+                    </table>
+                </div>
+            `;
+            await cargarPosiciones();
+        }
 
 async function cargarPosiciones() {
      try {
@@ -1007,6 +1007,137 @@ window.eliminarEntidad = async (entidad, id, nombre) => {
     }
 };
 
-// =================================================================
-// FIN DE ARCHIVO administracion.js
-// =================================================================
+// --- Módulos auxiliares de formularios (necesitan estar en el ámbito global del módulo) ---
+
+function getEquipoForm(id = '', nombre = '', delegado = '', telefono = '', logo = '') {
+    return `
+    <form id="equipoForm">
+        <input type="hidden" id="equipo_id" value="${id}">
+        <div class="mb-3">
+            <label for="nombre_equipo" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre_equipo" value="${nombre}" required>
+        </div>
+        <div class="mb-3">
+            <label for="delegado" class="form-label">Delegado</label>
+            <input type="text" class="form-control" id="delegado" value="${delegado}">
+        </div>
+        <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono</label>
+            <input type="text" class="form-control" id="telefono" value="${telefono}">
+        </div>
+        <div class="mb-3">
+            <label for="logo_url" class="form-label">URL del Logo (Opcional)</label>
+            <input type="url" class="form-control" id="logo_url" value="${logo}">
+        </div>
+        <button type="submit" class="btn btn-admin w-100">Guardar Equipo</button>
+    </form>`;
+}
+
+function getJugadorForm(j = {}) {
+    const equipoOptions = teamsCache.map(eq => 
+        `<option value="${eq.id_equipo}" ${j.id_equipo == eq.id_equipo ? 'selected' : ''}>${eq.nombre_equipo}</option>`
+    ).join('');
+
+    return `
+    <form id="jugadorForm">
+        <input type="hidden" id="jugador_id" value="${j.id_jugador || ''}">
+        <div class="mb-3"><label for="nombres" class="form-label">Nombres</label><input type="text" class="form-control" id="nombres" value="${j.nombres || ''}" required></div>
+        <div class="mb-3"><label for="apellidos" class="form-label">Apellidos</label><input type="text" class="form-control" id="apellidos" value="${j.apellidos || ''}" required></div>
+        <div class="mb-3">
+            <label for="id_equipo_jugador" class="form-label">Equipo</label>
+            <select class="form-select" id="id_equipo_jugador" required>
+                <option value="">-- Seleccionar Equipo --</option>
+                ${equipoOptions}
+            </select>
+        </div>
+        <div class="row">
+            <div class="col-6 mb-3"><label for="numero_camiseta" class="form-label"># Camiseta</label><input type="number" class="form-control" id="numero_camiseta" value="${j.numero_camiseta || ''}"></div>
+            <div class="col-6 mb-3"><label for="posicion" class="form-label">Posición</label><input type="text" class="form-control" id="posicion" value="${j.posicion || ''}"></div>
+        </div>
+        <div class="mb-3">
+            <label for="estado_jugador" class="form-label">Estado</label>
+            <select class="form-select" id="estado_jugador" required>
+                <option value="Activo" ${j.estado === 'Activo' ? 'selected' : ''}>Activo</option>
+                <option value="Inactivo" ${j.estado === 'Inactivo' ? 'selected' : ''}>Inactivo</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-admin w-100">Guardar Jugador</button>
+    </form>`;
+}
+
+function getUsuarioForm(u = {}) {
+    const isEdit = !!u.id;
+    return `
+    <form id="usuarioForm">
+        <input type="hidden" id="usuario_id" value="${u.id || ''}">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" value="${u.email || ''}" ${isEdit ? 'disabled' : ''} required>
+            ${isEdit ? '<small class="text-muted">El email no se puede editar.</small>' : ''}
+        </div>
+        <div class="mb-3 ${isEdit ? 'd-none' : ''}">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="password" ${isEdit ? '' : 'required'} placeholder="${isEdit ? 'Solo para nuevos usuarios' : 'Mínimo 6 caracteres'}">
+        </div>
+        <div class="mb-3">
+            <label for="nombre_completo" class="form-label">Nombre Completo</label>
+            <input type="text" class="form-control" id="nombre_completo" value="${u.nombre_completo || ''}">
+        </div>
+        <div class="mb-3">
+            <label for="rol" class="form-label">Rol</label>
+            <select class="form-select" id="rol" required>
+                <option value="usuario" ${u.rol === 'usuario' ? 'selected' : ''}>Usuario (Web Pública)</option>
+                <option value="admin" ${u.rol === 'admin' ? 'selected' : ''}>Administrador (Panel Total)</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="estado_usuario" class="form-label">Estado</label>
+            <select class="form-select" id="estado_usuario" required>
+                <option value="true" ${u.estado ? 'selected' : ''}>Activo</option>
+                <option value="false" ${!u.estado ? 'selected' : ''}>Inactivo</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-admin w-100">${isEdit ? 'Actualizar Usuario' : 'Crear Usuario'}</button>
+    </form>`;
+}
+
+function getResultadoForm(p = {}) {
+    const local = teamsCache.find(t => t.id_equipo == p.id_equipo_local)?.nombre_equipo || 'Local';
+    const visitante = teamsCache.find(t => t.id_equipo == p.id_equipo_visitante)?.nombre_equipo || 'Visitante';
+    
+    const golesLocal = p.marcador_local || p.goles_local || 0;
+    const golesVisitante = p.marcador_visitante || p.goles_visitante || 0;
+
+    return `
+    <form id="resultadoForm">
+        <input type="hidden" id="partido_id_resultado" value="${p.id_partido}">
+        <h4 class="text-center mb-4">${local} vs ${visitante}</h4>
+        
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="goles_local" class="form-label">${local} (Goles)</label>
+                <input type="number" class="form-control" id="goles_local" value="${golesLocal}" min="0" required>
+            </div>
+            <div class="col-6">
+                <label for="goles_visitante" class="form-label">${visitante} (Goles)</label>
+                <input type="number" class="form-control" id="goles_visitante" value="${golesVisitante}" min="0" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="estado_partido" class="form-label">Estado del Partido</label>
+            <select class="form-select" id="estado_partido" required>
+                <option value="Pendiente" ${p.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                <option value="Jugado" ${p.estado === 'Jugado' ? 'selected' : ''}>Finalizado (Actualizar marcador)</option>
+                <option value="Aplazado" ${p.estado === 'Aplazado' ? 'selected' : ''}>Aplazado</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="observaciones" class="form-label">Observaciones</label>
+            <textarea class="form-control" id="observaciones">${p.observaciones || ''}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-admin w-100">Guardar Resultado y Estado</button>
+    </form>`;
+}

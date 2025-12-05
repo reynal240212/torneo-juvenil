@@ -1,8 +1,8 @@
 // Archivo: public/scripts/script.js
 
 // Importar las funciones de carga desde los archivos refactorizados
-import { cargarPartidos } from "./calendario.js";
-import { cargarPosiciones } from "./posiciones.js";
+import { cargarPartidos } from "../scripts/calendario.js";
+import { cargarPosiciones } from "../scripts/posiciones.js";
 
 // Este script es el coordinador principal para index.html
 

@@ -1,11 +1,11 @@
-// Archivo: public/scripts/posiciones.js
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// 🟢 CORREGIDO: Importar la instancia de supabase desde el archivo centralizado
-import { supabase } from "./supabaseClient.js";
+const supabaseUrl = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Vista: vista_posiciones
 async function cargarPosiciones() {
-  // ❌ Se eliminó: const supabaseUrl = "...", const supabase = createClient(...)
   const { data, error } = await supabase
     .from("vista_posiciones")
     .select("*")

@@ -1,7 +1,8 @@
-// Archivo: public/scripts/calendario.js
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// Importar la instancia de supabase desde el archivo centralizado
-import { supabase } from "./supabaseClient.js"; 
+const supabaseUrl = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 function obtenerClaseEstado(estado) {
   // Personaliza según los estados que tienes en la BD
@@ -22,28 +23,24 @@ function obtenerClaseEstado(estado) {
 }
 
 async function cargarPartidos() {
-  // Usar la instancia de supabase importada
   const { data, error } = await supabase
-    .from("vista_resultados") // Asumo que 'vista_resultados' es una VIEW o FUNCTION
+    .from("vista_resultados")
     .select("*")
-    .order("fecha", { ascending: true })
-    .order("hora", { ascending: true });
+    .order("fecha")
+    .order("hora");
 
   const tabla = document.getElementById("tablaPartidos");
   tabla.innerHTML = "";
-  
   if (error || !data) {
-    tabla.innerHTML = `<tr><td colspan="7" class="text-danger">Error al cargar partidos: ${error?.message || 'Error desconocido'}. Revisa RLS.</td></tr>`;
+    tabla.innerHTML = `<tr><td colspan="7" class="text-danger">Error al cargar partidos.</td></tr>`;
     return;
   }
-  
   data.forEach((p) => {
     const fechaFormateada = p.fecha ? new Date(p.fecha).toLocaleDateString('es-CO') : '-';
     const resultadoHTML = (p.goles_local !== null && p.goles_visitante !== null) ? 
       `<span class="text-danger">${p.goles_local}</span> - <span class="text-primary">${p.goles_visitante}</span>` :
       `<span class="text-muted fw-normal">VS</span>`;
     const estadoClase = obtenerClaseEstado(p.estado || "");
-    
     tabla.innerHTML += `
       <tr>
         <td class="text-center">${fechaFormateada}</td>

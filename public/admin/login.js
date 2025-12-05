@@ -8,26 +8,9 @@ const SUPABASE_KEY =
 let supabaseClient = null;
 
 // ===============================
-// FUNCIONES DE UTILIDAD
-// ===============================
-
-// Verifica si la cadena tiene formato de email
-function isEmail(str) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(str);
-}
-
-
-// ===============================
 // INICIAR AL CARGAR
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
-  // Opcional: Si ya hay sesión guardada y no ha expirado, redirigir directamente
-  if (localStorage.getItem("email_admin") && localStorage.getItem("rol")) {
-    window.location.href = "administracion.html";
-    return;
-  }
-  
   initializeSupabase();
   attachFormListener();
 });
@@ -37,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // ===============================
 function initializeSupabase() {
   try {
-    // La variable window.supabase es accesible porque la cargaste en el HTML
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     console.log("✅ Supabase inicializado correctamente");
   } catch (error) {
@@ -57,13 +39,12 @@ function attachFormListener() {
 }
 
 // ===============================
-// LOGIN PRINCIPAL (POR EMAIL O USUARIO)
+// LOGIN PRINCIPAL (POR EMAIL)
 // ===============================
 async function handleLogin(e) {
   e.preventDefault();
 
-  // El campo de entrada en el HTML tiene el ID "usuario", que puede ser email o nombre de usuario
-  const searchInput = document.getElementById("usuario").value.trim();
+  const email = document.getElementById("usuario").value.trim(); // ahora es email
   const password = document.getElementById("password").value.trim();
 
   const loginMsg = document.getElementById("loginMsg");
@@ -71,7 +52,7 @@ async function handleLogin(e) {
   const loadingSpinner = document.getElementById("loadingSpinner");
   const btnText = document.getElementById("btnText");
 
-  if (!searchInput || !password) {
+  if (!email || !password) {
     showError(loginMsg, "Completa todos los campos.");
     return;
   }
@@ -80,59 +61,46 @@ async function handleLogin(e) {
   clearMessage(loginMsg);
 
   try {
-    let query;
-    let columnaBusqueda;
+    console.log("🔍 Buscando usuario en tabla 'usuarios'...");
 
-    // Determinar si buscar por 'email' o por 'usuario'
-    if (isEmail(searchInput)) {
-        columnaBusqueda = "email";
-    } else {
-        columnaBusqueda = "usuario";
-    }
-    
-    console.log(`🔍 Buscando en tabla 'usuarios' por ${columnaBusqueda}...`);
-
-    // 1. Buscar en la tabla usuarios para obtener ROL, ESTADO y, crucialmente, el EMAIL
+    // 1. Buscar por EMAIL en la tabla usuarios
     const { data: userRow, error: userError } = await supabaseClient
       .from("usuarios")
-      .select("id, email, rol, estado")
-      .eq(columnaBusqueda, searchInput)
+      .select("email, rol, estado")
+      .eq("email", email)
       .single();
 
     if (userError || !userRow) {
-      // Si hay error (ej. RLS o not found)
-      throw new Error("Credenciales incorrectas o usuario no registrado.");
+      throw new Error("Este correo no está registrado.");
     }
 
     if (!userRow.estado) {
       throw new Error("Tu usuario está inactivo. Contacta al administrador.");
     }
 
-    // 2. Autenticación real usando Email + Password con Supabase Auth
-    // ¡IMPORTANTE! signInWithPassword SIEMPRE usa el campo 'email' de la DB
-    console.log(`🔐 Iniciando sesión con Email: ${userRow.email}`);
+    console.log("🔐 Iniciando sesión con Supabase Auth...");
+
+    // 2. Autenticación real usando Email + Password
     const { error: authError } = await supabaseClient.auth.signInWithPassword({
-      email: userRow.email, // Se usa el email recuperado, no el input
+      email: userRow.email,
       password: password,
     });
 
     if (authError) {
-      console.error("Error de autenticación de Supabase:", authError);
+      console.error(authError);
       throw new Error("Correo o contraseña incorrectos.");
     }
 
-    // 3. Guardar sesión y redirigir
-    localStorage.setItem("usuario_id", userRow.id);
+    // 3. Guardar sesión
     localStorage.setItem("email_admin", userRow.email);
     localStorage.setItem("rol", userRow.rol);
     localStorage.setItem("login_timestamp", new Date().toISOString());
 
     showSuccess(loginMsg, "Acceso correcto. Redirigiendo...");
 
-    // Redirección al panel de administración
     setTimeout(() => {
       window.location.href = "administracion.html";
-    }, 800);
+    }, 1200);
   } catch (err) {
     showError(loginMsg, err.message);
   } finally {

@@ -1,7 +1,9 @@
-// Archivo: scripts/jugadores.js
+// Archivo: public/scripts/jugadores.js
 
-// Usar la instancia de supabase centralizada
-import { supabase } from "./supabaseClient.js"; 
+// 🟢 CORREGIDO: Importar la instancia de supabase desde el archivo centralizado
+import { supabase } from "./supabaseClient.js";
+
+// ❌ Se eliminó: const supabaseUrl = "...", const supabase = createClient(...)
 
 // Referencias a los elementos del DOM
 const equipoSelect = document.getElementById("equipoSelect");
@@ -10,7 +12,6 @@ const playerModal = document.getElementById('playerModal'); // Referencia al mod
 const placeholderImage = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png";
 
 // Usaremos un Map para guardar los datos de los jugadores cargados
-// La clave será el ID del jugador, y el valor será el objeto completo del jugador.
 const jugadoresMap = new Map();
 
 /**
@@ -52,11 +53,9 @@ async function mostrarPlantilla(equipoId) {
 
   plantillaContainer.innerHTML = `<div class="col-12 text-center"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Cargando plantilla...</p></div>`;
   
-  // Hacemos un JOIN para traer también el nombre del equipo.
-  // ¡Asegúrate de tener columnas para las tarjetas en tu tabla de jugadores!
   const { data: jugadores, error } = await supabase
     .from("jugadores")
-    .select(`*, equipos(nombre_equipo)`) // Traemos todo del jugador Y el nombre del equipo relacionado
+    .select(`*, equipos(nombre_equipo)`) 
     .eq("id_equipo", equipoId)
     .order("nombres");
 
@@ -71,16 +70,14 @@ async function mostrarPlantilla(equipoId) {
   }
 
   plantillaContainer.innerHTML = "";
-  jugadoresMap.clear(); // Limpiamos el mapa antes de llenarlo de nuevo
+  jugadoresMap.clear(); 
 
   jugadores.forEach(jugador => {
-    // Guardamos el jugador en el mapa para poder acceder a sus datos después
     jugadoresMap.set(jugador.id_jugador, jugador);
 
     const fotoJugador = jugador.foto_url || placeholderImage;
     const nombreCompleto = `${jugador.nombres} ${jugador.apellidos}`;
     
-    // ===== PARTE CRUCIAL: AÑADIMOS LOS ATRIBUTOS PARA ABRIR EL MODAL =====
     const cardHTML = `
       <div class="col-12 col-sm-6 col-md-4 col-lg-3">
         <div class="card player-card h-100" 
@@ -102,31 +99,27 @@ async function mostrarPlantilla(equipoId) {
   });
 }
 
-// --- EVENT LISTENERS ---
+// --- EVENT LISTENERS (Se mantienen) ---
 document.addEventListener("DOMContentLoaded", () => {
   if (equipoSelect) {
     cargarEquipos();
     equipoSelect.addEventListener("change", (e) => mostrarPlantilla(e.target.value));
   }
 
-  // Event listener para el modal. Se dispara JUSTO ANTES de que el modal se muestre.
   if (playerModal) {
     playerModal.addEventListener('show.bs.modal', function (event) {
-      const card = event.relatedTarget; // Obtenemos la carta en la que se hizo clic
-      // Usamos el Map para asegurar que el ID es un número entero para la búsqueda
-      const playerId = parseInt(card.dataset.playerId, 10); // Extraemos el ID
-      const jugador = jugadoresMap.get(playerId); // Buscamos los datos del jugador
+      const card = event.relatedTarget; 
+      const playerId = parseInt(card.dataset.playerId, 10); 
+      const jugador = jugadoresMap.get(playerId); 
 
       if (!jugador) {
         console.error("No se encontró el jugador con ID:", playerId);
         return;
       }
 
-      // Referencias a los elementos dentro del modal
       const modalTitle = playerModal.querySelector('#modalPlayerName');
       const modalBody = playerModal.querySelector('#modalPlayerDetails');
 
-      // Rellenamos el modal con los datos del jugador
       modalTitle.textContent = `${jugador.nombres} ${jugador.apellidos}`;
       
       modalBody.innerHTML = `

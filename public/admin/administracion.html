@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="../images/EscudoTorneo.png">
 
-    <!-- REUSANDO TUS ESTILOS -->
+    <!-- ESTILOS UNIFICADOS -->
     <style>
         :root {
             --color-blue: #0082C9;
@@ -18,7 +18,6 @@
         }
 
         body {
-            /* Dejamos el fondo más simple para el cuerpo principal de la SPA */
             background-color: #f8f9fa;
             color: var(--color-dark);
             font-family: 'Poppins','Roboto',sans-serif;
@@ -29,7 +28,7 @@
             border-bottom: 3px solid #00B7DF;
         }
 
-        .navbar-brand { color: #00B7DF !important; font-weight: 900; }
+        .navbar-brand { color: var(--color-cyan) !important; font-weight: 900; }
         
         .nav-link.active {
             color: var(--color-cyan) !important;
@@ -42,7 +41,7 @@
             color: #fff;
         }
 
-        .table-secondary { --bs-table-bg: #00B7DF; color: #fff !important; }
+        .table-secondary { --bs-table-bg: var(--color-cyan); color: #fff !important; }
         .table-secondary th { color: #fff; }
 
         .btn-admin, .btn-success, .btn-info {
@@ -56,7 +55,6 @@
             color: var(--color-light)!important;
         }
 
-        /* Ocultar el contenido inicialmente para evitar parpadeo */
         #content-area { opacity: 0; transition: opacity 0.3s; }
         #content-area.loaded { opacity: 1; }
     </style>
@@ -79,7 +77,7 @@
         }
     </script>
 
-    <!-- NAVBAR (Único y centralizado) -->
+    <!-- NAVBAR -->
     <nav class="navbar navbar-expand-md navbar-dark navbar-custom shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="administracion.html">
@@ -94,11 +92,12 @@
             <div class="collapse navbar-collapse" id="navAdmin">
                 <ul class="navbar-nav ms-auto" id="admin-nav-links">
                     <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="dashboard">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="jugadores">Jugadores</a></li>
                     <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="equipos">Equipos</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="jugadores">Jugadores</a></li>
                     <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="partidos">Partidos</a></li>
                     <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="goleadores">Goleadores</a></li>
                     <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="posiciones">Posiciones</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold" href="#" data-view="usuarios">Usuarios</a></li>
                     <li class="nav-item">
                         <a class="nav-link text-danger fw-bold" style="cursor:pointer;" onclick="logout()">
                             <i class="bi bi-box-arrow-right"></i> Salir
@@ -111,13 +110,10 @@
 
     <!-- CONTENIDO DINÁMICO -->
     <div class="container py-5 pt-4" id="content-area">
-        <!-- El contenido de la vista seleccionada se cargará aquí -->
+        <!-- Contenido SPA -->
     </div>
 
-    <!-- ============================================== -->
-    <!-- MODAL ÚNICO PARA OPERACIONES CRUD (EQUIPOS/JUGADORES) -->
-    <!-- Se actualiza con JS antes de mostrarse. -->
-    <!-- ============================================== -->
+    <!-- MODAL ÚNICO PARA OPERACIONES CRUD -->
     <div class="modal fade" id="crudModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -126,9 +122,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="crudModalBody">
-                    <!-- Formulario de Equipo o Jugador se insertará aquí -->
+                    <!-- Formularios inyectados aquí -->
                 </div>
-                <!-- El botón de submit debe estar dentro del formulario en el body -->
             </div>
         </div>
     </div>
@@ -144,7 +139,7 @@
         const crudModal = new bootstrap.Modal(document.getElementById('crudModal'));
         const navLinks = document.querySelectorAll('#admin-nav-links .nav-link');
         let currentView = 'dashboard';
-        const teamsCache = []; // Para almacenar equipos y usarlos en la vista Jugadores
+        const teamsCache = []; 
 
         document.addEventListener('DOMContentLoaded', () => {
             // Manejador de navegación
@@ -152,25 +147,21 @@
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     const view = e.target.getAttribute('data-view');
-                    if (view) {
-                        loadView(view);
-                    }
+                    if (view) loadView(view);
                 });
             });
 
-            // Cargar la vista por defecto
             loadView('dashboard');
         });
 
         // ===============================
-        // LÓGICA DE VISTAS
+        // 0. LÓGICA DE VISTAS PRINCIPAL
         // ===============================
 
         function loadView(viewName) {
             currentView = viewName;
             contentArea.classList.remove('loaded');
             
-            // Marcar el enlace activo
             navLinks.forEach(l => l.classList.remove('active'));
             document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
 
@@ -186,16 +177,26 @@
                 case 'jugadores':
                     renderJugadoresView();
                     break;
-                // Agrega más casos aquí
+                case 'usuarios': 
+                    renderUsuariosView();
+                    break;
+                case 'partidos': 
+                    renderPartidosView();
+                    break;
+                case 'goleadores': 
+                    renderGoleadoresView();
+                    break;
+                case 'posiciones': 
+                    renderPosicionesView();
+                    break;
                 default:
                     contentArea.innerHTML = `<h2 class="mt-4 text-danger">Vista "${viewName}" no implementada.</h2>`;
             }
-            // Mostrar contenido después de una pequeña espera para la animación
             setTimeout(() => contentArea.classList.add('loaded'), 50);
         }
         
-        // Vistas
         function renderDashboard() {
+            // ... (Módulo Dashboard sin cambios, solo placeholder) ...
             contentArea.innerHTML = `
                 <h2 class="fw-bold mb-3 text-center" style="color:var(--color-blue)">Bienvenido al Panel de Administración</h2>
                 <div class="row text-center mt-5">
@@ -219,11 +220,11 @@
                     </div>
                 </div>
             `;
-            // Lógica para cargar stats iría aquí
+            // Implementar la carga de estadísticas reales aquí
         }
 
         // ===============================
-        // MÓDULO EQUIPOS
+        // 1. MÓDULO EQUIPOS
         // ===============================
 
         async function renderEquiposView() {
@@ -260,7 +261,6 @@
                 if (!res.ok) throw new Error("Error al cargar equipos.");
                 const data = await res.json();
                 
-                // Actualizar caché para otras vistas (Jugadores)
                 teamsCache.splice(0, teamsCache.length, ...data); 
 
                 const cuerpo = document.querySelector("#tablaEquipos tbody");
@@ -272,6 +272,13 @@
 
                 data.forEach(eq => {
                     const logo = eq.logo_url ? `<img src="${eq.logo_url}" alt="Logo" height="30" class="rounded-circle">` : '<i class="bi bi-shield-fill-exclamation" style="font-size: 1.5rem;"></i>';
+                    
+                    // Escapar strings simples
+                    const nombre = eq.nombre_equipo.replace(/'/g, "\\'");
+                    const delegado = (eq.delegado || '').replace(/'/g, "\\'");
+                    const telefono = (eq.telefono || '').replace(/'/g, "\\'");
+                    const logoUrl = (eq.logo_url || '').replace(/'/g, "\\'");
+                    
                     cuerpo.innerHTML += `
                     <tr>
                       <td>${eq.id_equipo}</td>
@@ -280,10 +287,10 @@
                       <td>${eq.delegado || "N/A"}</td>
                       <td>${eq.telefono || "N/A"}</td>
                       <td>
-                        <button class="btn btn-warning btn-sm" onclick="prepararCrud('equipo', ${eq.id_equipo}, '${eq.nombre_equipo}', '${eq.delegado || ''}', '${eq.telefono || ''}', '${eq.logo_url || ''}')">
+                        <button class="btn btn-warning btn-sm" onclick="prepararCrud('equipo', ${eq.id_equipo}, '${nombre}', '${delegado}', '${telefono}', '${logoUrl}')">
                           <i class="bi bi-pencil-fill"></i>
                         </button>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarEntidad('equipos', ${eq.id_equipo}, '${eq.nombre_equipo}')">
+                        <button class="btn btn-danger btn-sm" onclick="eliminarEntidad('equipos', ${eq.id_equipo}, '${nombre}')">
                           <i class="bi bi-trash-fill"></i>
                         </button>
                       </td>
@@ -297,14 +304,12 @@
         }
 
         // ===============================
-        // MÓDULO JUGADORES
+        // 2. MÓDULO JUGADORES
         // ===============================
 
         async function renderJugadoresView() {
-            // Si la caché de equipos está vacía, la cargamos primero
             if (teamsCache.length === 0) await cargarEquipos(); 
 
-            // Generar las opciones del select de equipo
             const equipoOptions = teamsCache.map(eq => 
                 `<option value="${eq.id_equipo}">${eq.nombre_equipo}</option>`
             ).join('');
@@ -353,25 +358,19 @@
                 </div>
             `;
             
-            // Reasignar eventos
             document.getElementById("btnAgregarJugador").addEventListener('click', () => prepararCrud('jugador'));
             document.getElementById("busqueda-rapida-jugadores").addEventListener("submit", handleFiltroJugador);
             document.getElementById("btnMostrarTodos").addEventListener("click", () => cargarJugadores());
             document.getElementById("selectEquipoJugador").addEventListener("change", handleFiltroJugador);
 
-            // Cargar jugadores automáticamente si ya habías cargado antes
-            if (document.querySelector("#tablaJugadores tbody").textContent !== 'Cargando jugadores...') {
-                 cargarJugadores();
-            }
+            cargarJugadores();
         }
         
         async function cargarJugadores(filtro = "", valor = "", id_equipo = "") {
             let url = `${API_BASE}/jugadores`;
             let params = [];
-
             if (filtro && valor) params.push(`filtro=${filtro}&valor=${encodeURIComponent(valor)}`);
             if (id_equipo) params.push(`id_equipo=${id_equipo}`);
-
             if (params.length) url += "?" + params.join("&");
 
             try {
@@ -407,7 +406,8 @@
 
             jugadores.forEach(j => {
                 const equipoNombre = teamsCache.find(t => t.id_equipo == j.id_equipo)?.nombre_equipo || 'Sin Equipo';
-                const editParams = JSON.stringify(j).replace(/'/g, "\\'"); // Escapar comillas para pasar el objeto
+                // Usar JSON.stringify para pasar el objeto completo de forma segura
+                const editParams = JSON.stringify(j).replace(/'/g, "\\'"); 
                 
                 cuerpo.innerHTML += `
                 <tr>
@@ -433,16 +433,282 @@
         }
 
         // ===============================
-        // LÓGICA CRUD ÚNICA (Compartida)
+        // 3. MÓDULO USUARIOS
         // ===============================
 
-        /**
-         * Prepara el modal con el formulario correcto (Equipo o Jugador)
-         */
+        async function renderUsuariosView() {
+            contentArea.innerHTML = `
+                <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Gestión de Usuarios Admin</h2>
+                <div class="d-flex justify-content-end mb-3">
+                    <button class="btn btn-success btn-admin" id="btnAgregarUsuario">
+                        <i class="bi bi-person-plus"></i> Agregar Usuario
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle text-center shadow" id="tablaUsuarios">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>ID (UUID)</th>
+                                <th>Email</th>
+                                <th>Nombre</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody><tr><td colspan="6">Cargando usuarios...</td></tr></tbody>
+                    </table>
+                </div>
+            `;
+            document.getElementById('btnAgregarUsuario').addEventListener('click', () => prepararCrud('usuario'));
+            await cargarUsuarios();
+        }
+
+        async function cargarUsuarios() {
+            try {
+                // Endpoint local que obtiene la lista de usuarios (asumiendo que tiene la lógica de Auth y DB)
+                const res = await fetch(`${API_BASE}/usuarios`); 
+                if (!res.ok) throw new Error("Error al cargar usuarios.");
+                const data = await res.json();
+                
+                const cuerpo = document.querySelector("#tablaUsuarios tbody");
+                cuerpo.innerHTML = "";
+
+                data.forEach(u => {
+                    const estadoBadge = u.estado ? 
+                        `<span class="badge bg-success">Activo</span>` : 
+                        `<span class="badge bg-danger">Inactivo</span>`;
+                    
+                    const editParams = JSON.stringify(u).replace(/'/g, "\\'"); 
+                    
+                    cuerpo.innerHTML += `
+                    <tr>
+                      <td>${u.id.substring(0, 8)}...</td>
+                      <td class="text-start">${u.email}</td>
+                      <td>${u.nombre_completo || 'N/A'}</td>
+                      <td>${u.rol}</td>
+                      <td>${estadoBadge}</td>
+                      <td>
+                        <button class="btn btn-warning btn-sm" onclick="prepararCrud('usuario', ${editParams})">
+                          <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarEntidad('usuarios', '${u.id}', '${u.email}')">
+                          <i class="bi bi-trash-fill"></i>
+                        </button>
+                      </td>
+                    </tr>`;
+                });
+            } catch (error) {
+                console.error("Error cargando usuarios:", error);
+                document.querySelector("#tablaUsuarios tbody").innerHTML = 
+                    `<tr><td colspan="6" class="text-danger">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // ===============================
+        // 4. MÓDULO PARTIDOS / FIXTURE
+        // ===============================
+
+        async function renderPartidosView() {
+            contentArea.innerHTML = `
+                <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Gestión de Partidos / Fixture</h2>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle text-center shadow" id="tablaPartidos">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>Jornada</th>
+                                <th>Fecha y Hora</th>
+                                <th>Local</th>
+                                <th>Resultado</th>
+                                <th>Visitante</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody><tr><td colspan="7">Cargando fixture...</td></tr></tbody>
+                    </table>
+                </div>
+            `;
+            await cargarEquipos(); // Asegurar caché de equipos
+            await cargarPartidos();
+        }
+
+        async function cargarPartidos() {
+            try {
+                const res = await fetch(`${API_BASE}/partidos`); 
+                if (!res.ok) throw new Error("Error al cargar partidos.");
+                const data = await res.json();
+                
+                const cuerpo = document.querySelector("#tablaPartidos tbody");
+                cuerpo.innerHTML = "";
+
+                data.forEach(p => {
+                    const local = teamsCache.find(t => t.id_equipo == p.id_equipo_local)?.nombre_equipo || 'Local Desconocido';
+                    const visitante = teamsCache.find(t => t.id_equipo == p.id_equipo_visitante)?.nombre_equipo || 'Visitante Desconocido';
+                    
+                    const marcador = p.estado === 'Jugado' ? 
+                                     `${p.marcador_local || 0} - ${p.marcador_visitante || 0}` : 'vs';
+
+                    const estadoBadge = p.estado === 'Pendiente' ? `<span class="badge bg-warning text-dark">Pendiente</span>` :
+                                        p.estado === 'Jugado' ? `<span class="badge bg-success">Finalizado</span>` :
+                                        `<span class="badge bg-danger">Aplazado</span>`;
+
+                    const editParams = JSON.stringify(p).replace(/'/g, "\\'"); 
+
+                    cuerpo.innerHTML += `
+                    <tr>
+                      <td>${p.jornada || 'N/A'}</td>
+                      <td>${new Date(p.fecha).toLocaleDateString()} ${p.hora || ''}</td>
+                      <td class="text-end fw-bold">${local}</td>
+                      <td>${marcador}</td>
+                      <td class="text-start fw-bold">${visitante}</td>
+                      <td>${estadoBadge}</td>
+                      <td>
+                        <button class="btn btn-primary btn-sm" onclick="prepararCrud('resultado', ${editParams})">
+                          <i class="bi bi-gear-fill"></i> Gest. Resultado
+                        </button>
+                      </td>
+                    </tr>`;
+                });
+            } catch (error) {
+                console.error("Error cargando partidos:", error);
+                document.querySelector("#tablaPartidos tbody").innerHTML = 
+                    `<tr><td colspan="7" class="text-danger">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // ===============================
+        // 5. MÓDULO GOLEADORES (Ranking)
+        // ===============================
+
+        async function renderGoleadoresView() {
+            contentArea.innerHTML = `
+                <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Tabla de Goleadores (Ranking)</h2>
+                <p class="text-muted">Esta tabla se actualiza automáticamente con los goles registrados en los partidos.</p>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle text-center shadow" id="tablaGoleadores">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre Completo</th>
+                                <th>Equipo</th>
+                                <th>Goles</th>
+                                <th>Foto</th> <!-- Espacio para la foto si tienes la URL en la DB -->
+                            </tr>
+                        </thead>
+                        <tbody><tr><td colspan="5">Cargando ranking...</td></tr></tbody>
+                    </table>
+                </div>
+            `;
+            await cargarGoleadores();
+        }
+
+        async function cargarGoleadores() {
+            try {
+                // Endpoint que ya debe hacer JOIN con jugadores y equipos, y ordenar por Goles.
+                const res = await fetch(`${API_BASE}/goleadores/ranking`); 
+                if (!res.ok) throw new Error("Error al cargar goleadores.");
+                const data = await res.json();
+                
+                // Asegurar caché de equipos para el nombre
+                if (teamsCache.length === 0) await cargarEquipos(); 
+
+                const cuerpo = document.querySelector("#tablaGoleadores tbody");
+                cuerpo.innerHTML = "";
+
+                data.forEach((g, index) => {
+                    const equipoNombre = teamsCache.find(t => t.id_equipo == g.id_equipo)?.nombre_equipo || g.nombre_equipo || 'N/A';
+                    
+                    cuerpo.innerHTML += `
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td class="text-start">${g.nombres} ${g.apellidos}</td>
+                      <td>${equipoNombre}</td>
+                      <td class="fw-bold">${g.goles}</td>
+                      <td>
+                        <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
+                        <!-- Aquí iría una foto si tu tabla goleadores o jugadores la tiene -->
+                      </td>
+                    </tr>`;
+                });
+            } catch (error) {
+                console.error("Error cargando goleadores:", error);
+                document.querySelector("#tablaGoleadores tbody").innerHTML = 
+                    `<tr><td colspan="5" class="text-danger">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // ===============================
+        // 6. MÓDULO POSICIONES (Tabla)
+        // ===============================
+
+        async function renderPosicionesView() {
+            contentArea.innerHTML = `
+                <h2 class="fw-bold mb-3" style="color:var(--color-blue)">Tabla de Posiciones</h2>
+                <p class="text-muted">Esta tabla se calcula en el backend con los resultados de los partidos.</p>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle text-center shadow" id="tablaPosiciones">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>#</th>
+                                <th>Equipo</th>
+                                <th>PJ</th>
+                                <th>PG</th>
+                                <th>PE</th>
+                                <th>PP</th>
+                                <th>GF</th>
+                                <th>GC</th>
+                                <th>DIF</th>
+                                <th>PTS</th>
+                            </tr>
+                        </thead>
+                        <tbody><tr><td colspan="10">Cargando tabla de posiciones...</td></tr></tbody>
+                    </table>
+                </div>
+            `;
+            await cargarPosiciones();
+        }
+
+        async function cargarPosiciones() {
+            try {
+                // Endpoint que devuelve la tabla de posiciones calculada (asumiendo que tiene la lógica de cálculo)
+                const res = await fetch(`${API_BASE}/posiciones`); 
+                if (!res.ok) throw new Error("Error al cargar posiciones.");
+                const data = await res.json();
+                
+                const cuerpo = document.querySelector("#tablaPosiciones tbody");
+                cuerpo.innerHTML = "";
+
+                data.forEach((p, index) => {
+                    // Asumimos que los campos vienen como: nombre_equipo, pj, pg, pe, pp, gf, gc, dif, pts
+                    cuerpo.innerHTML += `
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td class="text-start fw-bold">${p.nombre_equipo}</td>
+                      <td>${p.pj}</td>
+                      <td>${p.pg}</td>
+                      <td>${p.pe}</td>
+                      <td>${p.pp}</td>
+                      <td>${p.gf}</td>
+                      <td>${p.gc}</td>
+                      <td class="fw-bold">${p.dif}</td>
+                      <td class="fw-bold bg-warning text-dark">${p.pts}</td>
+                    </tr>`;
+                });
+            } catch (error) {
+                console.error("Error cargando posiciones:", error);
+                document.querySelector("#tablaPosiciones tbody").innerHTML = 
+                    `<tr><td colspan="10" class="text-danger">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // ===============================
+        // 7. LÓGICA CRUD ÚNICA (Modals & Forms)
+        // ===============================
+
         function prepararCrud(tipo, ...params) {
             const modalLabel = document.getElementById('crudModalLabel');
             const modalBody = document.getElementById('crudModalBody');
-            
             modalBody.innerHTML = '';
             
             if (tipo === 'equipo') {
@@ -451,10 +717,20 @@
                 modalBody.innerHTML = getEquipoForm(id, nombre, delegado, telefono, logo);
                 document.getElementById('equipoForm').addEventListener('submit', handleEquipoSubmit);
             } else if (tipo === 'jugador') {
-                const jugador = params[0] || {}; // Puede ser un objeto vacío para crear
+                const jugador = params[0] || {}; 
                 modalLabel.textContent = jugador.id_jugador ? `Editar Jugador: ${jugador.nombres}` : 'Agregar Nuevo Jugador';
                 modalBody.innerHTML = getJugadorForm(jugador);
                 document.getElementById('jugadorForm').addEventListener('submit', handleJugadorSubmit);
+            } else if (tipo === 'usuario') { // NUEVO
+                const usuario = params[0] || {};
+                modalLabel.textContent = usuario.id ? `Editar Usuario: ${usuario.email}` : 'Crear Nuevo Usuario';
+                modalBody.innerHTML = getUsuarioForm(usuario);
+                document.getElementById('usuarioForm').addEventListener('submit', handleUsuarioSubmit);
+            } else if (tipo === 'resultado') { // NUEVO
+                const partido = params[0] || {};
+                modalLabel.textContent = `Gestión de Resultado: Jornada ${partido.jornada || 'N/A'}`;
+                modalBody.innerHTML = getResultadoForm(partido);
+                document.getElementById('resultadoForm').addEventListener('submit', handleResultadoSubmit);
             }
 
             crudModal.show();
@@ -494,16 +770,8 @@
             return `
             <form id="jugadorForm">
                 <input type="hidden" id="jugador_id" value="${j.id_jugador || ''}">
-
-                <div class="mb-3">
-                    <label for="nombres" class="form-label">Nombres</label>
-                    <input type="text" class="form-control" id="nombres" value="${j.nombres || ''}" required>
-                </div>
-                <div class="mb-3">
-                    <label for="apellidos" class="form-label">Apellidos</label>
-                    <input type="text" class="form-control" id="apellidos" value="${j.apellidos || ''}" required>
-                </div>
-
+                <div class="mb-3"><label for="nombres" class="form-label">Nombres</label><input type="text" class="form-control" id="nombres" value="${j.nombres || ''}" required></div>
+                <div class="mb-3"><label for="apellidos" class="form-label">Apellidos</label><input type="text" class="form-control" id="apellidos" value="${j.apellidos || ''}" required></div>
                 <div class="mb-3">
                     <label for="id_equipo_jugador" class="form-label">Equipo</label>
                     <select class="form-select" id="id_equipo_jugador" required>
@@ -511,18 +779,10 @@
                         ${equipoOptions}
                     </select>
                 </div>
-                
                 <div class="row">
-                    <div class="col-6 mb-3">
-                        <label for="numero_camiseta" class="form-label"># Camiseta</label>
-                        <input type="number" class="form-control" id="numero_camiseta" value="${j.numero_camiseta || ''}">
-                    </div>
-                    <div class="col-6 mb-3">
-                        <label for="posicion" class="form-label">Posición</label>
-                        <input type="text" class="form-control" id="posicion" value="${j.posicion || ''}">
-                    </div>
+                    <div class="col-6 mb-3"><label for="numero_camiseta" class="form-label"># Camiseta</label><input type="number" class="form-control" id="numero_camiseta" value="${j.numero_camiseta || ''}"></div>
+                    <div class="col-6 mb-3"><label for="posicion" class="form-label">Posición</label><input type="text" class="form-control" id="posicion" value="${j.posicion || ''}"></div>
                 </div>
-
                 <div class="mb-3">
                     <label for="estado_jugador" class="form-label">Estado</label>
                     <select class="form-select" id="estado_jugador" required>
@@ -530,12 +790,89 @@
                         <option value="Inactivo" ${j.estado === 'Inactivo' ? 'selected' : ''}>Inactivo</option>
                     </select>
                 </div>
-
                 <button type="submit" class="btn btn-admin w-100">Guardar Jugador</button>
             </form>`;
         }
+        
+        function getUsuarioForm(u = {}) {
+            const isEdit = !!u.id;
+            return `
+            <form id="usuarioForm">
+                <input type="hidden" id="usuario_id" value="${u.id || ''}">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" value="${u.email || ''}" ${isEdit ? 'disabled' : ''} required>
+                    ${isEdit ? '<small class="text-muted">El email no se puede editar.</small>' : ''}
+                </div>
+                <div class="mb-3 ${isEdit ? 'd-none' : ''}">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="password" ${isEdit ? '' : 'required'} placeholder="${isEdit ? 'Solo para nuevos usuarios' : 'Mínimo 6 caracteres'}">
+                </div>
+                <div class="mb-3">
+                    <label for="nombre_completo" class="form-label">Nombre Completo</label>
+                    <input type="text" class="form-control" id="nombre_completo" value="${u.nombre_completo || ''}">
+                </div>
+                <div class="mb-3">
+                    <label for="rol" class="form-label">Rol</label>
+                    <select class="form-select" id="rol" required>
+                        <option value="usuario" ${u.rol === 'usuario' ? 'selected' : ''}>Usuario (Web Pública)</option>
+                        <option value="admin" ${u.rol === 'admin' ? 'selected' : ''}>Administrador (Panel Total)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="estado_usuario" class="form-label">Estado</label>
+                    <select class="form-select" id="estado_usuario" required>
+                        <option value="true" ${u.estado ? 'selected' : ''}>Activo</option>
+                        <option value="false" ${!u.estado ? 'selected' : ''}>Inactivo</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-admin w-100">${isEdit ? 'Actualizar Usuario' : 'Crear Usuario'}</button>
+            </form>`;
+        }
 
-        // --- MANEJADORES DE SUBMIT ---
+        function getResultadoForm(p = {}) {
+            const local = teamsCache.find(t => t.id_equipo == p.id_equipo_local)?.nombre_equipo || 'Local';
+            const visitante = teamsCache.find(t => t.id_equipo == p.id_equipo_visitante)?.nombre_equipo || 'Visitante';
+            
+            const golesLocal = p.marcador_local || p.goles_local || 0;
+            const golesVisitante = p.marcador_visitante || p.goles_visitante || 0;
+
+            return `
+            <form id="resultadoForm">
+                <input type="hidden" id="partido_id_resultado" value="${p.id_partido}">
+                <h4 class="text-center mb-4">${local} vs ${visitante}</h4>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label for="goles_local" class="form-label">${local} (Goles)</label>
+                        <input type="number" class="form-control" id="goles_local" value="${golesLocal}" min="0" required>
+                    </div>
+                    <div class="col-6">
+                        <label for="goles_visitante" class="form-label">${visitante} (Goles)</label>
+                        <input type="number" class="form-control" id="goles_visitante" value="${golesVisitante}" min="0" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="estado_partido" class="form-label">Estado del Partido</label>
+                    <select class="form-select" id="estado_partido" required>
+                        <option value="Pendiente" ${p.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                        <option value="Jugado" ${p.estado === 'Jugado' ? 'selected' : ''}>Finalizado (Actualizar marcador)</option>
+                        <option value="Aplazado" ${p.estado === 'Aplazado' ? 'selected' : ''}>Aplazado</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="observaciones" class="form-label">Observaciones</label>
+                    <textarea class="form-control" id="observaciones">${p.observaciones || ''}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-admin w-100">Guardar Resultado y Estado</button>
+            </form>`;
+        }
+
+
+        // --- MANEJADORES DE SUBMIT (Compartidos) ---
 
         async function handleEquipoSubmit(e) {
             e.preventDefault();
@@ -560,7 +897,7 @@
             const url = id ? `${API_BASE}/jugadores/${id}` : `${API_BASE}/jugadores`;
             
             const jugadorData = {
-                id_equipo: document.getElementById('id_equipo_jugador').value,
+                id_equipo: document.getElementById('id_equipo_jugador').value || null,
                 nombres: document.getElementById('nombres').value,
                 apellidos: document.getElementById('apellidos').value,
                 numero_camiseta: document.getElementById('numero_camiseta').value || null,
@@ -571,7 +908,44 @@
             await crudOperation(url, method, jugadorData, id, () => cargarJugadores());
         }
 
-        // --- FUNCIÓN CRUD GENÉRICA ---
+        async function handleUsuarioSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('usuario_id').value;
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API_BASE}/usuarios/${id}` : `${API_BASE}/usuarios`;
+            
+            const isEdit = !!id;
+
+            const usuarioData = {
+                email: document.getElementById('email').value,
+                nombre_completo: document.getElementById('nombre_completo').value,
+                rol: document.getElementById('rol').value,
+                estado: document.getElementById('estado_usuario').value === 'true',
+            };
+
+            if (!isEdit) {
+                usuarioData.password = document.getElementById('password').value; 
+            }
+
+            await crudOperation(url, method, usuarioData, id, cargarUsuarios);
+        }
+
+        async function handleResultadoSubmit(e) {
+            e.preventDefault();
+            const id_partido = document.getElementById('partido_id_resultado').value;
+            const url = `${API_BASE}/partidos/resultado/${id_partido}`; 
+            
+            const resultadoData = {
+                goles_local: parseInt(document.getElementById('goles_local').value),
+                goles_visitante: parseInt(document.getElementById('goles_visitante').value),
+                estado: document.getElementById('estado_partido').value,
+                observaciones: document.getElementById('observaciones').value,
+            };
+
+            await crudOperation(url, 'PUT', resultadoData, id_partido, cargarPartidos);
+        }
+
+        // --- FUNCIÓN CRUD GENÉRICA (Base) ---
 
         async function crudOperation(url, method, data, id, successCallback) {
             try {
@@ -588,14 +962,14 @@
 
                 alert(`${method === 'POST' ? 'Creado' : 'Actualizado'} correctamente.`);
                 crudModal.hide();
-                successCallback(); // Recargar la vista actual
+                successCallback();
             } catch (error) {
                 console.error("Error CRUD:", error);
                 alert(`Hubo un error al guardar: ${error.message}`);
             }
         }
 
-        // --- FUNCIÓN ELIMINAR GENÉRICA ---
+        // --- FUNCIÓN ELIMINAR GENÉRICA (Base) ---
 
         window.eliminarEntidad = async (entidad, id, nombre) => {
             if (!confirm(`¿Estás seguro de eliminar "${nombre}" de ${entidad}? Esta acción es irreversible.`)) {
@@ -611,12 +985,11 @@
                 }
 
                 alert(`"${nombre}" eliminado correctamente.`);
-                // Recargar la vista dependiendo de la entidad actual
                 if (currentView === entidad) {
                     if (entidad === 'equipos') cargarEquipos();
                     if (entidad === 'jugadores') cargarJugadores();
+                    if (entidad === 'usuarios') cargarUsuarios();
                 }
-
             } catch (error) {
                 console.error("Error al eliminar:", error);
                 alert(`No se pudo eliminar: ${error.message}. Asegúrate de que no tenga dependencias.`);

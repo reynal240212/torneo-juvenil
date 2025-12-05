@@ -8,6 +8,17 @@ const SUPABASE_KEY =
 let supabaseClient = null;
 
 // ===============================
+// FUNCIONES DE UTILIDAD
+// ===============================
+
+// Verifica si la cadena tiene formato de email
+function isEmail(str) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(str);
+}
+
+
+// ===============================
 // INICIAR AL CARGAR
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
@@ -26,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ===============================
 function initializeSupabase() {
   try {
+    // La variable window.supabase es accesible porque la cargaste en el HTML
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     console.log("✅ Supabase inicializado correctamente");
   } catch (error) {
@@ -45,12 +57,13 @@ function attachFormListener() {
 }
 
 // ===============================
-// LOGIN PRINCIPAL (POR EMAIL)
+// LOGIN PRINCIPAL (POR EMAIL O USUARIO)
 // ===============================
 async function handleLogin(e) {
   e.preventDefault();
 
-  const email = document.getElementById("usuario").value.trim();
+  // El campo de entrada en el HTML tiene el ID "usuario", que puede ser email o nombre de usuario
+  const searchInput = document.getElementById("usuario").value.trim();
   const password = document.getElementById("password").value.trim();
 
   const loginMsg = document.getElementById("loginMsg");
@@ -58,7 +71,7 @@ async function handleLogin(e) {
   const loadingSpinner = document.getElementById("loadingSpinner");
   const btnText = document.getElementById("btnText");
 
-  if (!email || !password) {
+  if (!searchInput || !password) {
     showError(loginMsg, "Completa todos los campos.");
     return;
   }
@@ -67,16 +80,27 @@ async function handleLogin(e) {
   clearMessage(loginMsg);
 
   try {
-    // 1. Buscar por EMAIL en la tabla usuarios para obtener ROL y ESTADO
-    // NOTA: Se requiere configurar RLS para que el rol 'anon' pueda leer esta tabla
+    let query;
+    let columnaBusqueda;
+
+    // Determinar si buscar por 'email' o por 'usuario'
+    if (isEmail(searchInput)) {
+        columnaBusqueda = "email";
+    } else {
+        columnaBusqueda = "usuario";
+    }
+    
+    console.log(`🔍 Buscando en tabla 'usuarios' por ${columnaBusqueda}...`);
+
+    // 1. Buscar en la tabla usuarios para obtener ROL, ESTADO y, crucialmente, el EMAIL
     const { data: userRow, error: userError } = await supabaseClient
       .from("usuarios")
       .select("id, email, rol, estado")
-      .eq("email", email)
+      .eq(columnaBusqueda, searchInput)
       .single();
 
     if (userError || !userRow) {
-      // Si hay error (406, 404) o no encuentra la fila, el usuario no existe.
+      // Si hay error (ej. RLS o not found)
       throw new Error("Credenciales incorrectas o usuario no registrado.");
     }
 
@@ -85,18 +109,20 @@ async function handleLogin(e) {
     }
 
     // 2. Autenticación real usando Email + Password con Supabase Auth
+    // ¡IMPORTANTE! signInWithPassword SIEMPRE usa el campo 'email' de la DB
+    console.log(`🔐 Iniciando sesión con Email: ${userRow.email}`);
     const { error: authError } = await supabaseClient.auth.signInWithPassword({
-      email: userRow.email,
+      email: userRow.email, // Se usa el email recuperado, no el input
       password: password,
     });
 
     if (authError) {
-      console.error(authError);
+      console.error("Error de autenticación de Supabase:", authError);
       throw new Error("Correo o contraseña incorrectos.");
     }
 
     // 3. Guardar sesión y redirigir
-    localStorage.setItem("usuario_id", userRow.id); // Guardar el ID del usuario
+    localStorage.setItem("usuario_id", userRow.id);
     localStorage.setItem("email_admin", userRow.email);
     localStorage.setItem("rol", userRow.rol);
     localStorage.setItem("login_timestamp", new Date().toISOString());

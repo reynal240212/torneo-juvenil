@@ -1,9 +1,19 @@
 // scripts/calendario.js
-// 1. IMPORTAR el cliente de Supabase ya inicializado desde el archivo central.
-import { supabase } from './supabaseClient.js';
+// 1. IMPORTAR y crear el cliente en el mismo archivo
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-// ** NO definir credenciales aquí **
-// ** NO llamar a createClient() aquí **
+// 🚨 CREDENCIALES - COPIADAS DE SU ARCHIVO partidos.html
+const SUPABASE_URL = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
+
+// 2. Creación del cliente (esto fue lo que causaba el conflicto de re-definición antes)
+let supabase = null;
+try {
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (e) {
+    console.error("Error al crear el cliente Supabase:", e);
+}
+
 
 function obtenerClaseEstado(estado) {
   // Personaliza según los estados que tienes en la BD
@@ -24,11 +34,8 @@ function obtenerClaseEstado(estado) {
 }
 
 async function cargarPartidos() {
-  // 2. USAR el cliente Supabase importado para la consulta.
-  // Si 'supabase' es null o undefined aquí, el problema está en 'supabaseClient.js'
   if (!supabase) {
-      console.error("El cliente Supabase no está disponible.");
-      document.getElementById("tablaPartidos").innerHTML = `<tr><td colspan="7" class="text-danger">Error de inicialización del sistema.</td></tr>`;
+      document.getElementById("tablaPartidos").innerHTML = `<tr><td colspan="7" class="text-danger">Error: Cliente Supabase no inicializado.</td></tr>`;
       return;
   }
     

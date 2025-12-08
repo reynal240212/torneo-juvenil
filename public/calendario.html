@@ -43,12 +43,11 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   
-  <!-- 
-    CORRECCIÓN CRÍTICA:
-    1. Cargar el script que inicializa y EXPORTA el cliente Supabase.
-    2. Cargar el script que IMPORTA y USA el cliente.
-  -->
-  <script type="module" src="scripts/supabaseClient.js"></script> 
+  <!-- PASO CRÍTICO: Cargar el CDN de forma tradicional para definir window.supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+
+  <!-- 2. Cargar el script de lógica que importa el cliente -->
   <script type="module" src="scripts/calendario.js"></script>
 </body>
 </html>

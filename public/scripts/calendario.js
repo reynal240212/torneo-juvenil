@@ -1,8 +1,9 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+// scripts/calendario.js
+// 1. IMPORTAR el cliente de Supabase ya inicializado desde el archivo central.
+import { supabase } from './supabaseClient.js';
 
-const supabaseUrl = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
-const supabase = createClient(supabaseUrl, supabaseKey);
+// ** NO definir credenciales aquí **
+// ** NO llamar a createClient() aquí **
 
 function obtenerClaseEstado(estado) {
   // Personaliza según los estados que tienes en la BD
@@ -23,6 +24,14 @@ function obtenerClaseEstado(estado) {
 }
 
 async function cargarPartidos() {
+  // 2. USAR el cliente Supabase importado para la consulta.
+  // Si 'supabase' es null o undefined aquí, el problema está en 'supabaseClient.js'
+  if (!supabase) {
+      console.error("El cliente Supabase no está disponible.");
+      document.getElementById("tablaPartidos").innerHTML = `<tr><td colspan="7" class="text-danger">Error de inicialización del sistema.</td></tr>`;
+      return;
+  }
+    
   const { data, error } = await supabase
     .from("vista_resultados")
     .select("*")
@@ -32,9 +41,10 @@ async function cargarPartidos() {
   const tabla = document.getElementById("tablaPartidos");
   tabla.innerHTML = "";
   if (error || !data) {
-    tabla.innerHTML = `<tr><td colspan="7" class="text-danger">Error al cargar partidos.</td></tr>`;
+    tabla.innerHTML = `<tr><td colspan="7" class="text-danger">Error al cargar partidos: ${error.message || 'Desconocido'}.</td></tr>`;
     return;
   }
+  
   data.forEach((p) => {
     const fechaFormateada = p.fecha ? new Date(p.fecha).toLocaleDateString('es-CO') : '-';
     const resultadoHTML = (p.goles_local !== null && p.goles_visitante !== null) ? 

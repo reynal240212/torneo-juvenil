@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <!-- Meta datos y dependencias -->
   <meta charset="utf-8" />
@@ -239,15 +240,42 @@
 </head>
 
 <body>
-  <div id="nav-placeholder"></div>
-  <div id="hero-placeholder"></div>
-
-  <main class="container">
-    <h1 class="titulo-pag text-center">Partidos y Resultados</h1>
-    <div class="container bg-content">
-      <nav id="navFechas" class="nav-fechas"></nav>
-      <ul id="partidosList" class="list-unstyled" aria-live="polite" aria-atomic="true"></ul>
+  <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
+    <div>
+      <label for="filtroFecha" class="form-label mb-1">Selecciona fecha</label>
+      <input type="date" id="filtroFecha" class="form-control form-control-sm">
     </div>
+
+    <div>
+      <label for="filtroMes" class="form-label mb-1">Mes</label>
+      <select id="filtroMes" class="form-select form-select-sm">
+        <option value="">Todos</option>
+        <option value="0">Enero</option>
+        <option value="1">Febrero</option>
+        <option value="2">Marzo</option>
+        <option value="3">Abril</option>
+        <option value="4">Mayo</option>
+        <option value="5">Junio</option>
+        <option value="6">Julio</option>
+        <option value="7">Agosto</option>
+        <option value="8">Septiembre</option>
+        <option value="9">Octubre</option>
+        <option value="10">Noviembre</option>
+        <option value="11">Diciembre</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="filtroAnio" class="form-label mb-1">Año</label>
+      <input type="number" id="filtroAnio" class="form-control form-control-sm" min="2020" max="2100">
+    </div>
+
+    <button id="btnBuscarFecha" class="btn btn-sm btn-light ms-auto mt-3 mt-md-0">
+      <i class="fa-solid fa-magnifying-glass"></i> Buscar
+    </button>
+  </div>
+
+  <ul id="partidosList" class="list-unstyled" aria-live="polite" aria-atomic="true"></ul>
   </main>
 
   <div id="footer-placeholder"></div>
@@ -277,4 +305,5 @@
   <!-- Lógica de la página (usa window.supabase) -->
   <script src="scripts/partidosPage.js"></script>
 </body>
+
 </html>

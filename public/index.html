@@ -74,78 +74,111 @@
   <div id="hero-placeholder"></div>
 
   <main class="container" style="max-width:1240px;">
-    <!-- Info General -->
-    <section class="row mb-4">
-      <div class="col-lg-4 col-md-5 mb-3">
-        <div class="card-torneo info-shadow h-100">
-          <h3 class="mb-2"><i class="fas fa-info-circle"></i> Sobre el Torneo</h3>
-          <p>El Torneo Juvenil La Pradera reúne los mejores equipos jóvenes de la región en una experiencia de fútbol
-            inolvidable.</p>
-          <a href="reglamento.html" class="btn-torneo mt-2"><i class="fas fa-scroll"></i> Ver Reglamento</a>
-        </div>
-      </div>
-      <div class="col-lg-8 col-md-7 mb-3">
-        <div class="card-torneo info-shadow h-100 d-flex align-items-center bg-lightblue"
-          style="background: linear-gradient(100deg, #e3f6fe 55%, #a7e6fb 100%);">
-          <div>
-            <h1 class="display-5 fw-bold mb-2" style="color:#0082C9;"><i class="fas fa-futbol"></i> ¡Bienvenidos!</h1>
-            <p class="lead mb-0">Consulta posiciones, resultados y próximos partidos aquí. Sigue a tu equipo favorito y
-              vive la pasión juvenil.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- Tabla Partidos -->
-    <div class="card-torneo mb-4">
-      <h3 class="mb-3"><i class="fas fa-calendar-days"></i> Encuentros Recientes y Próximos</h3>
-      <div class="table-responsive">
-        <table class="table align-middle text-center table-hover mb-0">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Hora</th>
-              <th>Local</th>
-              <th>Visitante</th>
-              <th>Resultado</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody id="tablaPartidos">
-            <tr>
-              <td colspan="7" class="text-muted">Cargando partidos...</td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- Info General -->
+  <section class="row mb-4">
+    <div class="col-lg-4 col-md-5 mb-3">
+      <div class="card-torneo info-shadow h-100">
+        <h3 class="mb-2">
+          <i class="fas fa-info-circle"></i> Sobre el torneo
+        </h3>
+        <p>
+          El Torneo Juvenil La Pradera reúne a los mejores equipos de barrio en una competencia organizada,
+          con árbitros oficiales, reglamento claro y seguimiento estadístico partido a partido.
+        </p>
+        <p class="mb-2">
+          Aquí encontrarás toda la información actualizada de la temporada en curso.
+        </p>
+        <a href="reglamento.html" class="btn-torneo mt-2">
+          <i class="fas fa-scroll"></i> Ver reglamento completo
+        </a>
       </div>
     </div>
-    <!-- Tabla Posiciones -->
-    <div class="card-torneo mb-4">
-      <h3 class="mb-3"><i class="fas fa-ranking-star"></i> Tabla General</h3>
-      <div class="table-responsive">
-        <table class="table align-middle text-center table-hover mb-0">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Equipo</th>
-              <th>PJ</th>
-              <th>PG</th>
-              <th>PE</th>
-              <th>PP</th>
-              <th>GF</th>
-              <th>GC</th>
-              <th>DG</th>
-              <th>PTS</th>
-            </tr>
-          </thead>
-          <tbody id="tablaPosiciones">
-            <tr>
-              <td colspan="10" class="text-muted">Cargando posiciones...</td>
-            </tr>
-          </tbody>
-        </table>
+
+    <div class="col-lg-8 col-md-7 mb-3">
+      <div class="card-torneo info-shadow h-100 d-flex align-items-center bg-lightblue"
+           style="background: linear-gradient(100deg, #e3f6fe 55%, #a7e6fb 100%);">
+        <div>
+          <h1 class="display-5 fw-bold mb-2" style="color:#0082C9;">
+            <i class="fas fa-futbol"></i> Bienvenido al panel oficial
+          </h1>
+          <p class="lead mb-1">
+            Consulta en tiempo real resultados, posiciones y próximos partidos del torneo juvenil
+            más importante de La Pradera.
+          </p>
+          <p class="mb-0">
+            Actualizamos la información después de cada jornada para que jugadores, familias y cuerpos técnicos
+            sigan de cerca el rendimiento de sus equipos.
+          </p>
+        </div>
       </div>
     </div>
-  </main>
+  </section>
+
+  <!-- Tabla Partidos -->
+  <div class="card-torneo mb-4">
+    <h3 class="mb-3">
+      <i class="fas fa-calendar-days"></i> Encuentros recientes y próximos
+    </h3>
+    <p class="text-muted mb-2">
+      Esta tabla muestra los últimos resultados y los próximos partidos programados del torneo.
+      La información se alimenta directamente desde la base de datos oficial del campeonato.
+    </p>
+    <div class="table-responsive">
+      <table class="table align-middle text-center table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Local</th>
+            <th>Visitante</th>
+            <th>Resultado</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tablaPartidos">
+          <tr>
+            <td colspan="7" class="text-muted">Cargando partidos...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tabla Posiciones -->
+  <div class="card-torneo mb-4">
+    <h3 class="mb-3">
+      <i class="fas fa-ranking-star"></i> Tabla general de posiciones
+    </h3>
+    <p class="text-muted mb-2">
+      La tabla se actualiza automáticamente al registrar cada resultado e incluye partidos jugados,
+      goles a favor y en contra, diferencia de gol y puntos acumulados.
+    </p>
+    <div class="table-responsive">
+      <table class="table align-middle text-center table-hover mb-0">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Equipo</th>
+            <th>PJ</th>
+            <th>PG</th>
+            <th>PE</th>
+            <th>PP</th>
+            <th>GF</th>
+            <th>GC</th>
+            <th>DG</th>
+            <th>PTS</th>
+          </tr>
+        </thead>
+        <tbody id="tablaPosiciones">
+          <tr>
+            <td colspan="10" class="text-muted">Cargando posiciones...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
   <div id="footer-placeholder"></div>
   <script>
     Promise.all([

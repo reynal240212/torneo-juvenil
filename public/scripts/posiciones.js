@@ -1,23 +1,35 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+// scripts/posiciones.js
+
+// Supabase llega como global desde el CDN en el HTML
+// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+const { createClient } = window.supabase;
 
 const supabaseUrl = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
-const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Crear cliente único
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
 // Vista: vista_posiciones
 async function cargarPosiciones() {
-  const { data, error } = await supabase
+  const tabla = document.getElementById("tablaPosiciones");
+  if (!tabla) return;
+
+  const { data, error } = await supabaseClient
     .from("vista_posiciones")
     .select("*")
     .order("puntos", { ascending: false })
     .order("diferencia_goles", { ascending: false })
     .order("goles_favor", { ascending: false });
-  const tabla = document.getElementById("tablaPosiciones");
+
   tabla.innerHTML = "";
+
   if (error || !data) {
     tabla.innerHTML = `<tr><td colspan="10" class="text-danger">Error al cargar posiciones.</td></tr>`;
+    console.error("Error cargarPosiciones:", error);
     return;
   }
+
   data.forEach((p, idx) => {
     tabla.innerHTML += `
       <tr>
@@ -34,4 +46,5 @@ async function cargarPosiciones() {
       </tr>`;
   });
 }
+
 document.addEventListener("DOMContentLoaded", cargarPosiciones);

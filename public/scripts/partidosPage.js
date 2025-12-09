@@ -18,8 +18,11 @@ if (!window.supabase) {
 
   // -------------------------------------------------------------
 
-  const navFechasEl = document.getElementById("navFechas");
   const partidosListEl = document.getElementById("partidosList");
+  const filtroFechaEl = document.getElementById("filtroFecha");
+  const filtroMesEl = document.getElementById("filtroMes");
+  const filtroAnioEl = document.getElementById("filtroAnio");
+  const btnBuscarFecha = document.getElementById("btnBuscarFecha");
   let partidosData = []; // Caché para guardar los datos de los partidos
 
   function iconoEvento(tipo) {
@@ -202,55 +205,36 @@ if (!window.supabase) {
     return `${year}-${month}-${day}`;
   };
 
-  const obtenerFechasTabs = (base = new Date()) => {
-    const fechas = [];
-    for (let i = -7; i <= 7; i++) {
-      const f = new Date(base);
-      f.setDate(base.getDate() + i);
-      fechas.push(f);
-    }
-    return fechas.map((f) => ({
-      label: f
-        .toLocaleDateString("es-CO", {
-          weekday: "short",
-          day: "2-digit",
-          month: "short",
-        })
-        .replace(".", ""),
-      value: getLocalISODate(f),
-    }));
-  };
-
-  const renderTabsFechas = (fechasArr, fechaActiva) => {
-    if (!navFechasEl) return;
-    navFechasEl.innerHTML = fechasArr
-      .map(
-        (f) =>
-          `<button class="nav-fecha-btn${
-            f.value === fechaActiva ? " active" : ""
-          }" data-fecha="${f.value}">${f.label}</button>`
-      )
-      .join("");
-  };
-
   // Inicialización
   document.addEventListener("DOMContentLoaded", async () => {
     const hoy = new Date();
     const hoyISO = getLocalISODate(hoy);
-    const tabs = obtenerFechasTabs(hoy);
-    renderTabsFechas(tabs, hoyISO);
+
+    // Setear valores iniciales de filtros
+    if (filtroFechaEl) filtroFechaEl.value = hoyISO;
+    if (filtroMesEl) filtroMesEl.value = String(hoy.getMonth());
+    if (filtroAnioEl) filtroAnioEl.value = String(hoy.getFullYear());
+
     await cargarPartidosPorFecha(hoyISO);
 
-    if (navFechasEl) {
-      navFechasEl.addEventListener("click", async (e) => {
-        const targetButton = e.target.closest(".nav-fecha-btn");
-        if (!targetButton) return;
-        const nuevaFecha = targetButton.getAttribute("data-fecha");
-        document
-          .querySelector(".nav-fecha-btn.active")
-          ?.classList.remove("active");
-        targetButton.classList.add("active");
-        await cargarPartidosPorFecha(nuevaFecha);
+    if (btnBuscarFecha && filtroFechaEl) {
+      btnBuscarFecha.addEventListener("click", async () => {
+        let fechaSeleccionada = filtroFechaEl.value; // yyyy-mm-dd
+
+        // Si no hay fecha pero sí mes/año, usar primer día del mes
+        if (!fechaSeleccionada && filtroMesEl && filtroAnioEl) {
+          const mes = filtroMesEl.value;
+          const anio = filtroAnioEl.value;
+          if (mes !== "" && anio) {
+            fechaSeleccionada = `${anio}-${String(
+              Number(mes) + 1
+            ).padStart(2, "0")}-01`;
+            filtroFechaEl.value = fechaSeleccionada;
+          }
+        }
+
+        if (!fechaSeleccionada) return;
+        await cargarPartidosPorFecha(fechaSeleccionada);
       });
     }
 

@@ -23,6 +23,7 @@ if (!window.supabase) {
   const filtroMesEl = document.getElementById("filtroMes");
   const filtroAnioEl = document.getElementById("filtroAnio");
   const btnBuscarFecha = document.getElementById("btnBuscarFecha");
+  const eventosModal = document.getElementById("eventosModal");
   let partidosData = []; // Caché para guardar los datos de los partidos
 
   function iconoEvento(tipo) {
@@ -96,9 +97,7 @@ if (!window.supabase) {
     `;
   }
 
-  // -------------------------------------------------------------
-  // Lógica del Modal
-  const eventosModal = document.getElementById("eventosModal");
+  // Lógica del modal
   if (eventosModal) {
     eventosModal.addEventListener("show.bs.modal", (event) => {
       const button = event.relatedTarget;
@@ -153,8 +152,6 @@ if (!window.supabase) {
     });
   }
 
-  // -------------------------------------------------------------
-
   async function renderPartidos(partidos) {
     if (!partidosListEl) return;
     if (!partidos || partidos.length === 0) {
@@ -197,7 +194,7 @@ if (!window.supabase) {
     }
   }
 
-  // --- Auxiliares de fechas ---
+  // Auxiliar fecha local ISO
   const getLocalISODate = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");

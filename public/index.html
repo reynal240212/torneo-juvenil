@@ -2,69 +2,233 @@
 <html lang="es">
 
 <head>
+  <!-- Meta datos y dependencias (sin cambios) -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Inicio - Torneo Juvenil La Pradera</title>
-  <meta name="description"
-    content="Sitio oficial del Torneo Juvenil La Pradera. Consulta posiciones, calendario de partidos, goleadores y reglamento. Vive la mejor experiencia de fútbol juvenil de la región.">
-  <meta name="keywords"
-    content="fútbol juvenil, torneo juvenil, La Pradera, posiciones, calendario, goleadores, resultados, reglamento, equipos, partidos">
-  <meta name="author" content="Organización Torneo Juvenil La Pradera">
-  <meta name="theme-color" content="#0082C9">
-  <meta name="robots" content="index, follow">
-  <!-- SEO básico -->
-  <meta name="description"
-    content="Sitio oficial del Torneo Juvenil La Pradera. Consulta posiciones, calendario de partidos, goleadores y reglamento. Vive la mejor experiencia de fútbol juvenil de la región.">
-  <meta name="keywords"
-    content="fútbol juvenil, torneo juvenil, La Pradera, posiciones, calendario, goleadores, resultados, reglamento, equipos, partidos">
-  <meta name="author" content="Organización Torneo Juvenil La Pradera">
-  <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#0082C9">
-
-  <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
-  <meta property="og:title" content="Torneo Juvenil La Pradera - Fútbol Regional">
-  <meta property="og:description"
-    content="Resultados, posiciones, goleadores y toda la información del torneo juvenil del barrio La Pradera">
-  <meta property="og:image" content="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://torneo-juvenil.vercel.app/">
-  <meta property="og:type" content="website">
-  <meta property="og:locale" content="es_CO">
-  <meta property="og:site_name" content="Torneo Juvenil La Pradera">
-
-  <!-- Twitter Cards -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Torneo Juvenil La Pradera">
-  <meta name="twitter:description"
-    content="Resultados, posiciones, goleadores y noticias del torneo juvenil más importante de La Pradera.">
-  <meta name="twitter:image" content="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png">
-  <meta name="twitter:site" content="@TuUsuarioTwitter"> <!-- (Opcional: tu usuario) -->
-
-  <!-- Telegram y otras apps modernas también usan Open Graph -->
-
-  <!-- Icono para navegadores y apps -->
-  <link rel="icon" href="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png" type="image/png">
-  <link rel="apple-touch-icon" href="https://torneo-juvenil.vercel.app/images/EscudoTorneo.png" sizes="180x180">
-
-  <!-- Canonical URL para SEO -->
-  <link rel="canonical" href="https://torneo-juvenil.vercel.app/">
-
-  <!-- Preferiblemente la imagen debe ser 1200x630, jpg o png, accesible para todos -->
-
-
+  <title>Partidos y Resultados - Torneo Juvenil La Pradera</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link rel="shortcut icon" href="images/EscudoTorneo.png" type="image/x-icon">
-  <link rel="stylesheet" href="style/style.css" />
+
+  <!-- Estilos Mejorados -->
   <style>
-    /* Paleta suave para fondo principal */
-    body {
-      min-height: 100vh;
+    :root {
+      --azul-primario: #0f2578;
+      --azul-secundario: #002B3C;
+      --azul-acento: #0082C9;
+      --azul-interactivo: #0036a8;
+      --texto-claro: #f0f8ff;
+      --texto-resaltado: #7ef0ff;
+      --color-peligro: #dc3545;
+      --color-exito: #28a745;
     }
 
-    .info-shadow {
-      box-shadow: 0 8px 32px rgba(0, 130, 201, 0.11);
+    body {
+      background: linear-gradient(90deg, #002B3C 70%, #0082C9 100%);
+      min-height: 100vh;
+      color: var(--texto-claro);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    .container.bg-content {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+      padding: 2em;
+      margin-top: 1.5em;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .titulo-pag {
+      font-weight: 900;
+      font-size: 2.5rem;
+      letter-spacing: .03em;
+      margin: 1em 0 .5em 0;
+      text-shadow: 0 4px 20px #00000050;
+    }
+
+    .nav-fechas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7em;
+      justify-content: flex-start;
+      margin-bottom: 2em;
+      padding-bottom: 1em;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-fecha-btn {
+      background: #191d53;
+      color: #c2e7fa;
+      border-radius: 20px;
+      padding: 0.5em 1.3em;
+      border: 2px solid transparent;
+      font-weight: 600;
+      font-size: 1em;
+      box-shadow: 0 2px 10px rgba(25, 29, 83, 0.2);
+      transition: all .2s ease-in-out;
+      cursor: pointer;
+    }
+
+    .nav-fecha-btn.active,
+    .nav-fecha-btn:focus-visible {
+      background: var(--azul-interactivo);
+      color: var(--texto-resaltado);
+      border-color: var(--azul-acento);
+      box-shadow: 0 4px 20px rgba(0, 130, 201, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .nav-fecha-btn:hover:not(.active) {
+      background: var(--azul-acento);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .partido-card {
+      background: rgba(15, 37, 120, 0.6);
+      border-radius: 12px;
+      padding: 1.5em;
+      margin-bottom: 1em;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(0, 130, 201, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .partido-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 30px rgba(0, 130, 201, 0.3);
+    }
+
+    .partido-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1em;
+      text-align: center;
+    }
+
+    .equipo-nombre {
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.7em;
+    }
+
+    .equipo.local .equipo-nombre {
+      justify-content: flex-start;
+    }
+
+    .equipo.visitante .equipo-nombre {
+      justify-content: flex-end;
+      text-align: right;
+    }
+
+    .marcador {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: .05em;
+    }
+
+    .vs {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--texto-resaltado);
+    }
+
+    .partido-info {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5em;
+      margin-top: 1.2em;
+      font-size: 0.9rem;
+      color: #c2e7fa;
+      border-top: 1px solid rgba(0, 130, 201, 0.2);
+      padding-top: 1em;
+    }
+
+    .estado-badge {
+      padding: 0.3em 0.7em;
+      border-radius: 15px;
+      font-size: 0.8em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .estado-FINALIZADO {
+      background-color: var(--color-exito);
+      color: white;
+    }
+
+    .btn-eventos {
+      background-color: transparent;
+      border: 1px solid var(--azul-acento);
+      color: var(--texto-resaltado);
+      border-radius: 20px;
+      padding: 0.4em 1em;
+      transition: all 0.2s ease;
+    }
+
+    .btn-eventos:hover {
+      background-color: var(--azul-acento);
+      color: white;
+    }
+
+    /* --- NUEVOS ESTILOS PARA EL MODAL DE EVENTOS --- */
+    .modal-content {
+      background: var(--azul-secundario);
+      color: var(--texto-claro);
+      border: 1px solid var(--azul-acento);
+    }
+
+    .modal-header {
+      border-bottom: 1px solid rgba(0, 130, 201, 0.4);
+    }
+
+    .modal-footer {
+      border-top: 1px solid rgba(0, 130, 201, 0.4);
+    }
+
+    .btn-close {
+      filter: invert(1) grayscale(100%) brightness(200%);
+    }
+
+    .modal-eventos-grid {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .modal-eventos-column {
+      flex: 1;
+    }
+
+    .modal-eventos-header {
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-eventos-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .modal-eventos-list li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .modal-eventos-list .icono {
+      width: 25px;
+      text-align: center;
     }
   </style>
 </head>
@@ -72,123 +236,173 @@
 <body>
   <div id="nav-placeholder"></div>
   <div id="hero-placeholder"></div>
-
-  <main class="container" style="max-width:1240px;">
-    <!-- Info General -->
-    <section class="row mb-4">
-      <div class="col-lg-4 col-md-5 mb-3">
-        <div class="card-torneo info-shadow h-100">
-          <h3 class="mb-2">
-            <i class="fas fa-info-circle"></i> Sobre el torneo
-          </h3>
-          <p>
-            El Torneo Juvenil La Pradera reúne a los mejores equipos de barrio en una competencia organizada,
-            con árbitros oficiales, reglamento claro y seguimiento estadístico partido a partido.
-          </p>
-          <p class="mb-2">
-            Aquí encontrarás toda la información actualizada de la temporada en curso.
-          </p>
-          <a href="reglamento.html" class="btn-torneo mt-2">
-            <i class="fas fa-scroll"></i> Ver reglamento completo
-          </a>
-        </div>
-      </div>
-
-      <div class="col-lg-8 col-md-7 mb-3">
-        <div class="card-torneo info-shadow h-100 d-flex align-items-center bg-lightblue"
-          style="background: linear-gradient(100deg, #e3f6fe 55%, #a7e6fb 100%);">
-          <div>
-            <h1 class="display-5 fw-bold mb-2" style="color:#0082C9;">
-              <i class="fas fa-futbol"></i> Bienvenido al panel oficial
-            </h1>
-            <p class="lead mb-1">
-              Consulta en tiempo real resultados, posiciones y próximos partidos del torneo juvenil
-              más importante de La Pradera.
-            </p>
-            <p class="mb-0">
-              Actualizamos la información después de cada jornada para que jugadores, familias y cuerpos técnicos
-              sigan de cerca el rendimiento de sus equipos.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div class="card-torneo mt-4">
-      <h3 class="mb-3"><i class="fas fa-calendar-days"></i> Encuentros Recientes y Próximos</h3>
-      <div class="table-responsive">
-        <table class="table align-middle text-center table-hover mb-0">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Hora</th>
-              <th>Local</th>
-              <th>Visitante</th>
-              <th>Resultado</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody id="tablaPartidos">
-            <tr>
-              <td colspan="7" class="text-muted">Cargando partidos...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Tabla Posiciones -->
-    <div class="card-torneo mb-4">
-      <h3 class="mb-3">
-        <i class="fas fa-ranking-star"></i> Tabla general de posiciones
-      </h3>
-      <p class="text-muted mb-2">
-        La tabla se actualiza automáticamente al registrar cada resultado e incluye partidos jugados,
-        goles a favor y en contra, diferencia de gol y puntos acumulados.
-      </p>
-      <div class="table-responsive">
-        <table class="table align-middle text-center table-hover mb-0">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Equipo</th>
-              <th>PJ</th>
-              <th>PG</th>
-              <th>PE</th>
-              <th>PP</th>
-              <th>GF</th>
-              <th>GC</th>
-              <th>DG</th>
-              <th>PTS</th>
-            </tr>
-          </thead>
-          <tbody id="tablaPosiciones">
-            <tr>
-              <td colspan="10" class="text-muted">Cargando posiciones...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <main class="container">
+    <h1 class="titulo-pag text-center">Partidos y Resultados</h1>
+    <div class="bg-content">
+      <nav id="navFechas" class="nav-fechas"></nav>
+      <ul id="partidosList" class="list-unstyled" aria-live="polite" aria-atomic="true"></ul>
     </div>
   </main>
-
   <div id="footer-placeholder"></div>
-  <script>
-    Promise.all([
-      fetch('layout/navbar.html').then(r => r.text()).then(h => { document.getElementById('nav-placeholder').innerHTML = h; }),
-      fetch('layout/hero.html').then(r => r.text()).then(h => { document.getElementById('hero-placeholder').innerHTML = h; }),
-      fetch('layout/footer.html').then(r => r.text()).then(h => { document.getElementById('footer-placeholder').innerHTML = h; })
-    ]).catch(console.error);
-  </script>
+
+  <!-- MODAL DE EVENTOS -->
+  <div class="modal fade" id="eventosModal" tabindex="-1" aria-labelledby="eventosModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eventosModalLabel">Eventos del Partido</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="modal-body-content"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    const supabaseUrl = "https://cwlvpzossqmpuzdpjrsh.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3bHZwem9zc3FtcHV6ZHBqcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDc5NTIsImV4cCI6MjA3Njk4Mzk1Mn0.PPq8uCEx9Tu1B6iBtS2eCHogGSRaxc5tWPF8PZnU-Go";
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-  <!-- Supabase CDN UMD: define window.supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    const navFechasEl = document.getElementById("navFechas");
+    const partidosListEl = document.getElementById("partidosList");
+    let partidosData = []; // Caché para guardar los datos de los partidos
 
-  <!-- Tus scripts que usan window.supabase (SIN type="module") -->
-  <script src="scripts/posiciones.js"></script>
-  <script src="scripts/calendario.js"></script>
+    function iconoEvento(tipo) {
+      const tipoNormalizado = tipo ? tipo.toUpperCase() : '';
+      if (tipoNormalizado.includes('GOL')) return '<i class="fa-solid fa-futbol text-warning"></i>';
+      if (tipoNormalizado.includes('T.A') || tipoNormalizado.includes('T_A') || tipoNormalizado.includes('AMARILLA')) return '<i class="fa-solid fa-square text-warning"></i>';
+      if (tipoNormalizado.includes('T.R') || tipoNormalizado.includes('T_R') || tipoNormalizado.includes('ROJA')) return '<i class="fa-solid fa-square text-danger"></i>';
+      if (tipoNormalizado.includes('T.AZ') || tipoNormalizado.includes('T_AZ') || tipoNormalizado.includes('AZUL')) return '<i class="fa-solid fa-square text-info"></i>';
+      return '<i class="fa-solid fa-flag"></i>';
+    }
+
+    function partidoCardTemplate(p) {
+      const hora = p.hora?.substring(0, 5) ?? "--:--";
+      const fechaFormato = p.fecha ? new Date(p.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' }) : "Fecha no definida";
+      const equipoLocal = p.equipo_local_nombre || "Equipo Local";
+      const equipoVisitante = p.equipo_visitante_nombre || "Equipo Visitante";
+      const estado = p.estado || "Desconocido";
+      const marcadorHtml = (p.goles_local !== null && p.goles_visitante !== null) ? `<div class="marcador"><span>${p.goles_local}</span> - <span>${p.goles_visitante}</span></div>` : `<div class="vs">VS</div>`;
+      const estadoClase = estado.trim().replace(/\s+/g, '-').toUpperCase();
+
+      return `
+        <li id="partido-${p.id_partido}" class="partido-card">
+          <div class="partido-grid">
+            <div class="equipo local"><div class="equipo-nombre"><i class="fa-solid fa-shirt"></i> <span>${equipoLocal}</span></div></div>
+            ${marcadorHtml}
+            <div class="equipo visitante"><div class="equipo-nombre"><span>${equipoVisitante}</span> <i class="fa-solid fa-shirt"></i></div></div>
+          </div>
+          <div class="partido-info">
+            <span><i class="fa-regular fa-calendar-alt"></i> ${fechaFormato}</span>
+            <span><i class="fa-regular fa-clock"></i> ${hora}</span>
+            <span class="estado-badge estado-${estadoClase}">${estado}</span>
+            <button class="btn-eventos" data-bs-toggle="modal" data-bs-target="#eventosModal" data-partido-id="${p.id_partido}">
+              <i class="fa-solid fa-list-ol"></i> Eventos
+            </button>
+          </div>
+        </li>
+      `;
+    }
+
+    const eventosModal = document.getElementById('eventosModal');
+    eventosModal.addEventListener('show.bs.modal', (event) => {
+      const button = event.relatedTarget;
+      const modalBody = document.getElementById('modal-body-content');
+      if (!button) return;
+
+      const partidoId = parseInt(button.getAttribute('data-partido-id'), 10);
+      const partido = partidosData.find(p => p.id_partido === partidoId);
+
+      if (!partido || !partido.eventos_json || partido.eventos_json.length === 0) {
+        modalBody.innerHTML = `<p class="text-center p-4">No hay eventos registrados para este partido.</p>`;
+        return;
+      }
+
+      const eventosLocal = partido.eventos_json.filter(e => e.jugador_equipo_id === partido.id_equipo_local);
+      const eventosVisitante = partido.eventos_json.filter(e => e.jugador_equipo_id === partido.id_equipo_visitante);
+
+      const generarHtmlColumna = (eventos) => {
+        if (eventos.length === 0) return '<li>No hay eventos.</li>';
+        return eventos.map(e => {
+          const nombreCompleto = `${e.jugador_nombres || ''} ${e.jugador_apellidos || ''}`.trim();
+          const minuto = e.minuto ? `${e.minuto}'` : '';
+          return `<li><span class="icono">${iconoEvento(e.tipo_evento)}</span> ${nombreCompleto} ${minuto}</li>`;
+        }).join('');
+      };
+
+      modalBody.innerHTML = `
+            <div class="modal-eventos-grid">
+                <div class="modal-eventos-column">
+                    <div class="modal-eventos-header">${partido.equipo_local_nombre}</div>
+                    <ul class="modal-eventos-list">${generarHtmlColumna(eventosLocal)}</ul>
+                </div>
+                <div class="modal-eventos-column">
+                    <div class="modal-eventos-header">${partido.equipo_visitante_nombre}</div>
+                    <ul class="modal-eventos-list">${generarHtmlColumna(eventosVisitante)}</ul>
+                </div>
+            </div>
+        `;
+    });
+
+    async function renderPartidos(partidos) {
+      if (!partidos || partidos.length === 0) {
+        partidosListEl.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><p class="lead">No hay partidos para esta fecha.</p></div>`;
+        return;
+      }
+      partidosListEl.innerHTML = partidos.map(partidoCardTemplate).join('');
+    }
+
+    async function cargarPartidosPorFecha(fechaISO) {
+      partidosListEl.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Cargando...</span></div></div>`;
+      const desde = `${fechaISO} 00:00:00`;
+      const hasta = `${fechaISO} 23:59:59`;
+      try {
+        const { data, error } = await supabase.from("vista_partidos_completa").select("*")
+          .gte('fecha', desde).lte('fecha', hasta).order("hora", { ascending: true });
+
+        if (error) throw error;
+
+        partidosData = data;
+        await renderPartidos(partidosData);
+      } catch (error) {
+        console.error("Error al cargar partidos:", error);
+        partidosListEl.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><p class="lead text-danger">Error al cargar.</p></div>`;
+      }
+    }
+
+    // --- Resto de funciones auxiliares ---
+    const getLocalISODate = (date) => { const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; };
+    const obtenerFechasTabs = (base = new Date()) => { const fechas = []; for (let i = -7; i <= 7; i++) { const f = new Date(base); f.setDate(base.getDate() + i); fechas.push(f); } return fechas.map(f => ({ label: f.toLocaleDateString('es-CO', { weekday: "short", day: "2-digit", month: "short" }).replace('.', ''), value: getLocalISODate(f), })); };
+    const renderTabsFechas = (fechasArr, fechaActiva) => { navFechasEl.innerHTML = fechasArr.map(f => `<button class="nav-fecha-btn${f.value === fechaActiva ? " active" : ""}" data-fecha="${f.value}">${f.label}</button>`).join(""); };
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const hoy = new Date();
+      const hoyISO = getLocalISODate(hoy);
+      const tabs = obtenerFechasTabs(hoy);
+      renderTabsFechas(tabs, hoyISO);
+      await cargarPartidosPorFecha(hoyISO);
+
+      navFechasEl.addEventListener('click', async (e) => {
+        const targetButton = e.target.closest('.nav-fecha-btn');
+        if (!targetButton) return;
+        const nuevaFecha = targetButton.getAttribute("data-fecha");
+        document.querySelector('.nav-fecha-btn.active')?.classList.remove('active');
+        targetButton.classList.add('active');
+        await cargarPartidosPorFecha(nuevaFecha);
+      });
+
+      Promise.all([
+        fetch('layout/navbar.html').then(r => r.text()).then(h => document.getElementById('nav-placeholder').innerHTML = h),
+        fetch('layout/hero.html').then(r => r.text()).then(h => document.getElementById('hero-placeholder').innerHTML = h),
+        fetch('layout/footer.html').then(r => r.text()).then(h => document.getElementById('footer-placeholder').innerHTML = h)
+      ]).catch(console.error);
+    });
+  </script>
 </body>
 
 </html>

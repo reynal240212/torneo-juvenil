@@ -16,15 +16,14 @@ if (!window.supabase) {
   // Cliente único reutilizable en esta página
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // -------------------------------------------------------------
-
   const partidosListEl = document.getElementById("partidosList");
   const filtroFechaEl = document.getElementById("filtroFecha");
   const filtroMesEl = document.getElementById("filtroMes");
   const filtroAnioEl = document.getElementById("filtroAnio");
+  const filtroEquipoEl = document.getElementById("filtroEquipo");
   const btnBuscarFecha = document.getElementById("btnBuscarFecha");
   const eventosModal = document.getElementById("eventosModal");
-  let partidosData = []; // Caché para guardar los datos de los partidos
+  let partidosData = [];
 
   function iconoEvento(tipo) {
     const tipoNormalizado = tipo ? tipo.toUpperCase() : "";
@@ -97,7 +96,7 @@ if (!window.supabase) {
     `;
   }
 
-  // Lógica del modal
+  // Lógica del modal de eventos
   if (eventosModal) {
     eventosModal.addEventListener("show.bs.modal", (event) => {
       const button = event.relatedTarget;
@@ -155,13 +154,14 @@ if (!window.supabase) {
   async function renderPartidos(partidos) {
     if (!partidosListEl) return;
     if (!partidos || partidos.length === 0) {
-      partidosListEl.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><p class="lead">No hay partidos para esta fecha.</p></div>`;
+      partidosListEl.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><p class="lead">No hay partidos para esta búsqueda.</p></div>`;
       return;
     }
     partidosListEl.innerHTML = partidos.map(partidoCardTemplate).join("");
   }
 
-  async function cargarPartidosPorFecha(fechaISO) {
+  // Carga con filtros de fecha y equipo
+  async function cargarPartidos(fechaISO, nombreEquipo) {
     if (!partidosListEl) return;
 
     partidosListEl.innerHTML = `
@@ -171,16 +171,28 @@ if (!window.supabase) {
         </div>
       </div>`;
 
-    const desde = `${fechaISO}T00:00:00.000Z`;
-    const hasta = `${fechaISO}T23:59:59.999Z`;
+    const desde = fechaISO ? `${fechaISO}T00:00:00.000Z` : null;
+    const hasta = fechaISO ? `${fechaISO}T23:59:59.999Z` : null;
 
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from("vista_partidos_completa")
         .select("*")
-        .gte("fecha", desde)
-        .lte("fecha", hasta)
+        .order("fecha", { ascending: true })
         .order("hora", { ascending: true });
+
+      if (desde && hasta) {
+        query = query.gte("fecha", desde).lte("fecha", hasta);
+      }
+
+      const nombreNormalizado = nombreEquipo?.trim();
+      if (nombreNormalizado) {
+        query = query.or(
+          `equipo_local_nombre.ilike.%${nombreNormalizado}%,equipo_visitante_nombre.ilike.%${nombreNormalizado}%`
+        );
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -194,7 +206,6 @@ if (!window.supabase) {
     }
   }
 
-  // Auxiliar fecha local ISO
   const getLocalISODate = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -202,23 +213,21 @@ if (!window.supabase) {
     return `${year}-${month}-${day}`;
   };
 
-  // Inicialización
   document.addEventListener("DOMContentLoaded", async () => {
     const hoy = new Date();
     const hoyISO = getLocalISODate(hoy);
 
-    // Setear valores iniciales de filtros
     if (filtroFechaEl) filtroFechaEl.value = hoyISO;
     if (filtroMesEl) filtroMesEl.value = String(hoy.getMonth());
     if (filtroAnioEl) filtroAnioEl.value = String(hoy.getFullYear());
 
-    await cargarPartidosPorFecha(hoyISO);
+    await cargarPartidos(hoyISO, "");
 
-    if (btnBuscarFecha && filtroFechaEl) {
+    if (btnBuscarFecha) {
       btnBuscarFecha.addEventListener("click", async () => {
-        let fechaSeleccionada = filtroFechaEl.value; // yyyy-mm-dd
+        let fechaSeleccionada = filtroFechaEl ? filtroFechaEl.value : "";
+        const nombreEquipo = filtroEquipoEl ? filtroEquipoEl.value : "";
 
-        // Si no hay fecha pero sí mes/año, usar primer día del mes
         if (!fechaSeleccionada && filtroMesEl && filtroAnioEl) {
           const mes = filtroMesEl.value;
           const anio = filtroAnioEl.value;
@@ -226,12 +235,11 @@ if (!window.supabase) {
             fechaSeleccionada = `${anio}-${String(
               Number(mes) + 1
             ).padStart(2, "0")}-01`;
-            filtroFechaEl.value = fechaSeleccionada;
+            if (filtroFechaEl) filtroFechaEl.value = fechaSeleccionada;
           }
         }
 
-        if (!fechaSeleccionada) return;
-        await cargarPartidosPorFecha(fechaSeleccionada);
+        await cargarPartidos(fechaSeleccionada || null, nombreEquipo);
       });
     }
 
